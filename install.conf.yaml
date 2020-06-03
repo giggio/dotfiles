@@ -1,0 +1,29 @@
+- defaults:
+    shell:
+      stdin: true
+      stdout: true
+- clean:
+    - "~"
+- create:
+    - ~/.config
+    - ~/p
+    - ~/bin
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]
+- link:
+    ~/.dotfiles:
+      path: ""
+      if: '[ `pwd` != "$HOME/.dotfiles" ]'
+    ~/.vim: vimfiles
+    ~/.rbenv: rbenv
+    ~/.config/powershell: poshfiles
+    ~/.bashrc:
+      path: .bashrc
+      force: true
+    ~/.gitconfig: .gitconfig
+    ~/.inputrc: .inputrc
+    ~/.profile:
+      path: .profile
+      force: true
+    ~/.tmux.conf: .tmux.conf
+    ~/.vimrc: .vimrc

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ "$EUID" == "0" ]; then
+  echo "Please do not run as root"
+  exit 2
+fi
+
+BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+pushd "${BASEDIR}" > /dev/null
+
+export DEBIAN_FRONTEND=noninteractive
+$BASEDIR/pre-install.sh
+$BASEDIR/install.sh
+$BASEDIR/post-install.sh
+
+popd > /dev/null

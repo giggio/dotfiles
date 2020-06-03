@@ -1,0 +1,18 @@
+[submodule "dotbot"]
+	path = dotbot
+	url = https://github.com/anishathalye/dotbot
+[submodule "bashscripts"]
+	path = bashscripts
+	url = ../bashscripts.git
+[submodule "poshfiles"]
+	path = poshfiles
+	url = ../poshfiles.git
+[submodule "vimfiles"]
+	path = vimfiles
+	url = ../vimfiles.git
+[submodule "bash-it"]
+	path = bash-it
+	url = https://github.com/Bash-it/bash-it.git
+[submodule "rbenv"]
+	path = rbenv
+	url = https://github.com/rbenv/rbenv.git

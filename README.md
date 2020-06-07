@@ -7,13 +7,16 @@ to automate it.
 Installation
 ------
 
-* Make sure the SSH keys are correct, as some submodules ussh SSH.
-* Clone this repo to ~/.dotfiles:
+* Clone this repo to ~/.dotfiles
+
+If you are the repo owner make sure the SSH keys are correct, as some submodules
+use SSH, and clone with SSH:
+
 ````bash
 git clone --recurse-submodules git@github.com:giggio/dotfiles.git $HOME/.dotfiles
 ````
 
-If you are not the repo owner (Giggio), then you need to use https:
+If you are not the repo owner then you need to use https:
 
 ````bash
 git clone --recurse-submodules https://github.com/giggio/dotfiles $HOME/.dotfiles

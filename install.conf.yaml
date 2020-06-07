@@ -10,6 +10,7 @@
     - ~/bin
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
+    - touch $HOME/.hushlogin
 - link:
     ~/.dotfiles:
       path: ""

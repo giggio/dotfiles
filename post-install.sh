@@ -27,3 +27,12 @@ npm install -g trash-cli bash-language-server gist-cli vtop yaml-cli yarn
 git clone https://github.com/rbenv/ruby-build.git $BASEDIR/rbenv/plugins/ruby-build
 rbenv install 2.7.1
 rbenv global 2.7.1
+
+if ! [ -f /etc/sudoers.d/10-cron ]; then
+    echo "#allow cron to start without su
+%sudo ALL=NOPASSWD: /etc/init.d/cron start" | sudo tee /etc/sudoers.d/10-cron
+    sudo chmod 440 /etc/sudoers.d/10-cron
+fi
+
+sudo update-alternatives --set editor /usr/bin/vim.basic
+update-alternatives --set editor /usr/bin/vim.basic

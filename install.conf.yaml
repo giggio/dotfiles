@@ -27,6 +27,7 @@
     ~/.vim: vimfiles
     ~/.rbenv: rbenv
     ~/.config/powershell: poshfiles
+    ~/.config/git: config/git
     ~/.bashrc:
       path: .bashrc
       force: true

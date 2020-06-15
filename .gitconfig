@@ -34,6 +34,8 @@
            echo "Press CTRL C to stop."; \
            sleep infinity; \
         }; f"
+[pull]
+ ff = only
 [push]
  default = simple
 [log]
@@ -52,4 +54,6 @@
  textconv = fmt
 [diff "listzipfiles"]
  textconv = unzip -l
-
+[merge "npm-merge-driver"]
+	name = automatically merge npm lockfiles
+	driver = npx npm-merge-driver merge %A %O %B %P

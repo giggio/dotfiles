@@ -11,6 +11,16 @@
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - touch $HOME/.hushlogin
+    - if [ -L $HOME/.dotfiles ]; then rm -rf $HOME/.dotfiles; fi
+    - if [ -L $HOME/.vim ]; then rm -rf $HOME/.vim; fi
+    - if [ -L $HOME/.rbenv ]; then rm -rf $HOME/.rbenv; fi
+    - if [ -L $HOME/.config/powershell ]; then rm -rf $HOME/.config/powershell; fi
+    - if [ -L $HOME/.bashrc ]; then rm $HOME/.bashrc; fi
+    - if [ -L $HOME/.gitconfig ]; then rm $HOME/.gitconfig; fi
+    - if [ -L $HOME/.inputrc ]; then rm $HOME/.inputrc; fi
+    - if [ -L $HOME/.profile ]; then rm $HOME/.profile; fi
+    - if [ -L $HOME/.tmux.conf ]; then rm $HOME/.tmux.conf; fi
+    - if [ -L $HOME/.vimrc ]; then rm $HOME/.vimrc; fi
 - link:
     ~/.dotfiles:
       path: ""
@@ -28,3 +38,4 @@
       force: true
     ~/.tmux.conf: .tmux.conf
     ~/.vimrc: .vimrc
+    ~/bin/dotnet-sdk: dotnet-sdk-helpers/dotnet-sdk

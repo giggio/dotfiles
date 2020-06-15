@@ -16,3 +16,6 @@
 [submodule "rbenv"]
 	path = rbenv
 	url = https://github.com/rbenv/rbenv.git
+[submodule "dotnet-sdk-helpers"]
+	path = dotnet-sdk-helpers
+	url = https://github.com/faniereynders/dotnet-sdk-helpers.git

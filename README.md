@@ -4,8 +4,12 @@ These are the dotfiles. I'm using
 [Dotbot](https://github.com/anishathalye/dotbot)
 to automate it.
 
-Installation
-------
+## Installation
+
+*Note:* Some files and directories from the home directory will be removed. Check the
+[install.conf.yaml](https://github.com/giggio/dotfiles/blob/master/install.conf.yaml)
+file, on the `shell` section to see which ones and make sure you are ok with it,
+there will be no prompt.
 
 * Clone this repo to ~/.dotfiles
 
@@ -24,20 +28,21 @@ git clone --recurse-submodules https://github.com/giggio/dotfiles $HOME/.dotfile
 
 * Run the install script `~/.dotfiles/install`.
 
-Forking
--------
+## Cleanning up before installing
+
+Remove all directories that will be replaced by the submodules.
+
+## Forking
 
 You will need to take into consideration that this project uses submodules by
 the same author, so you will need to fork those repositories first.
 To learn which repositories are being used open at the [.gitmodules]() files and
 look for relative submodules (that start with `..`).
 
-Author
-------
+## Author
 
 [Giovanni Bassi](https://twitter.com/giovannibassi)
 
-License
--------
+## License
 
 Licensed under the Apache License, Version 2.0.

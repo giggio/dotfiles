@@ -17,7 +17,6 @@
     - if [ -L $HOME/.config/powershell ]; then rm -rf $HOME/.config/powershell; fi
     - if [ -L $HOME/.bashrc ]; then rm $HOME/.bashrc; fi
     - if [ -L $HOME/.gitconfig ]; then rm $HOME/.gitconfig; fi
-    - if [ -L $HOME/.inputrc ]; then rm $HOME/.inputrc; fi
     - if [ -L $HOME/.profile ]; then rm $HOME/.profile; fi
     - if [ -L $HOME/.tmux.conf ]; then rm $HOME/.tmux.conf; fi
     - if [ -L $HOME/.vimrc ]; then rm $HOME/.vimrc; fi
@@ -32,7 +31,6 @@
       path: .bashrc
       force: true
     ~/.gitconfig: .gitconfig
-    ~/.inputrc: .inputrc
     ~/.profile:
       path: .profile
       force: true

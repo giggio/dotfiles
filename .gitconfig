@@ -50,8 +50,12 @@
 [core]
  #pager = diff-so-fancy | less --tabs=4 -RFX
  pager = delta --dark
+[diff "pandoc2md"]
+ textconv = pandoc --to=markdown
 [diff "wrap"]
  textconv = fmt
+[diff "xlsx"]
+ textconv = python -m xlsx2csv
 [diff "listzipfiles"]
  textconv = unzip -l
 [merge "npm-merge-driver"]

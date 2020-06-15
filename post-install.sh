@@ -12,11 +12,12 @@ sudo apt-get autoremove -y
 echo -e "\e[34mGenerate location.\e[0m"
 sudo locale-gen en_US.UTF-8
 
-echo -e "\e[34mInstall powerline-status through pip.\e[0m"
+echo -e "\e[34mInstall several packages with Pip.\e[0m"
 pip3 install --user powerline-status
+pip3 install --user xlsx2csv
 
 # pwsh
-echo -e "\e[34mInstall PowerShell through .NET cli.\e[0m"
+echo -e "\e[34mInstall several packages with .NET.\e[0m"
 dotnet tool update --global PowerShell
 dotnet tool update --global dotnet-dump
 dotnet tool update --global dotnet-gcdump

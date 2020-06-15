@@ -53,6 +53,7 @@ apt-get install -y \
   lsb-release \
   mosh \
   nmap \
+  pandoc \
   python3-pip \
   socat \
   tmux \

@@ -19,3 +19,6 @@
 [submodule "dotnet-sdk-helpers"]
 	path = dotnet-sdk-helpers
 	url = https://github.com/faniereynders/dotnet-sdk-helpers.git
+[submodule "fzf"]
+	path = fzf
+	url = https://github.com/junegunn/fzf.git

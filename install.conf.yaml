@@ -26,20 +26,20 @@
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'
     ~/.vim: vimfiles
-    ~/.rbenv: rbenv
+    ~/.rbenv: tools/rbenv
     ~/.config/powershell: poshfiles
     ~/.config/git: config/git
     ~/.bashrc:
       path: .bashrc
       force: true
-    ~/.fzf: fzf
+    ~/.fzf: tools/fzf
     ~/.gitconfig: .gitconfig
     ~/.profile:
       path: .profile
       force: true
     ~/.tmux.conf: .tmux.conf
     ~/.vimrc: .vimrc
-    ~/bin/dotnet-sdk: dotnet-sdk-helpers/dotnet-sdk
+    ~/bin/dotnet-sdk: tools/dotnet-sdk-helpers/dotnet-sdk
     ~/bin/kubectx: tools/kubectx/kubectx
     ~/bin/kubens: tools/kubectx/kubens
     ~/bin/n: tools/n/bin/n

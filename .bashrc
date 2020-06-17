@@ -10,7 +10,7 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 # Path to the bash it configuration
-export BASH_IT="$DIR/bash-it"
+export BASH_IT="$DIR/tools/bash-it"
 
 # Lock and Load a custom theme file, location /.bash_it/themes/
 export BASH_IT_THEME=powerline-multiline

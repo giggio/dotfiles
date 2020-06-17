@@ -10,16 +10,16 @@
 [submodule "vimfiles"]
 	path = vimfiles
 	url = ../vimfiles.git
-[submodule "bash-it"]
+[submodule "tools/bash-it"]
 	path = tools/bash-it
 	url = https://github.com/Bash-it/bash-it.git
-[submodule "rbenv"]
+[submodule "tools/rbenv"]
 	path = tools/rbenv
 	url = https://github.com/rbenv/rbenv.git
-[submodule "dotnet-sdk-helpers"]
+[submodule "tools/dotnet-sdk-helpers"]
 	path = tools/dotnet-sdk-helpers
 	url = https://github.com/faniereynders/dotnet-sdk-helpers.git
-[submodule "fzf"]
+[submodule "tools/fzf"]
 	path = tools/fzf
 	url = https://github.com/junegunn/fzf.git
 [submodule "tools/kubectx"]

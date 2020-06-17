@@ -25,3 +25,6 @@
 [submodule "tools/kubectx"]
 	path = tools/kubectx
 	url = https://github.com/ahmetb/kubectx.git
+[submodule "tools/n"]
+	path = tools/n
+	url = https://github.com/tj/n.git

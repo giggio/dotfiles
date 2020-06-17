@@ -42,3 +42,4 @@
     ~/bin/dotnet-sdk: dotnet-sdk-helpers/dotnet-sdk
     ~/bin/kubectx: tools/kubectx/kubectx
     ~/bin/kubens: tools/kubectx/kubens
+    ~/bin/n: tools/n/bin/n

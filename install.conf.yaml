@@ -4,6 +4,7 @@
       stdout: true
 - clean:
     - "~"
+    - ~/bin
 - create:
     - ~/.config
     - ~/p
@@ -39,3 +40,5 @@
     ~/.tmux.conf: .tmux.conf
     ~/.vimrc: .vimrc
     ~/bin/dotnet-sdk: dotnet-sdk-helpers/dotnet-sdk
+    ~/bin/kubectx: tools/kubectx/kubectx
+    ~/bin/kubens: tools/kubectx/kubens

@@ -22,3 +22,6 @@
 [submodule "fzf"]
 	path = fzf
 	url = https://github.com/junegunn/fzf.git
+[submodule "tools/kubectx"]
+	path = tools/kubectx
+	url = https://github.com/ahmetb/kubectx.git

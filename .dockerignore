@@ -1,5 +1,7 @@
-dotbot
 bashscripts
+config
+dotbot
 poshfiles
-vimfiles
 tools
+vimfiles
+!config/git

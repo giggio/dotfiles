@@ -12,6 +12,16 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 pushd "${BASEDIR}" > /dev/null
 
 export DEBIAN_FRONTEND=noninteractive
+if grep [Mm]icrosoft /proc/version > /dev/null; then
+  export WSL=true
+else
+  export WSL=false
+fi
+if grep docker /proc/1/cgroup -qa; then
+  export RUNNING_IN_CONTAINER=true
+else
+  export RUNNING_IN_CONTAINER=false
+fi
 $BASEDIR/pre-install.sh
 $BASEDIR/install.sh
 $BASEDIR/post-install.sh

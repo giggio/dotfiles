@@ -7,6 +7,7 @@ if [ "$EUID" != "0" ]; then
   exit 2
 fi
 
+ALL_ARGS=$@
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
@@ -66,74 +67,116 @@ addKey () {
   wget -q -O - $1 | apt-key add -
 }
 
-echo -e "\e[34mUpdate with APT.\e[0m"
-apt-get update
-if $UPDATE; then
-  echo -e "\e[34mUpgrade with APT.\e[0m"
-  apt-get upgrade -y
+REPOS=`apt-cache policy | grep http | awk '{print $2"/dists/"$3}' | sort -u`
+printf -v REPOS $"$REPOS\n"
+if [ "$REPOS" == "" ] || $UPDATE; then
+  echo -e "\e[34mUpdate with APT.\e[0m"
+  apt-get update
+else
+  if $VERBOSE; then
+    echo "Not running apt update, repositories are already in place."
+  fi
 fi
-if ! hash add-apt-repository 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall base packages with APT.\e[0m"
-  apt-get install -y apt-transport-https ca-certificates curl wget \
-    gnupg gnupg-agent gnupg2 software-properties-common
+
+APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
+APT_PKGS_TO_INSTALL=`echo "apt-transport-https
+ca-certificates
+curl
+wget
+gnupg
+gnupg-agent
+gnupg2
+software-properties-common" | sort`
+APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
+if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
+  echo -e "\e[34mInstall base packages with APT: $APT_PKGS_NOT_INSTALLED\e[0m"
+  apt-get install -y $APT_PKGS_NOT_INSTALLED
+else
+  if $VERBOSE; then
+    echo "Not installing any of the base packages, they are already installed."
+  fi
 fi
-if [ "`apt-cache search --names-only ^git$`" == "" ]; then
+
+if ! [[ "$REPOS" =~ 'git-core/ppa' ]]; then
   echo -e "\e[34mAdd git PPA.\e[0m"
   add-apt-repository --yes ppa:git-core/ppa
+else
+  if $VERBOSE; then
+    echo "Not adding Git PPA, it is already present."
+  fi
 fi
-echo -e "\e[34mEnable the Universe repository.\e[0m"
-add-apt-repository universe --yes
-# apt-get update
-echo -e "\e[34mInstall a lot of packages using apt.\e[0m"
-apt-get install -y \
-  asciinema \
-  autoconf \
-  bat \
-  bison \
-  build-essential \
-  cowsay \
-  figlet \
-  fontforge \
-  fzf \
-  git \
-  gzip \
-  htop \
-  httpie \
-  hub \
-  jq \
-  libdb-dev \
-  libffi-dev \
-  libgdbm-dev \
-  libgdbm6 \
-  libncurses5-dev \
-  libreadline6-dev \
-  libssl-dev \
-  libyaml-dev \
-  locales \
-  lsb-release \
-  mosh \
-  nmap \
-  pandoc \
-  python3-pip \
-  socat \
-  tmux \
-  traceroute \
-  unzip \
-  vim \
-  w3m \
-  whois \
-  zip \
-  zlib1g-dev
+if ! [[ "$REPOS" =~ ubuntu.com/ubuntu/dists/.*/universe[[:space:]] ]]; then
+  echo -e "\e[34mEnable the Universe repository.\e[0m"
+  add-apt-repository universe --yes
+else
+  if $VERBOSE; then
+    echo "Not adding the Universe repository, it is already present."
+  fi
+fi
 
-echo -e "\e[34mRun custom installations.\e[0m"
+# apt packages
+APT_PKGS_TO_INSTALL=`echo "asciinema
+autoconf
+bat
+bison
+build-essential
+cowsay
+figlet
+fontforge
+fzf
+git
+gzip
+htop
+httpie
+hub
+jq
+libdb-dev
+libffi-dev
+libgdbm-dev
+libgdbm6
+libncurses5-dev
+libreadline-dev
+libssl-dev
+libyaml-dev
+locales
+lsb-release
+mosh
+nmap
+pandoc
+python3-pip
+socat
+tmux
+traceroute
+unzip
+vim
+w3m
+whois
+zip
+zlib1g-dev" | sort`
+APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
+APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
+if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
+  echo -e "\e[34mRun custom installations with APT: "$APT_PKGS_NOT_INSTALLED" \e[0m"
+  apt-get install -y $APT_PKGS_NOT_INSTALLED
+else
+  if $VERBOSE; then
+    echo "Not installing packages with PAT, they are already installed."
+  fi
+fi
 
 # yq
 if ! hash yq 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall YQ.\e[0m"
-  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
-  add-apt-repository --yes ppa:rmescandon/yq
-  apt-get update
+  if ! [[ "$REPOS" =~ 'rmescandon/yq' ]]; then
+    echo -e "\e[34mAdd git PPA.\e[0m"
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
+    add-apt-repository --yes -u ppa:rmescandon/yq
+  fi
   apt-get install yq -y
+else
+  if $VERBOSE; then
+    echo "Not intalling Yq, it is already installed."
+  fi
 fi
 
 # hashicorp vault
@@ -145,17 +188,35 @@ if ! hash vault 2>/dev/null || $UPDATE; then
   mv /tmp/vault/vault /usr/local/bin/
   rm /tmp/vault.zip
   rm -rf /tmp/vault
+else
+  if $VERBOSE; then
+    echo "Not intalling Vault, it is already installed."
+  fi
 fi
 
 # microsoft repos
-echo -e "\e[34mInstall Microsoft repos.\e[0m"
-install https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-apt-get update
+if ! [[ "$REPOS" =~ packages.microsoft.com/ubuntu/.*/prod/dists/.*/main[[:space:]] ]]; then
+  echo -e "\e[34mInstall Microsoft repos.\e[0m"
+  install https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+  apt-get update
+else
+  if $VERBOSE; then
+    echo "Not intalling the Microsoft repository, it is already present."
+  fi
+fi
 
 # dotnet
-if ! hash dotnet 2>/dev/null || $UPDATE; then
+APT_PKGS_TO_INSTALL=`echo "dotnet-sdk-2.1
+dotnet-sdk-3.1" | sort`
+APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
+APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
+if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
   echo -e "\e[34mInstall .NET cli.\e[0m"
-  apt-get install -y dotnet-sdk-2.1 dotnet-sdk-3.1
+  apt-get install -y $APT_PKGS_NOT_INSTALLED
+else
+  if $VERBOSE; then
+    echo "Not intalling .NET SDK, it is already installed."
+  fi
 fi
 
 # az
@@ -164,6 +225,10 @@ if ! hash az 2>/dev/null || $UPDATE; then
   echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list
   apt-get update
   apt-get install -y azure-cli
+else
+  if $VERBOSE; then
+    echo "Not intalling Az, it is already installed."
+  fi
 fi
 
 # kubectl
@@ -174,6 +239,10 @@ if ! hash kubectl 2>/dev/null || $UPDATE; then
   apt-get update
   apt-get install -y kubectl
   # or curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+else
+  if $VERBOSE; then
+    echo "Not intalling Kubectl, it is already installed."
+  fi
 fi
 
 # kubespy
@@ -186,6 +255,10 @@ if ! hash kubespy 2>/dev/null || $UPDATE; then
   rm /tmp/kubespy.tar.gz
   mv /tmp/kubespy/releases/kubespy-linux-amd64/kubespy /usr/local/bin/
   rm /tmp/kubespy -rf
+else
+  if $VERBOSE; then
+    echo "Not intalling Kubespy, it is already installed."
+  fi
 fi
 
 # google chrome
@@ -195,14 +268,23 @@ if ! hash google-chrome 2>/dev/null || $UPDATE; then
   echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
   apt-get update
   apt-get install -y google-chrome-stable
+else
+  if $VERBOSE; then
+    echo "Not intalling Google Chrome, it is already installed."
+  fi
 fi
 
 # dive
 if ! hash dive 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Dive.\e[0m"
   install https://github.com/wagoodman/dive/releases/download/v0.9.2/dive_0.9.2_linux_amd64.deb
+else
+  if $VERBOSE; then
+    echo "Not intalling Dive, it is already installed."
+  fi
 fi
 
+# docker
 if ! hash docker 2>/dev/null || $UPDATE; then
   if $WSL || $RUNNING_IN_CONTAINER; then
     echo -e "\e[34mInstall Docker cli only.\e[0m"
@@ -212,6 +294,21 @@ if ! hash docker 2>/dev/null || $UPDATE; then
   else
     echo -e "\e[34mInstall Docker.\e[0m"
     wget -q -O - https://get.docker.com | bash
+  fi
+else
+  if $VERBOSE; then
+    echo "Not intalling Docker, it is already installed."
+  fi
+fi
+
+if $WSL; then
+  if ! [[ $APT_PKGS_INSTALLED =~ wslu ]]; then
+    echo -e "\e[34mInstall WSL Utilities.\e[0m"
+    apt-get install -y wslu
+  else
+    if $VERBOSE; then
+      echo "Not intalling WSL Utilities package, it is already installed."
+    fi
   fi
 fi
 
@@ -224,6 +321,10 @@ if ! hash helm3 2>/dev/null || $UPDATE; then
   wget -q -O - https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
   mv /usr/local/bin/helm /usr/local/bin/helm3
   ln -s /usr/local/bin/helm3 /usr/local/bin/helm
+else
+  if $VERBOSE; then
+    echo "Not intalling Helm 3, it is already installed."
+  fi
 fi
 
 # helm 2
@@ -237,6 +338,10 @@ if ! hash helm2 2>/dev/null || $UPDATE; then
   mv /tmp/helm2/linux-amd64/helm /usr/local/bin/helm2
   mv /tmp/helm2/linux-amd64/tiller /usr/local/bin/
   rm /tmp/helm2 -rf
+else
+  if $VERBOSE; then
+    echo "Not intalling Helm 2, it is already installed."
+  fi
 fi
 
 # chart releaser - cr
@@ -249,6 +354,10 @@ if ! hash cr 2>/dev/null || $UPDATE; then
   rm /tmp/cr.tar.gz
   mv /tmp/cr/cr /usr/local/bin/
   rm /tmp/cr -rf
+else
+  if $VERBOSE; then
+    echo "Not intalling Chart Releaser, it is already installed."
+  fi
 fi
 
 # istioctl
@@ -257,6 +366,10 @@ if ! hash istioctl 2>/dev/null || $UPDATE; then
   wget -q -O - https://istio.io/downloadIstioctl | sh -
   mv $HOME/.istioctl/bin/istioctl /usr/local/bin/
   rm -rf $HOME/.istioctl
+else
+  if $VERBOSE; then
+    echo "Not intalling Istioctl, it is already installed."
+  fi
 fi
 
 # exa
@@ -268,6 +381,10 @@ if ! hash exa 2>/dev/null || $UPDATE; then
   mv /tmp/exa/exa-linux-x86_64 /usr/local/bin/exa
   rm /tmp/exa.zip
   rm -rf /tmp/exa
+else
+  if $VERBOSE; then
+    echo "Not intalling Exa, it is already installed."
+  fi
 fi
 
 # terraform
@@ -279,6 +396,10 @@ if ! hash terraform 2>/dev/null || $UPDATE; then
   mv /tmp/tf/terraform /usr/local/bin/
   rm /tmp/tf.zip
   rm -rf /tmp/tf
+else
+  if $VERBOSE; then
+    echo "Not intalling Terraform, it is already installed."
+  fi
 fi
 
 # terraform lint - tflint
@@ -290,6 +411,10 @@ if ! hash tflint 2>/dev/null || $UPDATE; then
   mv /tmp/tflint/tflint /usr/local/bin/
   rm /tmp/tflint.zip
   rm -rf /tmp/tflint
+else
+  if $VERBOSE; then
+    echo "Not intalling TFLint, it is already installed."
+  fi
 fi
 
 # delta
@@ -298,16 +423,28 @@ if ! hash delta 2>/dev/null || $UPDATE; then
   wget https://github.com/dandavison/delta/releases/download/0.1.1/git-delta_0.1.1_amd64.deb -O /tmp/delta.deb
   apt-get install /tmp/delta.deb
   rm /tmp/delta.deb
+else
+  if $VERBOSE; then
+    echo "Not intalling Delta, it is already installed."
+  fi
 fi
 
 # Github cli
 if ! hash gh 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Github cli.\e[0m"
   install https://github.com/cli/cli/releases/download/v0.10.0/gh_0.10.0_linux_amd64.deb
+else
+  if $VERBOSE; then
+    echo "Not intalling Github CLI, it is already installed."
+  fi
 fi
 
 # upgrade
 if $UPDATE; then
   echo -e "\e[34mUpgrade with APT.\e[0m"
   apt-get upgrade -y
+else
+  if $VERBOSE; then
+    echo "Not updating with APT."
+  fi
 fi

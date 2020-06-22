@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+ALL_ARGS=$@
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
@@ -56,14 +57,26 @@ if ! update-alternatives --display python &>/dev/null; then
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2
   sudo update-alternatives  --set python /usr/bin/python3.8
+else
+  if $VERBOSE; then
+    echo "Not Adding Python alternatives, they are already present."
+  fi
 fi
 
 if $UPDATE; then
   echo -e "\e[34mUpgrading all packages.\e[0m"
   sudo apt-get upgrade -y
+else
+  if $VERBOSE; then
+    echo "Not updating with APT."
+  fi
 fi
 
 if ! [ -L /etc/localtime ] || [ `realpath /etc/localtime` != "/usr/share/zoneinfo/America/Sao_Paulo" ]; then
   echo -e "\e[34mSetting default time zone to São Paulo.\e[0m"
   sudo ln -fs /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
+else
+  if $VERBOSE; then
+    echo "Not updating time zones."
+  fi
 fi

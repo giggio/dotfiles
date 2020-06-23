@@ -54,7 +54,8 @@ if $VERBOSE; then
   echo Update is $UPDATE
 fi
 
-sudo -E $BASEDIR/install-pkgs.sh $ALL_ARGS
+sudo -E $BASEDIR/install-root-pkgs.sh $ALL_ARGS
+$BASEDIR/install-user-pkgs.sh $ALL_ARGS
 
 if $CLEAN; then
   echo -e "\e[34mCleanning up packages.\e[0m"
@@ -87,7 +88,7 @@ else
   fi
 fi
 
-# pwsh
+# .NET Tools
 DOTNET_TOOLS=$HOME/.dotnet/tools
 if ! [ -f $DOTNET_TOOLS/pwsh ] || $UPDATE; then
   echo -e "\e[34mInstall PowerShell.\e[0m"
@@ -226,21 +227,6 @@ if ! hash deno 2>/dev/null && ! [ -f $HOME/.deno/bin/deno ] || $UPDATE; then
 else
   if $VERBOSE; then
     echo "Not installing Deno, it is already installed."
-  fi
-fi
-
-# k9s
-if ! hash k9s 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall k9s.\e[0m"
-  wget https://github.com/derailed/k9s/releases/download/v0.20.5/k9s_Linux_arm.tar.gz -O /tmp/k9s.tar.gz
-  mkdir /tmp/k9s/
-  tar -xvzf /tmp/k9s.tar.gz -C /tmp/k9s/
-  sudo mv /tmp/k9s/k9s /usr/local/bin/
-  rm -rf /tmp/k9s/
-  rm /tmp/k9s.tar.gz
-else
-  if $VERBOSE; then
-    echo "Not installing K9s, it is already installed."
   fi
 fi
 

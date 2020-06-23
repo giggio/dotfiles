@@ -5,7 +5,8 @@ DOTFILESDIR=/home/user/.dotfiles
 docker run -ti --name dft \
   -v $BASEDIR/install:$DOTFILESDIR/install \
   -v $BASEDIR/install.sh:$DOTFILESDIR/install.sh \
-  -v $BASEDIR/install-pkgs.sh:$DOTFILESDIR/install-pkgs.sh \
+  -v $BASEDIR/install-root-pkgs.sh:$DOTFILESDIR/install-root-pkgs.sh \
+  -v $BASEDIR/install-user-pkgs.sh:$DOTFILESDIR/install-user-pkgs.sh \
   -v $BASEDIR/install.conf.yaml:$DOTFILESDIR/install.conf.yaml \
   -v $BASEDIR/pre-install.sh:$DOTFILESDIR/pre-install.sh \
   -v $BASEDIR/post-install.sh:$DOTFILESDIR/post-install.sh \

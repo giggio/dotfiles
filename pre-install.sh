@@ -29,7 +29,7 @@ done
 
 if $SHOW_HELP; then
   cat <<EOF
-Packages pre installer.
+Packages for the installation, setup basic tools for dotbot.
 
 Usage:
   `readlink -f $0` [flags]

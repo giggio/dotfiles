@@ -9,11 +9,16 @@ fi
 
 ALL_ARGS=$@
 UPDATE=false
+CLEAN=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
+    --clean|-c)
+    CLEAN=true
+    shift
+    ;;
     --update|-u)
     UPDATE=true
     shift
@@ -34,7 +39,7 @@ done
 
 if $SHOW_HELP; then
   cat <<EOF
-Packages installer.
+Installs root packages.
 
 Usage:
   `readlink -f $0` [flags]
@@ -461,5 +466,14 @@ if $UPDATE; then
 else
   if $VERBOSE; then
     echo "Not updating with APT."
+  fi
+fi
+
+if $CLEAN; then
+  echo -e "\e[34mCleanning up packages.\e[0m"
+  sudo apt-get autoremove -y
+else
+  if $VERBOSE; then
+    echo "Not auto removing with APT."
   fi
 fi

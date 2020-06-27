@@ -20,7 +20,7 @@
  up = push upstream master
  sync = pull upstream master --rebase
  which = !git branch | grep -i
- daily = !sh -c 'git log --since=yesterday --format=%s --author=Giovanni'
+ daily = !sh -c 'git log --since=yesterday --format=%s --author=\"`git config user.email`\"'
  serve = daemon --reuseaddr --verbose --base-path=. --export-all ./.git
  graph = log --graph
  ngrok = "!f() { \

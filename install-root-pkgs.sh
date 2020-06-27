@@ -45,6 +45,7 @@ Usage:
   `readlink -f $0` [flags]
 
 Flags:
+  -c, --clean              Will clean installed packages.
   -u, --update             Will download and install/reinstall even if the tools are already installed
       --verbose            Show verbose output
   -h, --help               help

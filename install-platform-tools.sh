@@ -99,7 +99,7 @@ if ! [ -f $DOTNET_TOOLS/dotnet-suggest ] || $UPDATE; then
 fi
 if ! [ -f $DOTNET_TOOLS/tye ] || $UPDATE; then
   echo -e "\e[34mInstall Tye.\e[0m"
-  dotnet tool update --global Microsoft.Tye --version "0.2.0-alpha.20258.3"
+  dotnet tool update --global Microsoft.Tye --version "0.3.0-alpha.20319.3"
 fi
 if ! [ -f $DOTNET_TOOLS/dotnet-aspnet-codegenerator ] || $UPDATE; then
   echo -e "\e[34mInstall ASP.NET Code Generator.\e[0m"

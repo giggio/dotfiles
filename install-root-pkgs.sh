@@ -438,7 +438,7 @@ fi
 # Github cli
 if ! hash gh 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Github cli.\e[0m"
-  install https://github.com/cli/cli/releases/download/v0.10.0/gh_0.10.0_linux_amd64.deb
+  install https://github.com/cli/cli/releases/download/v0.11.0/gh_0.11.0_linux_amd64.deb
 else
   if $VERBOSE; then
     echo "Not intalling Github CLI, it is already installed."

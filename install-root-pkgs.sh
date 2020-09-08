@@ -175,7 +175,9 @@ if ! hash yq 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall YQ.\e[0m"
   if ! [[ "$REPOS" =~ 'rmescandon/yq' ]]; then
     echo -e "\e[34mAdd git PPA.\e[0m"
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
+    if [[ `apt-key fingerprint CC86BB64 2> /dev/null` == '' ]]; then
+      apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
+    fi
     add-apt-repository --yes -u ppa:rmescandon/yq
   fi
   apt-get install yq -y
@@ -438,7 +440,11 @@ fi
 # Github cli
 if ! hash gh 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Github cli.\e[0m"
-  install https://github.com/cli/cli/releases/download/v0.11.1/gh_0.11.1_linux_amd64.deb
+  if [[ `apt-key fingerprint C99B11DEB97541F0 2> /dev/null` == '' ]]; then
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+  fi
+  apt-add-repository -u https://cli.github.com/packages
+  apt install gh -y
 else
   if $VERBOSE; then
     echo "Not intalling Github CLI, it is already installed."

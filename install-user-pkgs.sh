@@ -54,14 +54,21 @@ if $VERBOSE; then
   echo Update is $UPDATE
 fi
 
-# deno
-if ! hash deno 2>/dev/null && ! [ -f $HOME/.deno/bin/deno ] || $UPDATE; then
-  echo -e "\e[34mInstall Deno.\e[0m"
-  curl -fsSL https://deno.land/x/install/install.sh | sh
-else
-  if $VERBOSE; then
-    echo "Not installing Deno, it is already installed."
+#dvm - deno
+if ! hash dvm 2>/dev/null || $UPDATE; then
+  DVM_BIN_DIR="$HOME/.dvm/bin"
+  EXE="$DVM_BIN_DIR/dvm"
+  if [ ! -d "$DVM_BIN_DIR" ]; then
+    mkdir -p "$DVM_BIN_DIR"
   fi
+  DVM_URI="https://cdn.jsdelivr.net/gh/justjavac/dvm_releases/dvm-x86_64-unknown-linux-gnu.zip"
+  curl -fsSL --output "$EXE.zip" "$DVM_URI"
+  pushd "$DVM_BIN_DIR"
+  unzip -o "$EXE.zip"
+  chmod +x "$EXE"
+  rm "$EXE.zip"
+  popd
+  dvm install
 fi
 
 # rbenv

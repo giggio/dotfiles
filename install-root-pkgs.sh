@@ -454,7 +454,7 @@ fi
 # k9s
 if ! hash k9s 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall k9s.\e[0m"
-  wget https://github.com/derailed/k9s/releases/download/v0.20.5/k9s_Linux_arm.tar.gz -O /tmp/k9s.tar.gz
+  wget https://github.com/derailed/k9s/releases/download/v0.22.1/k9s_Linux_x86_64.tar.gz -O /tmp/k9s.tar.gz
   mkdir /tmp/k9s/
   tar -xvzf /tmp/k9s.tar.gz -C /tmp/k9s/
   mv /tmp/k9s/k9s /usr/local/bin/

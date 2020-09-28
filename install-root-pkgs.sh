@@ -479,6 +479,13 @@ else
   fi
 fi
 
+#aws cli
+curl -fsSL --output /tmp/aws.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+unzip -q /tmp/aws.zip -d /tmp/aws
+/tmp/aws/aws/install
+rm /tmp/aws.zip
+rm /tmp/aws -rf
+
 # upgrade
 if $UPDATE; then
   echo -e "\e[34mUpgrade with APT.\e[0m"

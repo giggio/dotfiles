@@ -82,3 +82,8 @@ else
     echo "Not installing Rbenv and generating Ruby, it is already installed."
   fi
 fi
+
+if ! [ -x $HOME/.cargo/bin/rustc ] || $UPDATE; then
+  curl -fsSL https://sh.rustup.rs | bash -s -- -y
+fi
+

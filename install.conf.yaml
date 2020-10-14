@@ -25,6 +25,7 @@
     ~/.dotfiles:
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'
+    ~/.inputrc: .inputrc
     ~/.vim: vimfiles
     ~/.rbenv: tools/rbenv
     ~/.config/powershell: poshfiles

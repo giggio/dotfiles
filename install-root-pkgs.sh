@@ -426,7 +426,7 @@ fi
 # terraform lint - tflint
 if ! hash tflint 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall TFLint.\e[0m"
-  wget https://github.com/terraform-linters/tflint/releases/download/v0.16.2/tflint_linux_amd64.zip -O /tmp/tflint.zip
+  wget https://github.com/terraform-linters/tflint/releases/download/v0.20.3/tflint_linux_amd64.zip -O /tmp/tflint.zip
   rm -rf /tmp/tflint
   unzip /tmp/tflint.zip -d /tmp/tflint
   mv /tmp/tflint/tflint /usr/local/bin/

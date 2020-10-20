@@ -401,18 +401,16 @@ if ! hash terraform 2>/dev/null || $UPDATE; then
   wget https://releases.hashicorp.com/terraform/0.12.26/terraform_0.12.26_linux_amd64.zip -O /tmp/tf.zip
   rm -rf /tmp/tf
   unzip /tmp/tf.zip -d /tmp/tf
-  mv /tmp/tf/terraform /usr/local/bin/
+  mv /tmp/tf/terraform /usr/local/bin/terraform012
   rm /tmp/tf.zip
   rm -rf /tmp/tf
-  mv /usr/local/bin/terraform /usr/local/bin/terraform012
 
-  wget https://releases.hashicorp.com/terraform/0.13.3/terraform_0.13.3_linux_amd64.zip -O /tmp/tf.zip
+  wget https://releases.hashicorp.com/terraform/0.13.4/terraform_0.13.4_linux_amd64.zip -O /tmp/tf.zip
   rm -rf /tmp/tf
   unzip /tmp/tf.zip -d /tmp/tf
-  mv /tmp/tf/terraform /usr/local/bin/
+  mv /tmp/tf/terraform /usr/local/bin/terraform013
   rm /tmp/tf.zip
   rm -rf /tmp/tf
-  mv /usr/local/bin/terraform /usr/local/bin/terraform013
 
   update-alternatives --install /usr/local/bin/terraform terraform /usr/local/bin/terraform013 1
   update-alternatives --install /usr/local/bin/terraform terraform /usr/local/bin/terraform012 2

@@ -478,11 +478,17 @@ else
 fi
 
 #aws cli
-curl -fsSL --output /tmp/aws.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
-unzip -q /tmp/aws.zip -d /tmp/aws
-/tmp/aws/aws/install
-rm /tmp/aws.zip
-rm /tmp/aws -rf
+if ! hash aws 2>/dev/null || $UPDATE; then
+  curl -fsSL --output /tmp/aws.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+  unzip -q /tmp/aws.zip -d /tmp/aws
+  /tmp/aws/aws/install
+  rm /tmp/aws.zip
+  rm /tmp/aws -rf
+else
+  if $VERBOSE; then
+    echo "Not installing AWS cli, it is already installed."
+  fi
+fi
 
 # iperf
 if ! hash iperf3 2>/dev/null || $UPDATE; then

@@ -484,6 +484,19 @@ unzip -q /tmp/aws.zip -d /tmp/aws
 rm /tmp/aws.zip
 rm /tmp/aws -rf
 
+# iperf
+if ! hash iperf3 2>/dev/null || $UPDATE; then
+  apt install -y libsctp1
+  curl -fsSL --output /tmp/libperf.deb "https://iperf.fr/download/ubuntu/libiperf0_3.7-3_amd64.deb"
+  curl -fsSL --output /tmp/iperf.deb "https://iperf.fr/download/ubuntu/iperf3_3.7-3_amd64.deb"
+  dpkg -i /tmp/libperf.deb /tmp/iperf.deb
+  rm /tmp/libperf.deb /tmp/iperf.deb
+else
+  if $VERBOSE; then
+    echo "Not installing iperf3, it is already installed."
+  fi
+fi
+
 # upgrade
 if $UPDATE; then
   echo -e "\e[34mUpgrade with APT.\e[0m"

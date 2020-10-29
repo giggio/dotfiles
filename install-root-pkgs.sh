@@ -321,36 +321,45 @@ if $WSL; then
 fi
 
 # helm 3
-if ! hash helm3 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall Helm 3.\e[0m"
-  if [ -e /usr/local/bin/helm ]; then
-    rm /usr/local/bin/helm
+if ! hash helm 2>/dev/null || $UPDATE; then
+  if ! hash helm3 2>/dev/null || $UPDATE; then
+    echo -e "\e[34mInstall Helm 3.\e[0m"
+    if [ -e /usr/local/bin/helm ]; then
+      rm /usr/local/bin/helm
+    fi
+    wget -q -O - https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+    mv /usr/local/bin/helm /usr/local/bin/helm3
+  else
+    if $VERBOSE; then
+      echo "Not intalling Helm 3, it is already installed."
+    fi
   fi
-  wget -q -O - https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-  mv /usr/local/bin/helm /usr/local/bin/helm3
-  ln -s /usr/local/bin/helm3 /usr/local/bin/helm
+
+  # helm 2
+  if ! hash helm2 2>/dev/null || $UPDATE; then
+    echo -e "\e[34mInstall Helm 2.\e[0m"
+    wget https://get.helm.sh/helm-v2.17.0-linux-amd64.tar.gz -O /tmp/helm2.tar.gz
+    rm /tmp/helm2 -rf
+    mkdir -p /tmp/helm2
+    tar -xvzf /tmp/helm2.tar.gz -C /tmp/helm2/
+    rm /tmp/helm2.tar.gz
+    mv /tmp/helm2/linux-amd64/helm /usr/local/bin/helm2
+    mv /tmp/helm2/linux-amd64/tiller /usr/local/bin/
+    rm /tmp/helm2 -rf
+  else
+    if $VERBOSE; then
+      echo "Not intalling Helm 2, it is already installed."
+    fi
+  fi
+  update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm3 2
+  update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm2 1
+  update-alternatives --set helm /usr/local/bin/helm3
 else
   if $VERBOSE; then
-    echo "Not intalling Helm 3, it is already installed."
+    echo "Not intalling Helm, it is already installed."
   fi
 fi
 
-# helm 2
-if ! hash helm2 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall Helm 2.\e[0m"
-  wget https://get.helm.sh/helm-v2.16.7-linux-amd64.tar.gz -O /tmp/helm2.tar.gz
-  rm /tmp/helm2 -rf
-  mkdir -p /tmp/helm2
-  tar -xvzf /tmp/helm2.tar.gz -C /tmp/helm2/
-  rm /tmp/helm2.tar.gz
-  mv /tmp/helm2/linux-amd64/helm /usr/local/bin/helm2
-  mv /tmp/helm2/linux-amd64/tiller /usr/local/bin/
-  rm /tmp/helm2 -rf
-else
-  if $VERBOSE; then
-    echo "Not intalling Helm 2, it is already installed."
-  fi
-fi
 
 # chart releaser - cr
 if ! hash cr 2>/dev/null || $UPDATE; then

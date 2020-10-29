@@ -54,7 +54,7 @@ if $VERBOSE; then
   echo Update is $UPDATE
 fi
 
-#dvm - deno
+# dvm - deno
 if ! hash dvm 2>/dev/null || $UPDATE; then
   DVM_BIN_DIR="$HOME/.dvm/bin"
   EXE="$DVM_BIN_DIR/dvm"

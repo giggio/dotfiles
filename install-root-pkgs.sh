@@ -486,7 +486,7 @@ else
   fi
 fi
 
-#aws cli
+# aws cli
 if ! hash aws 2>/dev/null || $UPDATE; then
   curl -fsSL --output /tmp/aws.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
   unzip -q /tmp/aws.zip -d /tmp/aws

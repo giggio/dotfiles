@@ -150,7 +150,7 @@ else
   fi
 fi
 export PATH="$N_PREFIX/bin:$PATH"
-#npm tools
+# npm tools
 export NG_CLI_ANALYTICS=ci
 NPM_PKGS_INSTALLED_NOT_ORGS=$(ls `npm prefix -g`/lib/node_modules | grep -v @)
 NPM_PKGS_INSTALLED_ORGS=''

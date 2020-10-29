@@ -421,8 +421,8 @@ if ! hash terraform 2>/dev/null || $UPDATE; then
   rm /tmp/tf.zip
   rm -rf /tmp/tf
 
-  update-alternatives --install /usr/local/bin/terraform terraform /usr/local/bin/terraform013 1
-  update-alternatives --install /usr/local/bin/terraform terraform /usr/local/bin/terraform012 2
+  update-alternatives --install /usr/local/bin/terraform terraform /usr/local/bin/terraform013 2
+  update-alternatives --install /usr/local/bin/terraform terraform /usr/local/bin/terraform012 1
   update-alternatives --set terraform /usr/local/bin/terraform013
 else
   if $VERBOSE; then

@@ -414,7 +414,7 @@ if ! hash terraform 2>/dev/null || $UPDATE; then
   rm /tmp/tf.zip
   rm -rf /tmp/tf
 
-  wget https://releases.hashicorp.com/terraform/0.13.4/terraform_0.13.4_linux_amd64.zip -O /tmp/tf.zip
+  wget https://releases.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip -O /tmp/tf.zip
   rm -rf /tmp/tf
   unzip /tmp/tf.zip -d /tmp/tf
   mv /tmp/tf/terraform /usr/local/bin/terraform013

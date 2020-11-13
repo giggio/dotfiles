@@ -513,6 +513,22 @@ else
   fi
 fi
 
+## dog is not working with ubuntu 20.04 yet, see https://github.com/ogham/dog/issues/28
+## dog
+#if ! hash dog 2>/dev/null || $UPDATE; then
+#  echo -e "\e[34mInstall Exa.\e[0m"
+#  wget https://github.com/ogham/dog/releases/download/v0.1.0/dog-v0.1.0-x86_64-unknown-linux-gnu.zip -O /tmp/dog.zip
+#  rm -rf /tmp/dog
+#  unzip /tmp/dog.zip -d /tmp/dog
+#  mv /tmp/dog/bin/dog /usr/local/bin/dog
+#  rm /tmp/dog.zip
+#  rm -rf /tmp/dog
+#else
+#  if $VERBOSE; then
+#    echo "Not intalling Dog, it is already installed."
+#  fi
+#fi
+
 # upgrade
 if $UPDATE; then
   echo -e "\e[34mUpgrade with APT.\e[0m"

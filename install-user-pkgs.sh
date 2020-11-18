@@ -55,20 +55,23 @@ if $VERBOSE; then
 fi
 
 # dvm - deno
-if ! hash dvm 2>/dev/null || $UPDATE; then
-  DVM_BIN_DIR="$HOME/.dvm/bin"
-  EXE="$DVM_BIN_DIR/dvm"
-  if [ ! -d "$DVM_BIN_DIR" ]; then
-    mkdir -p "$DVM_BIN_DIR"
-  fi
-  DVM_URI="https://cdn.jsdelivr.net/gh/justjavac/dvm_releases/dvm-x86_64-unknown-linux-gnu.zip"
-  curl -fsSL --output "$EXE.zip" "$DVM_URI"
-  pushd "$DVM_BIN_DIR"
-  unzip -o "$EXE.zip"
-  chmod +x "$EXE"
-  rm "$EXE.zip"
-  popd
-  dvm install
+if ! hash dvm 2>/dev/null; then
+  DVM_TARGZ='dvm_linux_amd64.tar.gz'
+  DVM_DOWNLOAD_URL=`curl -fsSL https://api.github.com/repos/axetroy/dvm/releases/latest \
+  | jq --raw-output '.assets[] | select(.name | contains("'$DVM_TARGZ'")) | .browser_download_url'`
+  DVM_TMP_DIR='/tmp/dvm'
+  mkdir -p $DVM_TMP_DIR
+  DVM_TARGZ_TMP="$DVM_TMP_DIR/dvm_linux_amd64.tar.gz"
+  curl -fsSL --output $DVM_TARGZ_TMP $DVM_DOWNLOAD_URL
+  pushd $DVM_TMP_DIR > /dev/null
+  tar -xvzf $DVM_TARGZ_TMP
+  mv dvm $HOME/bin/
+  popd > /dev/null
+  rm -rf $DVM_TMP_DIR
+  $HOME/bin/dvm install latest
+elif $UPDATE; then
+  dvm upgrade
+  $HOME/bin/dvm install latest
 fi
 
 # rbenv

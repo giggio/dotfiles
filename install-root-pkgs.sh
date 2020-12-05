@@ -449,7 +449,10 @@ fi
 # delta
 if ! hash delta 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Delta.\e[0m"
-  wget https://github.com/dandavison/delta/releases/download/0.1.1/git-delta_0.1.1_amd64.deb -O /tmp/delta.deb
+  if sudo dpkg -l git-delta &> /dev/null; then
+    apt-get purge -y git-delta
+  fi
+  wget https://github.com/barnumbirr/delta-debian/releases/download/0.4.4-1/delta-diff_0.4.4-1_amd64_debian_buster.deb -O /tmp/delta.deb
   apt-get install /tmp/delta.deb
   rm /tmp/delta.deb
 else

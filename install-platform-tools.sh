@@ -150,6 +150,7 @@ else
   fi
 fi
 export PATH="$N_PREFIX/bin:$PATH"
+
 # npm tools
 export NG_CLI_ANALYTICS=ci
 NPM_PKGS_INSTALLED_NOT_ORGS=$(ls `npm prefix -g`/lib/node_modules | grep -v @)
@@ -198,3 +199,20 @@ else
     echo "Not installing Npm packages, they are already installed."
   fi
 fi
+
+# krew tools
+function installKrewPkg() {
+  if [ "$1" == "" ]; then return; fi
+  local PKG=$1
+  if kubectl krew list | grep $PKG > /dev/null; then
+    if $UPDATE; then
+       kubectl krew upgrade $PKG || true
+    fi
+  else
+    kubectl krew install $PKG
+  fi
+}
+installKrewPkg get-all
+installKrewPkg resource-capacity
+installKrewPkg sniff
+installKrewPkg tail

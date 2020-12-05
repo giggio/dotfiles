@@ -490,6 +490,21 @@ else
   fi
 fi
 
+# krew
+if ! hash krew 2>/dev/null || $UPDATE; then
+  echo -e "\e[34mInstall krew.\e[0m"
+  wget https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.tar.gz -O /tmp/krew.tar.gz
+  mkdir /tmp/krew/
+  tar -xvzf /tmp/krew.tar.gz -C /tmp/krew/
+  /tmp/krew/krew-"$(uname | tr '[:upper:]' '[:lower:]')_$(uname -m | sed -e 's/x86_64/amd64/' -e 's/arm.*$/arm/')" install krew
+  rm -rf /tmp/krew/
+  rm /tmp/krew.tar.gz
+else
+  if $VERBOSE; then
+    echo "Not installing Krew, it is already installed."
+  fi
+fi
+
 # aws cli
 if ! hash aws 2>/dev/null || $UPDATE; then
   curl -fsSL --output /tmp/aws.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"

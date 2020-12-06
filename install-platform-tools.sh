@@ -184,6 +184,7 @@ mocha
 nodemon
 npmrc
 pm2
+terminalizer
 tldr
 trash-cli
 typescript

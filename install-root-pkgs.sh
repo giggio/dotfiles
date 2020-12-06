@@ -149,6 +149,7 @@ lsb-release
 mosh
 nmap
 pandoc
+pkg-config
 python3-pip
 socat
 tmux

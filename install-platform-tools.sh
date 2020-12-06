@@ -230,3 +230,20 @@ else
     echo "Not installing gems, they are already installed."
   fi
 fi
+
+# rust/cargo
+CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
+CRATES_TO_INSTALL="cargo-update
+gping"
+CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
+if [ "$CRATES_NOT_INSTALLED" != "" ]; then
+  echo -e "\e[34mInstall crates $CRATES_NOT_INSTALLED.\e[0m"
+  cargo install $CRATES_NOT_INSTALLED
+else
+  if $VERBOSE; then
+    echo "Not installing crates, they are already installed."
+  fi
+fi
+if $UPDATE; then
+  cargo install-update -a
+fi

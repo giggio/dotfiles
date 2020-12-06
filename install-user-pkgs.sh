@@ -69,9 +69,11 @@ if ! hash dvm 2>/dev/null; then
   popd > /dev/null
   rm -rf $DVM_TMP_DIR
   $HOME/bin/dvm install latest
+  dvm use `dvm ls | tail -n1`
 elif $UPDATE; then
   dvm upgrade
   $HOME/bin/dvm install latest
+  dvm use `dvm ls | tail -n1`
 fi
 
 # rbenv

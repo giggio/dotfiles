@@ -405,31 +405,10 @@ else
   fi
 fi
 
-# terraform
-if ! hash terraform 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall Terraform.\e[0m"
-  wget https://releases.hashicorp.com/terraform/0.12.26/terraform_0.12.26_linux_amd64.zip -O /tmp/tf.zip
-  rm -rf /tmp/tf
-  unzip /tmp/tf.zip -d /tmp/tf
-  mv /tmp/tf/terraform /usr/local/bin/terraform012
-  rm /tmp/tf.zip
-  rm -rf /tmp/tf
-
-  wget https://releases.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip -O /tmp/tf.zip
-  rm -rf /tmp/tf
-  unzip /tmp/tf.zip -d /tmp/tf
-  mv /tmp/tf/terraform /usr/local/bin/terraform013
-  rm /tmp/tf.zip
-  rm -rf /tmp/tf
-
-  update-alternatives --install /usr/local/bin/terraform terraform /usr/local/bin/terraform013 2
-  update-alternatives --install /usr/local/bin/terraform terraform /usr/local/bin/terraform012 1
-  update-alternatives --set terraform /usr/local/bin/terraform013
-else
-  if $VERBOSE; then
-    echo "Not intalling Terraform, it is already installed."
-  fi
-fi
+# terraform - todo: remove this after a while, it is clean up from the previous installation
+echo -e "\e[34mUninstall Terraform (we're using tfenv now).\e[0m"
+rm -f /usr/local/bin/terraform012 /usr/local/bin/terraform013
+update-alternatives --remove-all terraform
 
 # terraform lint - tflint
 if ! hash tflint 2>/dev/null || $UPDATE; then

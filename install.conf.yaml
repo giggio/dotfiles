@@ -44,3 +44,5 @@
     ~/bin/kubectx: tools/kubectx/kubectx
     ~/bin/kubens: tools/kubectx/kubens
     ~/bin/n: tools/n/bin/n
+    ~/bin/terraform: tools/tfenv/bin/terraform
+    ~/bin/tfenv: tools/tfenv/bin/tfenv

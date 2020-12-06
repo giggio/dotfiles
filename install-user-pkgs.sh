@@ -86,7 +86,15 @@ else
   fi
 fi
 
+# rust
 if ! [ -x $HOME/.cargo/bin/rustc ] || $UPDATE; then
   curl -fsSL https://sh.rustup.rs | bash -s -- -y
 fi
 
+# tfenv
+if ! $HOME/bin/tfenv list &> /dev/null || $UPDATE; then
+  $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.12.
+  $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.13.
+  $BASEDIR/tools/tfenv/bin/tfenv install latest
+  $BASEDIR/tools/tfenv/bin/tfenv use latest
+fi

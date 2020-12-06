@@ -217,3 +217,16 @@ installKrewPkg get-all
 installKrewPkg resource-capacity
 installKrewPkg sniff
 installKrewPkg tail
+
+# gem
+GEMS_INSTALLED=`gem list -q --no-versions`
+GEMS_TO_INSTALL="lolcat"
+GEMS_NOT_INSTALLED=`comm -23 <(echo "$GEMS_TO_INSTALL") <(echo "$GEMS_INSTALLED")`
+if [ "$GEMS_NOT_INSTALLED" != "" ]; then
+  echo -e "\e[34mInstall gems "$GEMS_NOT_INSTALLED".\e[0m"
+  gem install $GEMS_NOT_INSTALLED
+else
+  if $VERBOSE; then
+    echo "Not installing gems, they are already installed."
+  fi
+fi

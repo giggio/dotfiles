@@ -28,6 +28,8 @@ git clone --recurse-submodules https://github.com/giggio/dotfiles $HOME/.dotfile
 
 * Run the install script `~/.dotfiles/install`.
 
+(to update run `~/.dotfiles/install --update`)
+
 ## Cleanning up before installing
 
 Remove all directories that will be replaced by the submodules.

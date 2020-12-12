@@ -41,7 +41,7 @@ done
 
 if $SHOW_HELP; then
   cat <<EOF
-Post installer.
+Dotfiles installer.
 
 Usage:
   `readlink -f $0` [flags]

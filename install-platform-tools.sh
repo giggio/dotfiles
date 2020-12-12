@@ -99,7 +99,7 @@ if ! [ -f $DOTNET_TOOLS/dotnet-suggest ] || $UPDATE; then
 fi
 if ! [ -f $DOTNET_TOOLS/tye ] || $UPDATE; then
   echo -e "\e[34mInstall Tye.\e[0m"
-  dotnet tool update --global Microsoft.Tye --version "0.3.0-alpha.20319.3"
+  dotnet tool update --global Microsoft.Tye --version "0.5.0-alpha.20555.1"
 fi
 if ! [ -f $DOTNET_TOOLS/dotnet-aspnet-codegenerator ] || $UPDATE; then
   echo -e "\e[34mInstall ASP.NET Code Generator.\e[0m"
@@ -184,7 +184,6 @@ mocha
 nodemon
 npmrc
 pm2
-terminalizer
 tldr
 trash-cli
 typescript
@@ -192,11 +191,14 @@ vtop
 yaml-cli
 yarn" | sort`
 NPM_PKGS_NOT_INSTALLED=`comm -23 <(echo "$NPM_PKGS_TO_INSTALL") <(echo "$NPM_PKGS_INSTALLED")`
-if [ "$NPM_PKGS_NOT_INSTALLED" != "" ] || $UPDATE; then
+if [ "$NPM_PKGS_NOT_INSTALLED" != "" ]; then
   echo -e "\e[34mInstall packages "$NPM_PKGS_NOT_INSTALLED" with npm.\e[0m"
   npm install -g $NPM_PKGS_NOT_INSTALLED
 else
-  if $VERBOSE; then
+  if $UPDATE; then
+    echo -e "\e[34mUpdating npm packages.\e[0m"
+    npm update -g
+  elif $VERBOSE; then
     echo "Not installing Npm packages, they are already installed."
   fi
 fi

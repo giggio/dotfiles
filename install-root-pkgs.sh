@@ -191,9 +191,9 @@ fi
 # hashicorp vault
 if ! hash vault 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Hashicorp Vault.\e[0m"
-  wget https://releases.hashicorp.com/vault/1.4.2/vault_1.4.2_linux_amd64.zip -O /tmp/vault.zip
+  wget https://releases.hashicorp.com/vault/1.6.0/vault_1.6.0_linux_amd64.zip -O /tmp/vault.zip
   rm -rf /tmp/vault
-  unzip /tmp/vault.zip -d /tmp/vault
+  unzip -qo /tmp/vault.zip -d /tmp/vault
   mv /tmp/vault/vault /usr/local/bin/
   rm /tmp/vault.zip
   rm -rf /tmp/vault
@@ -258,12 +258,12 @@ fi
 # kubespy
 if ! hash kubespy 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Kubespy.\e[0m"
-  wget https://github.com/pulumi/kubespy/releases/download/v0.5.1/kubespy-linux-amd64.tar.gz -O /tmp/kubespy.tar.gz
+  wget https://github.com/pulumi/kubespy/releases/download/v0.6.0/kubespy-v0.6.0-linux-amd64.tar.gz -O /tmp/kubespy.tar.gz
   rm /tmp/kubespy -rf
   mkdir -p /tmp/kubespy
   tar -xvzf /tmp/kubespy.tar.gz -C /tmp/kubespy/
   rm /tmp/kubespy.tar.gz
-  mv /tmp/kubespy/releases/kubespy-linux-amd64/kubespy /usr/local/bin/
+  mv /tmp/kubespy/kubespy /usr/local/bin/
   rm /tmp/kubespy -rf
 else
   if $VERBOSE; then
@@ -366,7 +366,7 @@ fi
 # chart releaser - cr
 if ! hash cr 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Chart releaser (CR).\e[0m"
-  wget https://github.com/helm/chart-releaser/releases/download/v1.0.0-beta.1/chart-releaser_1.0.0-beta.1_linux_amd64.tar.gz -O /tmp/cr.tar.gz
+  wget https://github.com/helm/chart-releaser/releases/download/v1.1.1/chart-releaser_1.1.1_linux_amd64.tar.gz -O /tmp/cr.tar.gz
   rm /tmp/cr -rf
   mkdir -p /tmp/cr
   tar -xvzf /tmp/cr.tar.gz -C /tmp/cr/
@@ -396,7 +396,7 @@ if ! hash exa 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Exa.\e[0m"
   wget https://github.com/ogham/exa/releases/download/v0.9.0/exa-linux-x86_64-0.9.0.zip -O /tmp/exa.zip
   rm -rf /tmp/exa
-  unzip /tmp/exa.zip -d /tmp/exa
+  unzip -qo /tmp/exa.zip -d /tmp/exa
   mv /tmp/exa/exa-linux-x86_64 /usr/local/bin/exa
   rm /tmp/exa.zip
   rm -rf /tmp/exa
@@ -409,14 +409,14 @@ fi
 # terraform - todo: remove this after a while, it is clean up from the previous installation
 echo -e "\e[34mUninstall Terraform (we're using tfenv now).\e[0m"
 rm -f /usr/local/bin/terraform012 /usr/local/bin/terraform013
-update-alternatives --remove-all terraform
+update-alternatives --remove-all terraform || true
 
 # terraform lint - tflint
 if ! hash tflint 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall TFLint.\e[0m"
-  wget https://github.com/terraform-linters/tflint/releases/download/v0.20.3/tflint_linux_amd64.zip -O /tmp/tflint.zip
+  wget https://github.com/terraform-linters/tflint/releases/latest/download/tflint_linux_amd64.zip -O /tmp/tflint.zip
   rm -rf /tmp/tflint
-  unzip /tmp/tflint.zip -d /tmp/tflint
+  unzip -qo /tmp/tflint.zip -d /tmp/tflint
   mv /tmp/tflint/tflint /usr/local/bin/
   rm /tmp/tflint.zip
   rm -rf /tmp/tflint
@@ -458,7 +458,7 @@ fi
 # k9s
 if ! hash k9s 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall k9s.\e[0m"
-  wget https://github.com/derailed/k9s/releases/download/v0.22.1/k9s_Linux_x86_64.tar.gz -O /tmp/k9s.tar.gz
+  wget https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_x86_64.tar.gz -O /tmp/k9s.tar.gz
   mkdir /tmp/k9s/
   tar -xvzf /tmp/k9s.tar.gz -C /tmp/k9s/
   mv /tmp/k9s/k9s /usr/local/bin/
@@ -487,9 +487,14 @@ fi
 
 # aws cli
 if ! hash aws 2>/dev/null || $UPDATE; then
+  echo -e "\e[34mInstall AWS cli.\e[0m"
   curl -fsSL --output /tmp/aws.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
-  unzip -q /tmp/aws.zip -d /tmp/aws
-  /tmp/aws/aws/install
+  unzip -qo /tmp/aws.zip -d /tmp/aws
+  if hash aws 2>/dev/null; then
+    /tmp/aws/aws/install --update
+  else
+    /tmp/aws/aws/install
+  fi
   rm /tmp/aws.zip
   rm /tmp/aws -rf
 else

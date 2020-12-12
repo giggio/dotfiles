@@ -77,7 +77,7 @@ elif $UPDATE; then
 fi
 
 # rbenv
-if ! [ -f $BASEDIR/tools/rbenv/shims/ruby ] || $UPDATE; then
+if ! [ -f $BASEDIR/tools/rbenv/shims/ruby ]; then
   echo -e "\e[34mInstall ruby-build and install Ruby with rbenv.\e[0m"
   git clone https://github.com/rbenv/ruby-build.git $BASEDIR/tools/rbenv/plugins/ruby-build
   $HOME/.rbenv/bin/rbenv install 2.7.1
@@ -90,7 +90,7 @@ fi
 
 # rust
 if ! [ -x $HOME/.cargo/bin/rustc ] || $UPDATE; then
-  curl -fsSL https://sh.rustup.rs | bash -s -- -y
+  curl -fsSL https://sh.rustup.rs | bash -s -- -y --no-modify-path
 fi
 
 # tfenv

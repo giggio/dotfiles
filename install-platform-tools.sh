@@ -206,6 +206,13 @@ fi
 # krew tools
 function installKrewPkg() {
   if [ "$1" == "" ]; then return; fi
+  if ! [ -e $HOME/.krew/bin/kubectl-krew ]; then
+    echo -e "\e[34mKrew not available, skipping...\e[0m"
+    return
+  fi
+  if ! [[ $PATH =~ "$HOME/.krew/bin" ]]; then
+    export PATH=$PATH:$HOME/.krew/bin
+  fi
   local PKG=$1
   if kubectl krew list | grep $PKG > /dev/null; then
     if $UPDATE; then
@@ -221,31 +228,41 @@ installKrewPkg sniff
 installKrewPkg tail
 
 # gem
-GEMS_INSTALLED=`gem list -q --no-versions`
-GEMS_TO_INSTALL="lolcat"
-GEMS_NOT_INSTALLED=`comm -23 <(echo "$GEMS_TO_INSTALL") <(echo "$GEMS_INSTALLED")`
-if [ "$GEMS_NOT_INSTALLED" != "" ]; then
-  echo -e "\e[34mInstall gems "$GEMS_NOT_INSTALLED".\e[0m"
-  gem install $GEMS_NOT_INSTALLED
-else
-  if $VERBOSE; then
-    echo "Not installing gems, they are already installed."
+if [ -e $HOME/.rbenv/bin/rbenv ]; then
+  if ! [[ $PATH =~ "$HOME/.rbenv/bin" ]]; then
+    export PATH="$HOME/.rbenv/shims:$HOME/.rbenv/bin:$PATH"
   fi
+  GEMS_INSTALLED=`gem list -q --no-versions`
+  GEMS_TO_INSTALL="lolcat"
+  GEMS_NOT_INSTALLED=`comm -23 <(echo "$GEMS_TO_INSTALL") <(echo "$GEMS_INSTALLED")`
+  if [ "$GEMS_NOT_INSTALLED" != "" ]; then
+    echo -e "\e[34mInstall gems "$GEMS_NOT_INSTALLED".\e[0m"
+    gem install $GEMS_NOT_INSTALLED
+  else
+    if $VERBOSE; then
+      echo "Not installing gems, they are already installed."
+    fi
+  fi
+else
+  echo -e "\e[34mRbenv not available, skipping...\e[0m"
 fi
 
-# rust/cargo
-CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
-CRATES_TO_INSTALL="cargo-update
-gping"
-CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
-if [ "$CRATES_NOT_INSTALLED" != "" ]; then
-  echo -e "\e[34mInstall crates $CRATES_NOT_INSTALLED.\e[0m"
-  cargo install $CRATES_NOT_INSTALLED
-else
-  if $VERBOSE; then
-    echo "Not installing crates, they are already installed."
+if [ -f $HOME/.cargo/env ]; then
+  source "$HOME/.cargo/env"
+  # rust/cargo
+  CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
+  CRATES_TO_INSTALL="cargo-update
+  gping"
+  CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
+  if [ "$CRATES_NOT_INSTALLED" != "" ]; then
+    echo -e "\e[34mInstall crates $CRATES_NOT_INSTALLED.\e[0m"
+    cargo install $CRATES_NOT_INSTALLED
+  else
+    if $VERBOSE; then
+      echo "Not installing crates, they are already installed."
+    fi
   fi
-fi
-if $UPDATE; then
-  cargo install-update -a
+  if $UPDATE; then
+    cargo install-update -a
+  fi
 fi

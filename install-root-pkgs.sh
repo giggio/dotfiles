@@ -243,12 +243,16 @@ fi
 
 # kubectl
 if ! hash kubectl 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall Kubectl.\e[0m"
-  addKey https://packages.cloud.google.com/apt/doc/apt-key.gpg
-  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
-  apt-get update
-  apt-get install -y kubectl
-  # or curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+  if $WSL; then
+    echo -e "\e[34mNot installing Kubectl, already on WSL.\e[0m"
+  else
+    echo -e "\e[34mInstall Kubectl.\e[0m"
+    addKey https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
+    apt-get update
+    apt-get install -y kubectl
+    # or curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+  fi
 else
   if $VERBOSE; then
     echo "Not intalling Kubectl, it is already installed."
@@ -296,7 +300,9 @@ fi
 
 # docker
 if ! hash docker 2>/dev/null || $UPDATE; then
-  if $WSL || $RUNNING_IN_CONTAINER; then
+  if $WSL; then
+    echo -e "\e[34mNot installing Docker, already on WSL.\e[0m"
+  elif $RUNNING_IN_CONTAINER; then
     echo -e "\e[34mInstall Docker cli only.\e[0m"
     addKey https://download.docker.com/linux/ubuntu/gpg
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
@@ -467,21 +473,6 @@ if ! hash k9s 2>/dev/null || $UPDATE; then
 else
   if $VERBOSE; then
     echo "Not installing K9s, it is already installed."
-  fi
-fi
-
-# krew
-if ! hash krew 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall krew.\e[0m"
-  wget https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.tar.gz -O /tmp/krew.tar.gz
-  mkdir /tmp/krew/
-  tar -xvzf /tmp/krew.tar.gz -C /tmp/krew/
-  /tmp/krew/krew-"$(uname | tr '[:upper:]' '[:lower:]')_$(uname -m | sed -e 's/x86_64/amd64/' -e 's/arm.*$/arm/')" install krew
-  rm -rf /tmp/krew/
-  rm /tmp/krew.tar.gz
-else
-  if $VERBOSE; then
-    echo "Not installing Krew, it is already installed."
   fi
 fi
 

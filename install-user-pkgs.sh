@@ -89,8 +89,11 @@ else
 fi
 
 # rust
-if ! [ -x $HOME/.cargo/bin/rustc ] || $UPDATE; then
+if ! [ -x $HOME/.cargo/bin/rustc ]; then
   curl -fsSL https://sh.rustup.rs | bash -s -- -y --no-modify-path
+  $HOME/.cargo/bin/rustup toolchain install {beta,nightly}
+elif $UPDATE; then
+  $HOME/.cargo/bin/rustup toolchain install {stable,beta,nightly}
 fi
 
 # tfenv

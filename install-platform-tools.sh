@@ -253,6 +253,7 @@ if [ -f $HOME/.cargo/env ]; then
   CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
   CRATES_TO_INSTALL="cargo-update
   cargo-edit
+  cargo-expand
   gping"
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED" != "" ]; then

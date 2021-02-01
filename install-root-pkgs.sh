@@ -160,6 +160,8 @@ w3m
 whois
 zip
 zlib1g-dev" | sort`
+# todo, add ripgrep when issue is fixed (move from cargo install)
+# see: https://github.com/sharkdp/bat/issues/938
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then

@@ -251,10 +251,13 @@ if [ -f $HOME/.cargo/env ]; then
   source "$HOME/.cargo/env"
   # rust/cargo
   CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
+  # todo: how to work with as-tree, which is not on crates.io?
+  # https://github.com/jez/as-tree
   CRATES_TO_INSTALL="cargo-update
   cargo-edit
   cargo-expand
   cross
+  fd-find
   gping"
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED" != "" ]; then

@@ -118,3 +118,14 @@ else
     echo "Not installing Krew, it is already installed."
   fi
 fi
+
+# docker-show-context
+if ! hash docker-show-context 2>/dev/null || $UPDATE; then
+  echo -e "\e[34mInstall docker-show-context.\e[0m"
+  wget https://github.com/pwaller/docker-show-context/releases/download/v1.1.1/docker-show-context_linux_amd64 -O $HOME/bin/docker-show-context
+  chmod +x $HOME/bin/docker-show-context
+else
+  if $VERBOSE; then
+    echo "Not installing docker-show-context, it is already installed."
+  fi
+fi

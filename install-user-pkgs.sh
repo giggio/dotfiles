@@ -129,3 +129,12 @@ else
     echo "Not installing docker-show-context, it is already installed."
   fi
 fi
+
+# golang
+if ! hash go &> /dev/null; then
+  wget https://golang.org/dl/go1.16.1.linux-amd64.tar.gz -O /tmp/go.tar.gz
+  rm -rf $HOME/.go/
+  tar -C /tmp/ -xzvf /tmp/go.tar.gz
+  mv /tmp/go $HOME/.go
+  rm /tmp/go.tar.gz
+fi

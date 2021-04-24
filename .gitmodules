@@ -31,3 +31,6 @@
 [submodule "tools/tfenv"]
 	path = tools/tfenv
 	url = https://github.com/tfutils/tfenv.git
+[submodule "nvim"]
+	path = nvim
+	url = ../nvimfiles.git

@@ -92,6 +92,7 @@ wget
 gnupg
 gnupg-agent
 gnupg2
+silversearcher-ag
 software-properties-common" | sort`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then

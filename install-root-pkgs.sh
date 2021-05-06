@@ -420,11 +420,6 @@ else
   fi
 fi
 
-# terraform - todo: remove this after a while, it is clean up from the previous installation
-echo -e "\e[34mUninstall Terraform (we're using tfenv now).\e[0m"
-rm -f /usr/local/bin/terraform012 /usr/local/bin/terraform013
-update-alternatives --remove-all terraform || true
-
 # terraform lint - tflint
 if ! hash tflint 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall TFLint.\e[0m"

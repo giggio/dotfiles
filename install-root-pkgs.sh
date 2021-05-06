@@ -73,6 +73,11 @@ addKey () {
   wget -q -O - $1 | apt-key add -
 }
 
+WSL=false
+if grep [Mm]icrosoft /proc/version > /dev/null; then
+  WSL=true
+fi
+
 REPOS=`apt-cache policy | grep http | awk '{print $2"/dists/"$3}' | sort -u`
 printf -v REPOS $"$REPOS\n"
 if [ "$REPOS" == "" ] || $UPDATE; then

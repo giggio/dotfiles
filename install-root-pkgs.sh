@@ -510,6 +510,15 @@ else
   fi
 fi
 
+# k3d
+if ! hash k3d 2>/dev/null || $UPDATE; then
+  curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+else
+  if $VERBOSE; then
+    echo "Not installing k3d, it is already installed."
+  fi
+fi
+
 # upgrade
 if $UPDATE; then
   echo -e "\e[34mUpgrade with APT.\e[0m"

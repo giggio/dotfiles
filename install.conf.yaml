@@ -14,6 +14,7 @@
     - touch $HOME/.hushlogin
     - if [ -e $HOME/.vim ]; then rm -rf $HOME/.vim; fi
     - if [ -e $HOME/.config/nvim ]; then rm -rf $HOME/.config/nvim; fi
+    - if [ -e $HOME/.config/starship.toml ]; then rm -rf $HOME/.config/starship.toml; fi
     - if [ -e $HOME/.rbenv ]; then rm -rf $HOME/.rbenv; fi
     - if [ -e $HOME/.config/powershell ]; then rm -rf $HOME/.config/powershell; fi
     - if [ -e $HOME/.bashrc ]; then rm -rf $HOME/.bashrc; fi
@@ -32,6 +33,7 @@
     ~/.rbenv: tools/rbenv
     ~/.config/powershell: poshfiles
     ~/.config/git: config/git
+    ~/.config/starship.toml: config/starship.toml
     ~/.bashrc:
       path: .bashrc
       force: true

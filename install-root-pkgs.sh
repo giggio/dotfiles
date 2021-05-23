@@ -519,6 +519,15 @@ else
   fi
 fi
 
+# starship
+if ! hash starship 2>/dev/null || $UPDATE; then
+  sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
+else
+  if $VERBOSE; then
+    echo "Not installing Starship, it is already installed."
+  fi
+fi
+
 # upgrade
 if $UPDATE; then
   echo -e "\e[34mUpgrade with APT.\e[0m"

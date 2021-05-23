@@ -9,19 +9,16 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
-# Path to the bash it configuration
-export BASH_IT="$DIR/tools/bash-it"
-
-# Lock and Load a custom theme file, location /.bash_it/themes/
-export BASH_IT_THEME=powerline-multiline
-
 # Don't check mail when opening terminal.
 unset MAILCHECK
 
 # Set this to false to turn off version control status checking within the prompt for all themes
 export SCM_CHECK=true
 
+# Path to the bash it configuration
+export BASH_IT="$DIR/tools/bash-it"
+
 # Load Bash It
 export BASH_IT_CUSTOM="$DIR/bashscripts/"
 source "$BASH_IT/bash_it.sh"
-source "$BASH_IT_CUSTOM/bash-it-customizations.sh"
+

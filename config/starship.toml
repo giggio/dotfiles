@@ -104,6 +104,7 @@ disabled = false
 when = "sudo -n true"
 style = "bold red"
 format = "[!]($style)"
+os = "linux"
 
 [dotnet]
 symbol = " "

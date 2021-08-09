@@ -528,6 +528,15 @@ else
   fi
 fi
 
+# act
+if ! hash act 2>/dev/null || $UPDATE; then
+  curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash
+else
+  if $VERBOSE; then
+    echo "Not installing Act, it is already installed."
+  fi
+fi
+
 # upgrade
 if $UPDATE; then
   echo -e "\e[34mUpgrade with APT.\e[0m"

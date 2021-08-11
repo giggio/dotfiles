@@ -264,6 +264,7 @@ if [ -f $HOME/.cargo/env ]; then
   grex
   procs
   ripgrep
+  sccache
   tealdeer
   tokei"
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`

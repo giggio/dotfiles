@@ -257,6 +257,7 @@ if [ -f $HOME/.cargo/env ]; then
   cargo-edit
   cargo-expand
   cargo-outdated
+  cargo-watch
   cross
   du-dust
   fd-find

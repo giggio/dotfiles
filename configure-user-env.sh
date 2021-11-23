@@ -49,3 +49,9 @@ fi
 if ! hash bat 2>/dev/null; then
   ln -s /usr/bin/batcat $HOME/bin/bat
 fi
+
+xdg-mime default wslview.desktop x-scheme-handler/http
+xdg-mime default wslview.desktop x-scheme-handler/https
+xdg-mime default wslview.desktop x-scheme-handler/about
+xdg-mime default wslview.desktop x-scheme-handler/unknown
+xdg-mime default wslview.desktop text/html

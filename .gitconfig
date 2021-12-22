@@ -65,3 +65,5 @@
 	defaultBranch = main
 [credential]
 	helper = store --file $HOME/.cache/git/credential/.git-credentials
+[rerere]
+	enabled = true

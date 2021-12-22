@@ -91,9 +91,9 @@ fi
 # rust
 if ! [ -x $HOME/.cargo/bin/rustc ]; then
   curl -fsSL https://sh.rustup.rs | bash -s -- -y --no-modify-path
-  $HOME/.cargo/bin/rustup toolchain install {beta,nightly}
-elif $UPDATE; then
   $HOME/.cargo/bin/rustup toolchain install {stable,beta,nightly}
+elif $UPDATE; then
+  $HOME/.cargo/bin/rustup update
 fi
 
 # tfenv

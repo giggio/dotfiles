@@ -135,7 +135,6 @@ build-essential
 cowsay
 figlet
 fontforge
-fzf
 git
 gzip
 htop

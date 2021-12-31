@@ -138,3 +138,8 @@ if ! hash go &> /dev/null; then
   mv /tmp/go $HOME/.go
   rm /tmp/go.tar.gz
 fi
+
+#fzf
+if ! [ -e $HOME/.fzf/bin/fzf ] || $UPDATE; then
+  $HOME/.fzf/install --no-update-rc --no-completion --no-key-bindings --no-bash
+fi

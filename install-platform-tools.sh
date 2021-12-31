@@ -263,6 +263,7 @@ if [ -f $HOME/.cargo/env ]; then
   fd-find
   gping
   grex
+  navi
   procs
   ripgrep
   sccache
@@ -271,7 +272,7 @@ if [ -f $HOME/.cargo/env ]; then
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED" != "" ]; then
     echo -e "\e[34mInstall crates $CRATES_NOT_INSTALLED.\e[0m"
-    cargo install $CRATES_NOT_INSTALLED
+    cargo install --locked $CRATES_NOT_INSTALLED
   else
     if $VERBOSE; then
       echo "Not installing crates, they are already installed."

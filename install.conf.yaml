@@ -12,6 +12,7 @@
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - touch $HOME/.hushlogin
+    - if ! [ -d $HOME/.config/navi/ ]; then mkdir -p $HOME/.config/navi/; fi
     - if [ -e $HOME/.vim ]; then rm -rf $HOME/.vim; fi
     - if [ -e $HOME/.config/nvim ]; then rm -rf $HOME/.config/nvim; fi
     - if [ -e $HOME/.config/starship.toml ]; then rm -rf $HOME/.config/starship.toml; fi
@@ -34,6 +35,7 @@
     ~/.config/powershell: poshfiles
     ~/.config/git: config/git
     ~/.config/starship.toml: config/starship.toml
+    ~/.config/navi/config.yaml: config/navi-config.yaml
     ~/.bashrc:
       path: .bashrc
       force: true

@@ -529,7 +529,7 @@ fi
 
 # act
 if ! hash act 2>/dev/null || $UPDATE; then
-  curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin
 else
   if $VERBOSE; then
     echo "Not installing Act, it is already installed."

@@ -282,3 +282,8 @@ if [ -f $HOME/.cargo/env ]; then
     cargo install-update -a
   fi
 fi
+
+if [ -e $HOME/.go/bin/go ]; then
+  export PATH=$PATH:$HOME/.go/bin
+  go install github.com/mitchellh/gox@latest
+fi

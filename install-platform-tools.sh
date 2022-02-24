@@ -263,6 +263,7 @@ if [ -f $HOME/.cargo/env ]; then
   fd-find
   gping
   grex
+  just
   navi
   procs
   ripgrep

@@ -143,3 +143,21 @@ fi
 if ! [ -e $HOME/.fzf/bin/fzf ] || $UPDATE; then
   $HOME/.fzf/install --no-update-rc --no-completion --no-key-bindings --no-bash
 fi
+
+# docker-slim
+if ! hash docker-slim 2>/dev/null; then
+  echo -e "\e[34mInstall docker-slim.\e[0m"
+  DSLIMTAR=/tmp/docker-slim.tar.gz
+  curl -fsSL --output $DSLIMTAR https://downloads.dockerslim.com/releases/1.37.6/dist_linux.tar.gz
+  mkdir /tmp/dslim/
+  tar -xvzf $DSLIMTAR -C /tmp/dslim/
+  mv /tmp/dslim/dist_linux/* $HOME/bin/
+  rm -rf /tmp/dslim/
+  rm $DSLIMTAR
+elif $UPDATE; then
+  docker-slim update
+else
+  if $VERBOSE; then
+    echo "Not installing docker-slim, it is already installed."
+  fi
+fi

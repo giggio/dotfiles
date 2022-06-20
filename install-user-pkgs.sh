@@ -132,9 +132,18 @@ fi
 
 # golang
 if ! hash go &> /dev/null; then
-  wget https://golang.org/dl/go1.16.1.linux-amd64.tar.gz -O /tmp/go.tar.gz
+  processor=`lscpu | grep Architecture | awk '{print $2}'`
+  if [ "$processor" == "x86_64" ]; then
+    GO_ARCH="amd64"
+  elif [ "$processor" == "armv7l" ]; then
+    GO_ARCH="armv6l"
+  else
+    echo "Unsupported processor to install golang: $processor"
+  fi
+  GO_VERSION="1.18.3"
+  wget https://go.dev/dl/go$GO_VERSION.linux-$GO_ARCH.tar.gz -O /tmp/go.tar.gz
   rm -rf $HOME/.go/
-  tar -C /tmp/ -xzvf /tmp/go.tar.gz
+  tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib
   mv /tmp/go $HOME/.go
   rm /tmp/go.tar.gz
 fi

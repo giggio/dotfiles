@@ -52,6 +52,4 @@
     ~/bin/n: tools/n/bin/n
     ~/bin/terraform: tools/tfenv/bin/terraform
     ~/bin/tfenv: tools/tfenv/bin/tfenv
-    ~/.local/share/applications/wslview.desktop:
-      path: "applications/wslview.desktop"
-      if: "[[ `grep [Mm]icrosoft /proc/version` != '' ]]"
+

@@ -68,8 +68,12 @@ if grep [Mm]icrosoft /proc/version > /dev/null; then
 else
   export WSL=false
 fi
-if grep docker /proc/1/cgroup -qa; then
-  export RUNNING_IN_CONTAINER=true
+if [ -f /proc/1/cgroup ]; then
+  if grep docker /proc/1/cgroup -qa; then
+    export RUNNING_IN_CONTAINER=true
+  else
+    export RUNNING_IN_CONTAINER=false
+  fi
 else
   export RUNNING_IN_CONTAINER=false
 fi

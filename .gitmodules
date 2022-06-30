@@ -10,9 +10,6 @@
 [submodule "vimfiles"]
 	path = vimfiles
 	url = ../vimfiles.git
-[submodule "tools/bash-it"]
-	path = tools/bash-it
-	url = https://github.com/Bash-it/bash-it.git
 [submodule "tools/rbenv"]
 	path = tools/rbenv
 	url = https://github.com/rbenv/rbenv.git

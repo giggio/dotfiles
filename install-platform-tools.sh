@@ -99,7 +99,7 @@ if ! [ -f $DOTNET_TOOLS/dotnet-suggest ] || $UPDATE; then
 fi
 if ! [ -f $DOTNET_TOOLS/tye ] || $UPDATE; then
   echo -e "\e[34mInstall Tye.\e[0m"
-  dotnet tool update --global Microsoft.Tye --version "0.5.0-alpha.20555.1"
+  dotnet tool update --global Microsoft.Tye --prerelease
 fi
 if ! [ -f $DOTNET_TOOLS/dotnet-aspnet-codegenerator ] || $UPDATE; then
   echo -e "\e[34mInstall ASP.NET Code Generator.\e[0m"
@@ -203,28 +203,18 @@ else
 fi
 
 # krew tools
-function installKrewPkg() {
-  if [ "$1" == "" ]; then return; fi
-  if ! [ -e $HOME/.krew/bin/kubectl-krew ]; then
-    echo -e "\e[34mKrew not available, skipping...\e[0m"
-    return
-  fi
+if [ -e $HOME/.krew/bin/kubectl-krew ]; then
   if ! [[ $PATH =~ "$HOME/.krew/bin" ]]; then
     export PATH=$PATH:$HOME/.krew/bin
   fi
-  local PKG=$1
-  if kubectl krew list | grep $PKG > /dev/null; then
-    if $UPDATE; then
-       kubectl krew upgrade $PKG || true
-    fi
+  if $UPDATE; then
+    kubectl krew upgrade
   else
-    kubectl krew install $PKG
+    kubectl krew install get-all resource-capacity sniff tail
   fi
-}
-installKrewPkg get-all
-installKrewPkg resource-capacity
-installKrewPkg sniff
-installKrewPkg tail
+else
+  echo -e "\e[34mKrew not available, skipping...\e[0m"
+fi
 
 # gem
 if [ -e $HOME/.rbenv/bin/rbenv ]; then

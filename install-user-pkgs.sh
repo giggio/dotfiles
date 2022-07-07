@@ -105,14 +105,17 @@ if ! $HOME/bin/tfenv list &> /dev/null || $UPDATE; then
 fi
 
 # krew
-if ! hash krew 2>/dev/null || $UPDATE; then
+if ! hash krew 2>/dev/null; then
   echo -e "\e[34mInstall krew.\e[0m"
-  wget https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.tar.gz -O /tmp/krew.tar.gz
+  wget https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_amd64.tar.gz -O /tmp/krew.tar.gz
+  rm -rf /tmp/krew/
   mkdir /tmp/krew/
   tar -xvzf /tmp/krew.tar.gz -C /tmp/krew/
   /tmp/krew/krew-"$(uname | tr '[:upper:]' '[:lower:]')_$(uname -m | sed -e 's/x86_64/amd64/' -e 's/arm.*$/arm/')" install krew
   rm -rf /tmp/krew/
   rm /tmp/krew.tar.gz
+elif $UPDATE; then
+  kubectl krew upgrade
 else
   if $VERBOSE; then
     echo "Not installing Krew, it is already installed."

@@ -198,7 +198,7 @@ fi
 # hashicorp vault
 if ! hash vault 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Hashicorp Vault.\e[0m"
-  wget https://releases.hashicorp.com/vault/1.6.0/vault_1.6.0_linux_amd64.zip -O /tmp/vault.zip
+  wget https://releases.hashicorp.com/vault/1.11.0/vault_1.11.0_linux_amd64.zip -O /tmp/vault.zip
   rm -rf /tmp/vault
   unzip -qo /tmp/vault.zip -d /tmp/vault
   mv /tmp/vault/vault /usr/local/bin/
@@ -223,7 +223,6 @@ fi
 
 # dotnet
 APT_PKGS_TO_INSTALL=`echo "dotnet-sdk-3.1
-dotnet-sdk-5.0
 dotnet-sdk-6.0" | sort`
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
@@ -344,6 +343,7 @@ if ! hash helm 2>/dev/null || $UPDATE; then
     fi
     wget -q -O - https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
     mv /usr/local/bin/helm /usr/local/bin/helm3
+    update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm3 2
   else
     if $VERBOSE; then
       echo "Not intalling Helm 3, it is already installed."
@@ -366,20 +366,19 @@ if ! hash helm 2>/dev/null || $UPDATE; then
       echo "Not intalling Helm 2, it is already installed."
     fi
   fi
-  update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm3 2
   update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm2 1
-  update-alternatives --set helm /usr/local/bin/helm3
 else
   if $VERBOSE; then
     echo "Not intalling Helm, it is already installed."
   fi
 fi
+update-alternatives --set helm /usr/local/bin/helm3
 
 
 # chart releaser - cr
 if ! hash cr 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Chart releaser (CR).\e[0m"
-  wget https://github.com/helm/chart-releaser/releases/download/v1.1.1/chart-releaser_1.1.1_linux_amd64.tar.gz -O /tmp/cr.tar.gz
+  wget https://github.com/helm/chart-releaser/releases/download/v1.4.0/chart-releaser_1.4.0_linux_amd64.tar.gz -O /tmp/cr.tar.gz
   rm /tmp/cr -rf
   mkdir -p /tmp/cr
   tar -xvzf /tmp/cr.tar.gz -C /tmp/cr/
@@ -407,10 +406,10 @@ fi
 # exa
 if ! hash exa 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Exa.\e[0m"
-  wget https://github.com/ogham/exa/releases/download/v0.9.0/exa-linux-x86_64-0.9.0.zip -O /tmp/exa.zip
+  wget https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-x86_64-v0.10.1.zip -O /tmp/exa.zip
   rm -rf /tmp/exa
   unzip -qo /tmp/exa.zip -d /tmp/exa
-  mv /tmp/exa/exa-linux-x86_64 /usr/local/bin/exa
+  mv /tmp/exa/bin/exa /usr/local/bin/
   rm /tmp/exa.zip
   rm -rf /tmp/exa
 else
@@ -440,7 +439,10 @@ if ! hash delta 2>/dev/null || $UPDATE; then
   if sudo dpkg -l git-delta &> /dev/null; then
     apt-get purge -y git-delta
   fi
-  wget https://github.com/barnumbirr/delta-debian/releases/download/0.4.4-1/delta-diff_0.4.4-1_amd64_debian_buster.deb -O /tmp/delta.deb
+  if sudo dpkg -l delta-diff &> /dev/null; then
+    apt-get purge -y delta-diff
+  fi
+  wget https://github.com/dandavison/delta/releases/download/0.13.0/git-delta_0.13.0_amd64.deb -O /tmp/delta.deb
   apt-get install /tmp/delta.deb
   rm /tmp/delta.deb
 else
@@ -466,7 +468,7 @@ fi
 # k9s
 if ! hash k9s 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall k9s.\e[0m"
-  wget https://github.com/derailed/k9s/releases/download/v0.24.10/k9s_v0.24.10_Linux_x86_64.tar.gz -O /tmp/k9s.tar.gz
+  wget https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_x86_64.tar.gz -O /tmp/k9s.tar.gz
   mkdir /tmp/k9s/
   tar -xvzf /tmp/k9s.tar.gz -C /tmp/k9s/
   mv /tmp/k9s/k9s /usr/local/bin/

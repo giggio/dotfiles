@@ -42,6 +42,7 @@
   ff = only
 [push]
   default = simple
+  autoSetupRemote = true
 [log]
   decorate = full
   abbrevCommit = true

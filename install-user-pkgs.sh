@@ -68,6 +68,7 @@ if ! hash dvm 2>/dev/null; then
   mv dvm $HOME/bin/
   popd > /dev/null
   rm -rf $DVM_TMP_DIR
+  export PATH=$PATH:$HOME/.deno/bin
   $HOME/bin/dvm install latest
   $HOME/bin/dvm use `$HOME/bin/dvm ls | tail -n1`
 elif $UPDATE; then
@@ -143,10 +144,10 @@ if ! hash go &> /dev/null; then
   else
     echo "Unsupported processor to install golang: $processor"
   fi
-  GO_VERSION="1.18.3"
+  GO_VERSION="1.18.4"
   wget https://go.dev/dl/go$GO_VERSION.linux-$GO_ARCH.tar.gz -O /tmp/go.tar.gz
   rm -rf $HOME/.go/
-  tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib
+  tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src
   mv /tmp/go $HOME/.go
   rm /tmp/go.tar.gz
 fi

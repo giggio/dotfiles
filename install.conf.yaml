@@ -28,7 +28,7 @@
     ~/.dotfiles:
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'
-    ~/.inputrc: .inputrc
+    ~/.inputrc: home/.inputrc
     ~/.vim: vimfiles
     ~/.config/nvim: nvim
     ~/.rbenv: tools/rbenv
@@ -37,19 +37,18 @@
     ~/.config/starship.toml: config/starship.toml
     ~/.config/navi/config.yaml: config/navi-config.yaml
     ~/.bashrc:
-      path: .bashrc
+      path: home/.bashrc
       force: true
     ~/.fzf: tools/fzf
-    ~/.gitconfig: .gitconfig
+    ~/.gitconfig: home/.gitconfig
     ~/.profile:
-      path: .profile
+      path: home/.profile
       force: true
-    ~/.tmux.conf: .tmux.conf
-    ~/.vimrc: .vimrc
+    ~/.tmux.conf: home/.tmux.conf
+    ~/.vimrc: home/.vimrc
     ~/bin/dotnet-sdk: tools/dotnet-sdk-helpers/dotnet-sdk
     ~/bin/kubectx: tools/kubectx/kubectx
     ~/bin/kubens: tools/kubectx/kubens
     ~/bin/n: tools/n/bin/n
     ~/bin/terraform: tools/tfenv/bin/terraform
     ~/bin/tfenv: tools/tfenv/bin/tfenv
-

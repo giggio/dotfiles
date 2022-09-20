@@ -436,10 +436,10 @@ fi
 # delta
 if ! hash delta 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Delta.\e[0m"
-  if sudo dpkg -l git-delta &> /dev/null; then
+  if dpkg -l git-delta &> /dev/null; then
     apt-get purge -y git-delta
   fi
-  if sudo dpkg -l delta-diff &> /dev/null; then
+  if dpkg -l delta-diff &> /dev/null; then
     apt-get purge -y delta-diff
   fi
   wget https://github.com/dandavison/delta/releases/download/0.13.0/git-delta_0.13.0_amd64.deb -O /tmp/delta.deb
@@ -454,10 +454,10 @@ fi
 # Github cli
 if ! hash gh 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Github cli.\e[0m"
-  if [[ `apt-key fingerprint C99B11DEB97541F0 2> /dev/null` == '' ]]; then
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-  fi
-  apt-add-repository -u https://cli.github.com/packages
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+  chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+  apt update
   apt install gh -y
 else
   if $VERBOSE; then
@@ -550,7 +550,7 @@ fi
 
 if $CLEAN; then
   echo -e "\e[34mCleanning up packages.\e[0m"
-  sudo apt-get autoremove -y
+  apt-get autoremove -y
 else
   if $VERBOSE; then
     echo "Not auto removing with APT."

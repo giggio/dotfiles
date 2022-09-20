@@ -326,6 +326,7 @@ fi
 if $WSL; then
   if ! [[ $APT_PKGS_INSTALLED =~ wslu ]]; then
     echo -e "\e[34mInstall WSL Utilities.\e[0m"
+    add-apt-repository --yes ppa:wslutilities/wslu
     apt-get install -y wslu
   else
     if $VERBOSE; then

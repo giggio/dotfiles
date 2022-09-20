@@ -46,7 +46,3 @@ if $VERBOSE; then
   echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
 fi
 
-if ! hash bat 2>/dev/null; then
-  ln -s /usr/bin/batcat $HOME/bin/bat
-fi
-

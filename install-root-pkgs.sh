@@ -213,7 +213,14 @@ fi
 # microsoft repos
 if ! [[ "$REPOS" =~ packages.microsoft.com/ubuntu/.*/prod/dists/.*/main[[:space:]] ]]; then
   echo -e "\e[34mInstall Microsoft repos.\e[0m"
-  install https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+  install https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+  if ! [ -f /etc/apt/preferences.d/20-microsoft-packages ]; then
+    cat <<EOF >> /etc/apt/preferences.d/20-microsoft-packages
+Package: *
+Pin: origin "packages.microsoft.com"
+Pin-Priority: 1001
+EOF
+fi
   apt-get update
 else
   if $VERBOSE; then
@@ -222,8 +229,7 @@ else
 fi
 
 # dotnet
-APT_PKGS_TO_INSTALL=`echo "dotnet-sdk-3.1
-dotnet-sdk-6.0" | sort`
+APT_PKGS_TO_INSTALL=`echo "dotnet-sdk-6.0" | sort`
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then

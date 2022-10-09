@@ -1,3 +1,7 @@
 {
-    "git.detectSubmodulesLimit": 20
+  "git.detectSubmodulesLimit": 20,
+  "files.exclude": {
+    "tools/**": true,
+    "dotbot/**": true
+  }
 }

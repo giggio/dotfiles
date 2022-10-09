@@ -47,16 +47,16 @@ if $VERBOSE; then
   echo Update is $UPDATE
 fi
 
-if ! hash python2.7 2>/dev/null || ! hash python3.8 2>/dev/null; then
+if ! hash python2.7 2>/dev/null || ! hash python3 2>/dev/null; then
   echo -e "\e[34mInstalling Python 2 and 3.\e[0m"
   sudo apt-get update
-  sudo apt-get install -y python2.7 python3.8
+  sudo apt-get install -y python2.7 python3
 fi
 if ! update-alternatives --display python &>/dev/null; then
   echo -e "\e[34mSetting the default Python to version 3.\e[0m"
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2
-  sudo update-alternatives  --set python /usr/bin/python3.8
+  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 2
+  sudo update-alternatives  --set python /usr/bin/python3
 else
   if $VERBOSE; then
     echo "Not Adding Python alternatives, they are already present."

@@ -187,8 +187,7 @@ pm2
 trash-cli
 typescript
 vtop
-yaml-cli
-yarn" | sort`
+yaml-cli" | sort`
 NPM_PKGS_NOT_INSTALLED=`comm -23 <(echo "$NPM_PKGS_TO_INSTALL") <(echo "$NPM_PKGS_INSTALLED")`
 if [ "$NPM_PKGS_NOT_INSTALLED" != "" ]; then
   echo -e "\e[34mInstall packages "$NPM_PKGS_NOT_INSTALLED" with npm.\e[0m"
@@ -201,6 +200,7 @@ else
     echo "Not installing Npm packages, they are already installed."
   fi
 fi
+corepack enable # makes yarn available
 
 # krew tools
 if [ -e $HOME/.krew/bin/kubectl-krew ]; then
@@ -241,9 +241,8 @@ if [ -f $HOME/.cargo/env ]; then
   # rust/cargo
   CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
   # todo: how to work with as-tree, which is not on crates.io?
-  # https://github.com/jez/as-tree
-  CRATES_TO_INSTALL="bandwhich
-  cargo-update
+  # See issue: https://github.com/jez/as-tree/issues/14
+  CRATES_TO_INSTALL="cargo-update
   cargo-edit
   cargo-expand
   cargo-outdated
@@ -260,10 +259,20 @@ if [ -f $HOME/.cargo/env ]; then
   sccache
   tealdeer
   tokei"
+  CRATES_TO_INSTALL_NO_LOCK="bandwhich" # see https://github.com/imsnif/bandwhich/issues/258
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED" != "" ]; then
     echo -e "\e[34mInstall crates $CRATES_NOT_INSTALLED.\e[0m"
     cargo install --locked $CRATES_NOT_INSTALLED
+  else
+    if $VERBOSE; then
+      echo "Not installing crates, they are already installed."
+    fi
+  fi
+  CRATES_NOT_INSTALLED_NO_LOCK=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_TO_INSTALL_NO_LOCK"))`
+  if [ "$CRATES_NOT_INSTALLED_NO_LOCK" != "" ]; then
+    echo -e "\e[34mInstall crates $CRATES_NOT_INSTALLED_NO_LOCK.\e[0m"
+    cargo install $CRATES_NOT_INSTALLED_NO_LOCK
   else
     if $VERBOSE; then
       echo "Not installing crates, they are already installed."

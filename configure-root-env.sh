@@ -78,7 +78,7 @@ function setAlternative() {
   fi
 }
 
-if $WSL; then
+if $WSL && ! $RUNNING_IN_CONTAINER; then
   if hash wslview 2>/dev/null; then
     setAlternative x-www-browser wslview
   else

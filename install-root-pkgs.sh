@@ -74,7 +74,7 @@ addKey () {
 }
 
 WSL=false
-if grep [Mm]icrosoft /proc/version > /dev/null; then
+if grep microsoft /proc/version -q; then
   WSL=true
 fi
 
@@ -140,6 +140,7 @@ gzip
 htop
 httpie
 hub
+iperf3
 jq
 libdb-dev
 libffi-dev
@@ -177,6 +178,11 @@ else
     echo "Not installing packages with PAT, they are already installed."
   fi
 fi
+
+# libssl1.1 (not available in Ubuntu 22.04)
+curl -fsSL --output /tmp/libssl1.1.deb http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+dpkg -i /tmp/libssl1.1.deb
+rm /tmp/libssl1.1.deb
 
 # yq
 if ! hash yq 2>/dev/null || $UPDATE; then
@@ -255,7 +261,7 @@ fi
 
 # kubectl
 if ! hash kubectl 2>/dev/null || $UPDATE; then
-  if $WSL; then
+  if $WSL && ! $RUNNING_IN_CONTAINER; then
     echo -e "\e[34mNot installing Kubectl, already on WSL.\e[0m"
   else
     echo -e "\e[34mInstall Kubectl.\e[0m"
@@ -312,13 +318,13 @@ fi
 
 # docker
 if ! hash docker 2>/dev/null || $UPDATE; then
-  if $WSL; then
-    echo -e "\e[34mNot installing Docker, already on WSL.\e[0m"
-  elif $RUNNING_IN_CONTAINER; then
+  if $RUNNING_IN_CONTAINER; then
     echo -e "\e[34mInstall Docker cli only.\e[0m"
     addKey https://download.docker.com/linux/ubuntu/gpg
-    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    add-apt-repository --yes "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     apt-get install -y docker-ce-cli
+  elif $WSL; then
+    echo -e "\e[34mNot installing Docker, already on WSL.\e[0m"
   else
     echo -e "\e[34mInstall Docker.\e[0m"
     wget -q -O - https://get.docker.com | bash
@@ -329,7 +335,7 @@ else
   fi
 fi
 
-if $WSL; then
+if $WSL && ! $RUNNING_IN_CONTAINER; then
   if ! [[ $APT_PKGS_INSTALLED =~ wslu ]]; then
     echo -e "\e[34mInstall WSL Utilities.\e[0m"
     add-apt-repository --yes ppa:wslutilities/wslu
@@ -502,19 +508,6 @@ if ! hash aws 2>/dev/null || $UPDATE; then
 else
   if $VERBOSE; then
     echo "Not installing AWS cli, it is already installed."
-  fi
-fi
-
-# iperf
-if ! hash iperf3 2>/dev/null || $UPDATE; then
-  apt install -y libsctp1
-  curl -fsSL --output /tmp/libperf.deb "https://iperf.fr/download/ubuntu/libiperf0_3.7-3_amd64.deb"
-  curl -fsSL --output /tmp/iperf.deb "https://iperf.fr/download/ubuntu/iperf3_3.7-3_amd64.deb"
-  dpkg -i /tmp/libperf.deb /tmp/iperf.deb
-  rm /tmp/libperf.deb /tmp/iperf.deb
-else
-  if $VERBOSE; then
-    echo "Not installing iperf3, it is already installed."
   fi
 fi
 

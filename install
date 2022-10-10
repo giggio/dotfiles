@@ -63,7 +63,7 @@ fi
 pushd "${BASEDIR}" > /dev/null
 
 export DEBIAN_FRONTEND=noninteractive
-if grep [Mm]icrosoft /proc/version > /dev/null; then
+if grep microsoft /proc/version -q; then
   export WSL=true
 else
   export WSL=false

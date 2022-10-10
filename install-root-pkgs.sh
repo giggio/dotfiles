@@ -153,6 +153,7 @@ libyaml-dev
 locales
 lsb-release
 mosh
+neovim
 nmap
 pandoc
 pkg-config

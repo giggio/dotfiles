@@ -147,6 +147,7 @@ libffi-dev
 libgdbm-dev
 libgdbm6
 libncurses5-dev
+libpython3-dev
 libreadline-dev
 libssl-dev
 libyaml-dev
@@ -178,6 +179,36 @@ else
   if $VERBOSE; then
     echo "Not installing packages with PAT, they are already installed."
   fi
+fi
+
+# build Vim 9 if needed
+VIM_VERSION=`vim --version | grep 'Vi IM' | sed -E 's/.*([0-9]+\.[0-9]+).*/\1/g'`
+if dpkg --compare-versions "$VIM_VERSION" 'lt' '9.0' ; then
+  if [ -d $HOME/p/vim ];then rm -rf $HOME/p/vim; fi
+  mkdir -p $HOME/p/
+  git clone https://github.com/vim/vim $HOME/p/vim
+  pushd $HOME/p/vim > /dev/null
+  sed -i 's/#CONF_OPT_PYTHON3 = --enable-python3interp$/CONF_OPT_PYTHON3 = --enable-python3interp/' src/Makefile
+  make
+  make install
+  popd
+  which vim
+  vim --version
+elif $UPDATE; then
+  if ! [ -d $HOME/p/vim ];then
+    mkdir -p $HOME/p/
+    git clone https://github.com/vim/vim $HOME/p/vim
+  fi
+  pushd $HOME/p/vim > /dev/null
+  git checkout -- :/
+  git checkout master
+  git pull origin master
+  sed -i 's/#CONF_OPT_PYTHON3 = --enable-python3interp$/CONF_OPT_PYTHON3 = --enable-python3interp/' src/Makefile
+  make
+  make install
+  popd
+  which vim
+  vim --version
 fi
 
 # libssl1.1 (not available in Ubuntu 22.04)

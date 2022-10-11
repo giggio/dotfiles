@@ -216,7 +216,7 @@ else
   echo -e "\e[34mKrew not available, skipping...\e[0m"
 fi
 
-# gem
+# gem/ruby
 if [ -e $HOME/.rbenv/bin/rbenv ]; then
   if ! [[ $PATH =~ "$HOME/.rbenv/bin" ]]; then
     export PATH="$HOME/.rbenv/shims:$HOME/.rbenv/bin:$PATH"

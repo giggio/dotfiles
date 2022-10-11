@@ -64,7 +64,7 @@ install () {
   DEB=`echo "${DEB%%\?*}"` # remove query string
   DEB=`echo "${DEB%%\#*}"` # remove fragment
   DEB=/tmp/$DEB
-  wget $1 -O $DEB
+  curl -fsSL --output $DEB $1
   apt-get install $DEB
   rm $DEB
 }
@@ -85,7 +85,7 @@ if [ "$REPOS" == "" ] || $UPDATE; then
   apt-get update
 else
   if $VERBOSE; then
-    echo "Not running apt update, repositories are already in place."
+    echo "Not running apt-get update, repositories are already in place."
   fi
 fi
 
@@ -134,6 +134,7 @@ bison
 build-essential
 cowsay
 figlet
+file
 fontforge
 git
 gzip
@@ -150,6 +151,7 @@ libncurses5-dev
 libpython3-dev
 libreadline-dev
 libssl-dev
+libtext-lorem-perl
 libyaml-dev
 locales
 lsb-release
@@ -183,7 +185,7 @@ fi
 
 # build Vim 9 if needed
 VIM_VERSION=`vim --version | grep 'Vi IM' | sed -E 's/.*([0-9]+\.[0-9]+).*/\1/g'`
-if dpkg --compare-versions "$VIM_VERSION" 'lt' '9.0' ; then
+if dpkg --compare-versions "$VIM_VERSION" lt 9.0; then
   if [ -d $HOME/p/vim ];then rm -rf $HOME/p/vim; fi
   mkdir -p $HOME/p/
   git clone https://github.com/vim/vim $HOME/p/vim
@@ -234,18 +236,15 @@ else
 fi
 
 # hashicorp vault
-if ! hash vault 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall Hashicorp Vault.\e[0m"
-  wget https://releases.hashicorp.com/vault/1.11.0/vault_1.11.0_linux_amd64.zip -O /tmp/vault.zip
-  rm -rf /tmp/vault
-  unzip -qo /tmp/vault.zip -d /tmp/vault
-  mv /tmp/vault/vault /usr/local/bin/
-  rm /tmp/vault.zip
-  rm -rf /tmp/vault
-else
-  if $VERBOSE; then
-    echo "Not intalling Vault, it is already installed."
+if ! hash vault 2>/dev/null; then
+  if [ -e /usr/local/bin/vault ]; then # todo remove after a while, there was no repo for vault, so this is a temporary cleanup. It's been here since 2022-10-10
+    rm /usr/local/bin/vault
   fi
+  echo -e "\e[34mInstall Hashicorp Vault.\e[0m"
+  curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+  echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list
+  apt-get update
+  apt-get install -y vault
 fi
 
 # microsoft repos
@@ -301,7 +300,6 @@ if ! hash kubectl 2>/dev/null || $UPDATE; then
     echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
     apt-get update
     apt-get install -y kubectl
-    # or curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
   fi
 else
   if $VERBOSE; then
@@ -312,7 +310,9 @@ fi
 # kubespy
 if ! hash kubespy 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Kubespy.\e[0m"
-  wget https://github.com/pulumi/kubespy/releases/download/v0.6.0/kubespy-v0.6.0-linux-amd64.tar.gz -O /tmp/kubespy.tar.gz
+  KUBESPY_DL_URL=`curl -fsSL https://api.github.com/repos/pulumi/kubespy/releases | \
+  jq --raw-output '[.[] | select(.prerelease == false)][0].assets[] | select(.name|test("linux")).browser_download_url'`
+  curl -fsSL --output /tmp/kubespy.tar.gz $KUBESPY_DL_URL
   rm /tmp/kubespy -rf
   mkdir -p /tmp/kubespy
   tar -xvzf /tmp/kubespy.tar.gz -C /tmp/kubespy/
@@ -341,7 +341,9 @@ fi
 # dive
 if ! hash dive 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Dive.\e[0m"
-  install https://github.com/wagoodman/dive/releases/download/v0.9.2/dive_0.9.2_linux_amd64.deb
+  DIVE_DL_URL=`curl -fsSL https://api.github.com/repos/wagoodman/dive/releases | \
+  jq --raw-output '[.[] | select(.prerelease == false)][0].assets[] | select(.name|test("linux_amd64.deb")).browser_download_url'`
+  install $DIVE_DL_URL
 else
   if $VERBOSE; then
     echo "Not intalling Dive, it is already installed."
@@ -423,7 +425,9 @@ update-alternatives --set helm /usr/local/bin/helm3
 # chart releaser - cr
 if ! hash cr 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Chart releaser (CR).\e[0m"
-  wget https://github.com/helm/chart-releaser/releases/download/v1.4.0/chart-releaser_1.4.0_linux_amd64.tar.gz -O /tmp/cr.tar.gz
+  CR_DL_URL=`curl -fsSL https://api.github.com/repos/helm/chart-releaser/releases | \
+  jq --raw-output '[.[] | select(.prerelease == false)][0].assets[] | select(.name|test("linux_amd64.tar.gz$")).browser_download_url'`
+  curl -fsSL --output /tmp/cr.tar.gz $CR_DL_URL
   rm /tmp/cr -rf
   mkdir -p /tmp/cr
   tar -xvzf /tmp/cr.tar.gz -C /tmp/cr/
@@ -449,17 +453,34 @@ else
 fi
 
 # exa
-if ! hash exa 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall Exa.\e[0m"
-  wget https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-x86_64-v0.10.1.zip -O /tmp/exa.zip
-  rm -rf /tmp/exa
-  unzip -qo /tmp/exa.zip -d /tmp/exa
-  mv /tmp/exa/bin/exa /usr/local/bin/
-  rm /tmp/exa.zip
-  rm -rf /tmp/exa
-else
-  if $VERBOSE; then
-    echo "Not intalling Exa, it is already installed."
+# amd64, arm64, armhf
+ARCH=''
+case `uname -m` in
+  x86_64)
+    ARCH=amd64
+    ;;
+  armv7l)
+    ARCH=armv7
+    ;;
+  *)
+    echo "Exa will not be installed: unsupported architecture: `uname -m`"
+    ;;
+esac
+if [ "$ARCH" != '' ]; then
+  if ! hash exa 2>/dev/null || $UPDATE; then
+    echo -e "\e[34mInstall Exa.\e[0m"
+    EXA_DL_URL=`curl -fsSL https://api.github.com/repos/ogham/exa/releases | \
+    jq --arg arch $ARCH --raw-output '[.[] | select(.prerelease == false)][0].assets[] | select(.name|test("^exa-linux-\($arch)(?!-musl)")).browser_download_url'`
+    curl -fsSL --output /tmp/exa.zip $EXA_DL_URL
+    rm -rf /tmp/exa
+    unzip -qo /tmp/exa.zip -d /tmp/exa
+    mv /tmp/exa/bin/exa /usr/local/bin/
+    rm /tmp/exa.zip
+    rm -rf /tmp/exa
+  else
+    if $VERBOSE; then
+      echo "Not intalling Exa, it is already installed."
+    fi
   fi
 fi
 
@@ -479,20 +500,37 @@ else
 fi
 
 # delta
-if ! hash delta 2>/dev/null || $UPDATE; then
-  echo -e "\e[34mInstall Delta.\e[0m"
-  if dpkg -l git-delta &> /dev/null; then
-    apt-get purge -y git-delta
-  fi
-  if dpkg -l delta-diff &> /dev/null; then
-    apt-get purge -y delta-diff
-  fi
-  wget https://github.com/dandavison/delta/releases/download/0.13.0/git-delta_0.13.0_amd64.deb -O /tmp/delta.deb
-  apt-get install /tmp/delta.deb
-  rm /tmp/delta.deb
-else
-  if $VERBOSE; then
-    echo "Not intalling Delta, it is already installed."
+ARCH=''
+case `uname -m` in
+  x86_64)
+    ARCH=amd64
+    ;;
+  aarch64)
+    ARCH=arm64
+    ;;
+  armv7l)
+    ARCH=armhf
+    ;;
+  *)
+    echo "Delta will not be installed: unsupported architecture: `uname -m`"
+    ;;
+esac
+if [ "$ARCH" != '' ]; then
+  if ! hash delta 2>/dev/null || $UPDATE; then
+    echo -e "\e[34mInstall Delta.\e[0m"
+    if dpkg -l git-delta &> /dev/null; then
+      apt-get purge -y git-delta
+    fi
+    if dpkg -l delta-diff &> /dev/null; then
+      apt-get purge -y delta-diff
+    fi
+    DELTA_DL_URL=`curl -fsSL https://api.github.com/repos/dandavison/delta/releases | \
+    jq --arg arch $ARCH --raw-output '[.[] | select(.prerelease == false)][0].assets[] | select(.name|test("^git-delta(?!-musl).*_\($arch).deb$")).browser_download_url'`
+    install $DELTA_DL_URL
+  else
+    if $VERBOSE; then
+      echo "Not intalling Delta, it is already installed."
+    fi
   fi
 fi
 
@@ -502,8 +540,8 @@ if ! hash gh 2>/dev/null || $UPDATE; then
   curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
   chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-  apt update
-  apt install gh -y
+  apt-get update
+  apt-get install gh -y
 else
   if $VERBOSE; then
     echo "Not intalling Github CLI, it is already installed."
@@ -513,7 +551,7 @@ fi
 # k9s
 if ! hash k9s 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall k9s.\e[0m"
-  wget https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_x86_64.tar.gz -O /tmp/k9s.tar.gz
+  curl -fsSL --output /tmp/k9s.tar.gz https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_x86_64.tar.gz
   mkdir /tmp/k9s/
   tar -xvzf /tmp/k9s.tar.gz -C /tmp/k9s/
   mv /tmp/k9s/k9s /usr/local/bin/

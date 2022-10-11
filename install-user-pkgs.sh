@@ -57,12 +57,12 @@ fi
 # dvm - deno
 if ! hash dvm 2>/dev/null; then
   DVM_TARGZ='dvm_linux_amd64.tar.gz'
-  DVM_DOWNLOAD_URL=`curl -fsSL https://api.github.com/repos/axetroy/dvm/releases/latest \
-  | jq --raw-output '.assets[] | select(.name | contains("'$DVM_TARGZ'")) | .browser_download_url'`
+  DVM_DL_URL=`curl -fsSL https://api.github.com/repos/axetroy/dvm/releases | \
+  jq --raw-output '[.[] | select(.prerelease == false)][0].assets[] | select(.name|test("'$DVM_TARGZ'")).browser_download_url'`
   DVM_TMP_DIR='/tmp/dvm'
   mkdir -p $DVM_TMP_DIR
-  DVM_TARGZ_TMP="$DVM_TMP_DIR/dvm_linux_amd64.tar.gz"
-  curl -fsSL --output $DVM_TARGZ_TMP $DVM_DOWNLOAD_URL
+  DVM_TARGZ_TMP="$DVM_TMP_DIR/$DVM_TARGZ"
+  curl -fsSL --output $DVM_TARGZ_TMP $DVM_DL_URL
   pushd $DVM_TMP_DIR > /dev/null
   tar -xvzf $DVM_TARGZ_TMP
   mv dvm $HOME/bin/
@@ -81,8 +81,9 @@ fi
 if ! [ -f $BASEDIR/tools/rbenv/shims/ruby ]; then
   echo -e "\e[34mInstall ruby-build and install Ruby with rbenv.\e[0m"
   git clone https://github.com/rbenv/ruby-build.git $BASEDIR/tools/rbenv/plugins/ruby-build
-  $HOME/.rbenv/bin/rbenv install 2.7.1
-  $HOME/.rbenv/bin/rbenv global 2.7.1
+  $HOME/.rbenv/bin/rbenv install 2.7.6
+  $HOME/.rbenv/bin/rbenv install 3.1.2
+  $HOME/.rbenv/bin/rbenv global 3.1.2
 else
   if $VERBOSE; then
     echo "Not installing Rbenv and generating Ruby, it is already installed."
@@ -126,7 +127,7 @@ fi
 # docker-show-context
 if ! hash docker-show-context 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall docker-show-context.\e[0m"
-  wget https://github.com/pwaller/docker-show-context/releases/download/v1.1.1/docker-show-context_linux_amd64 -O $HOME/bin/docker-show-context
+  curl -fsSL --output $HOME/bin/docker-show-context https://github.com/pwaller/docker-show-context/releases/latest/download/docker-show-context_linux_amd64
   chmod +x $HOME/bin/docker-show-context
 else
   if $VERBOSE; then
@@ -136,20 +137,31 @@ fi
 
 # golang
 if ! hash go &> /dev/null; then
-  processor=`lscpu | grep Architecture | awk '{print $2}'`
-  if [ "$processor" == "x86_64" ]; then
-    GO_ARCH="amd64"
-  elif [ "$processor" == "armv7l" ]; then
-    GO_ARCH="armv6l"
-  else
-    echo "Unsupported processor to install golang: $processor"
+  GO_ARCH=''
+  case `uname -m` in
+    x86_64)
+      GO_ARCH=amd64
+      ;;
+    aarch64)
+      GO_ARCH=arm64
+      ;;
+    armv7l)
+      GO_ARCH=armv6l
+      ;;
+    *)
+      echo "Golang will not be installed: unsupported architecture: `uname -m`"
+      ;;
+  esac
+  if [ "$GO_ARCH" != '' ]; then
+    GO_VERSION=`curl -fsSL https://api.github.com/repos/golang/go/git/matching-refs/tags/go1. | \
+    jq --raw-output '.[-1].ref' | \
+    sed 's/refs\/tags\/go//'`
+    curl -fsSL --output /tmp/go.tar.gz https://go.dev/dl/go$GO_VERSION.linux-$GO_ARCH.tar.gz
+    rm -rf $HOME/.go/
+    tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src
+    mv /tmp/go $HOME/.go
+    rm /tmp/go.tar.gz
   fi
-  GO_VERSION="1.18.4"
-  wget https://go.dev/dl/go$GO_VERSION.linux-$GO_ARCH.tar.gz -O /tmp/go.tar.gz
-  rm -rf $HOME/.go/
-  tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src
-  mv /tmp/go $HOME/.go
-  rm /tmp/go.tar.gz
 fi
 
 #fzf
@@ -158,10 +170,28 @@ if ! [ -e $HOME/.fzf/bin/fzf ] || $UPDATE; then
 fi
 
 # docker-slim
+ARCH=''
+case `uname -m` in
+  x86_64)
+    ARCH=linux
+    ;;
+  aarch64)
+    ARCH=linux_arm64
+    ;;
+  armv7l)
+    ARCH=linux_arm
+    ;;
+  *)
+    echo "Docker-slim will not be installed: unsupported architecture: `uname -m`"
+    ;;
+esac
 if ! hash docker-slim 2>/dev/null; then
   echo -e "\e[34mInstall docker-slim.\e[0m"
   DSLIMTAR=/tmp/docker-slim.tar.gz
-  curl -fsSL --output $DSLIMTAR https://downloads.dockerslim.com/releases/1.37.6/dist_linux.tar.gz
+  DS_VERSION=`curl -fsSL https://api.github.com/repos/docker-slim/docker-slim/git/matching-refs/tags/1. | \
+  jq --raw-output '.[-1].ref' | \
+  sed 's/refs\/tags\///'`
+  curl -fsSL --output $DSLIMTAR https://downloads.dockerslim.com/releases/$DS_VERSION/dist_$ARCH.tar.gz
   mkdir /tmp/dslim/
   tar -xvzf $DSLIMTAR -C /tmp/dslim/
   mv /tmp/dslim/dist_linux/* $HOME/bin/

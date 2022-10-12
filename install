@@ -68,12 +68,8 @@ if grep microsoft /proc/version -q; then
 else
   export WSL=false
 fi
-if [ -f /proc/1/cgroup ]; then
-  if grep docker /proc/1/cgroup -qa; then
-    export RUNNING_IN_CONTAINER=true
-  else
-    export RUNNING_IN_CONTAINER=false
-  fi
+if [ -f /.dockerenv ] || grep docker /proc/1/cgroup -qa 2> /dev/null; then
+  export RUNNING_IN_CONTAINER=true
 else
   export RUNNING_IN_CONTAINER=false
 fi

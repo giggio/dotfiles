@@ -72,11 +72,11 @@ else
   fi
 fi
 
-if ! [ -L /etc/localtime ] || [ `realpath /etc/localtime` != "/usr/share/zoneinfo/America/Sao_Paulo" ]; then
-  echo -e "\e[34mSetting default time zone to São Paulo.\e[0m"
-  sudo ln -fs /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
-else
+if ([ -L /etc/localtime ] && [ `realpath /etc/localtime` == "/usr/share/zoneinfo/America/Sao_Paulo" ]) || $RUNNING_IN_CONTAINER; then
   if $VERBOSE; then
     echo "Not updating time zones."
   fi
+else
+  echo -e "\e[34mSetting default time zone to São Paulo.\e[0m"
+  sudo ln -fs /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 fi

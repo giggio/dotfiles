@@ -70,7 +70,28 @@ install () {
 }
 
 addKey () {
-  wget -q -O - $1 | apt-key add -
+  local KEYRING_URL=$1
+  local LIST_INFO=$2
+  local LIST_FILE=$3
+  if [ -v 4 ]; then
+    local KEYRING_FILE=$4
+  else
+    local KEYRING_FILE=$LIST_FILE-keyring.gpg
+  fi
+  local KEYRING_TMP_FILE=/tmp/$KEYRING_FILE
+  KEYRING_FILE=/etc/apt/trusted.gpg.d/$KEYRING_FILE
+  curl -fsSL --output $KEYRING_TMP_FILE $KEYRING_URL
+  if [ `file --mime-type -b $KEYRING_TMP_FILE` == 'application/pgp-keys' ]; then
+    echo "Converting $KEYRING_TMP_FILE to $KEYRING_FILE with gpg --dearmor"
+    cat $KEYRING_TMP_FILE | gpg --dearmor > $KEYRING_FILE
+    rm $KEYRING_TMP_FILE
+  else
+    echo "Saving gpg key to $KEYRING_FILE"
+    mv $KEYRING_TMP_FILE $KEYRING_FILE
+  fi
+  echo "Creating file '/etc/apt/sources.list.d/$LIST_FILE.list' with value: 'deb [arch=amd64 signed-by=$KEYRING_FILE] $LIST_INFO'"
+  echo "deb [arch=`dpkg --print-architecture` signed-by=$KEYRING_FILE] $LIST_INFO" > /etc/apt/sources.list.d/$LIST_FILE.list
+  apt-get update
 }
 
 WSL=false
@@ -214,9 +235,12 @@ elif $UPDATE; then
 fi
 
 # libssl1.1 (not available in Ubuntu 22.04)
-curl -fsSL --output /tmp/libssl1.1.deb http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
-dpkg -i /tmp/libssl1.1.deb
-rm /tmp/libssl1.1.deb
+if ! dpkg-query --no-pager --showformat='${Package}\n' --show 'libssl1.1' > /dev/null; then
+  echo -e "\e[34mInstall libssl1.1.\e[0m"
+  curl -fsSL --output /tmp/libssl1.1.deb http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+  dpkg -i /tmp/libssl1.1.deb
+  rm /tmp/libssl1.1.deb
+fi
 
 # yq
 if ! hash yq 2>/dev/null || $UPDATE; then
@@ -237,13 +261,11 @@ fi
 
 # hashicorp vault
 if ! hash vault 2>/dev/null; then
+  echo -e "\e[34mInstall Hashicorp Vault.\e[0m"
   if [ -e /usr/local/bin/vault ]; then # todo remove after a while, there was no repo for vault, so this is a temporary cleanup. It's been here since 2022-10-10
     rm /usr/local/bin/vault
   fi
-  echo -e "\e[34mInstall Hashicorp Vault.\e[0m"
-  curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
-  echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list
-  apt-get update
+  addKey https://apt.releases.hashicorp.com/gpg "https://apt.releases.hashicorp.com `lsb_release -cs` main" hashicorp
   apt-get install -y vault
 fi
 
@@ -296,9 +318,7 @@ if ! hash kubectl 2>/dev/null || $UPDATE; then
     echo -e "\e[34mNot installing Kubectl, already on WSL.\e[0m"
   else
     echo -e "\e[34mInstall Kubectl.\e[0m"
-    addKey https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
-    apt-get update
+    addKey https://packages.cloud.google.com/apt/doc/apt-key.gpg 'https://apt.kubernetes.io/ kubernetes-xenial main' kubernetes
     apt-get install -y kubectl
   fi
 else
@@ -328,9 +348,7 @@ fi
 # google chrome
 if ! hash google-chrome 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Google Chrome.\e[0m"
-  addKey https://dl-ssl.google.com/linux/linux_signing_key.pub
-  echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
-  apt-get update
+  addKey https://dl-ssl.google.com/linux/linux_signing_key.pub 'http://dl.google.com/linux/chrome/deb/ stable main' google
   apt-get install -y google-chrome-stable
 else
   if $VERBOSE; then
@@ -354,8 +372,7 @@ fi
 if ! hash docker 2>/dev/null || $UPDATE; then
   if $RUNNING_IN_CONTAINER; then
     echo -e "\e[34mInstall Docker cli only.\e[0m"
-    addKey https://download.docker.com/linux/ubuntu/gpg
-    add-apt-repository --yes "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    addKey https://download.docker.com/linux/ubuntu/gpg "https://download.docker.com/linux/ubuntu `lsb_release -cs` stable" docker
     apt-get install -y docker-ce-cli
   elif $WSL; then
     echo -e "\e[34mNot installing Docker, already on WSL.\e[0m"
@@ -457,7 +474,7 @@ fi
 ARCH=''
 case `uname -m` in
   x86_64)
-    ARCH=amd64
+    ARCH=x86_64
     ;;
   armv7l)
     ARCH=armv7
@@ -537,10 +554,7 @@ fi
 # Github cli
 if ! hash gh 2>/dev/null || $UPDATE; then
   echo -e "\e[34mInstall Github cli.\e[0m"
-  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-  chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-  apt-get update
+  addKey https://cli.github.com/packages/githubcli-archive-keyring.gpg "https://cli.github.com/packages stable main" githubcli
   apt-get install gh -y
 else
   if $VERBOSE; then
@@ -583,6 +597,7 @@ fi
 
 # k3d
 if ! hash k3d 2>/dev/null || $UPDATE; then
+  echo -e "\e[34mInstall K3d.\e[0m"
   curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
 else
   if $VERBOSE; then
@@ -592,6 +607,7 @@ fi
 
 # starship
 if ! hash starship 2>/dev/null || $UPDATE; then
+  echo -e "\e[34mInstall Starship.\e[0m"
   sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
 else
   if $VERBOSE; then
@@ -601,6 +617,7 @@ fi
 
 # act
 if ! hash act 2>/dev/null || $UPDATE; then
+  echo -e "\e[34mInstall Act.\e[0m"
   curl -fsSL https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin
 else
   if $VERBOSE; then

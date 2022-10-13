@@ -69,74 +69,79 @@ fi
 
 # .NET Tools
 DOTNET_TOOLS=$HOME/.dotnet/tools
-if ! [ -f $DOTNET_TOOLS/pwsh ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/pwsh ]; then
   echo -e "\e[34mInstall PowerShell.\e[0m"
   dotnet tool update --global PowerShell
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-dump ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-dump ]; then
   echo -e "\e[34mInstall .NET Dump.\e[0m"
   dotnet tool update --global dotnet-dump
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-gcdump ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-gcdump ]; then
   echo -e "\e[34mInstall .NET GC Dump.\e[0m"
   dotnet tool update --global dotnet-gcdump
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-counters ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-counters ]; then
   echo -e "\e[34mInstall .NET Counters.\e[0m"
   dotnet tool update --global dotnet-counters
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-trace ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-trace ]; then
   echo -e "\e[34mInstall .NET Trace.\e[0m"
   dotnet tool update --global dotnet-trace
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-script ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-script ]; then
   echo -e "\e[34mInstall .NET Script.\e[0m"
   dotnet tool update --global dotnet-script
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-suggest ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-suggest ]; then
   echo -e "\e[34mInstall .NET Suggest.\e[0m"
   dotnet tool update --global dotnet-suggest
 fi
-if ! [ -f $DOTNET_TOOLS/tye ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/tye ]; then
   echo -e "\e[34mInstall Tye.\e[0m"
   dotnet tool update --global Microsoft.Tye --prerelease
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-aspnet-codegenerator ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-aspnet-codegenerator ]; then
   echo -e "\e[34mInstall ASP.NET Code Generator.\e[0m"
   dotnet tool update --global dotnet-aspnet-codegenerator
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-delice ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-delice ]; then
   echo -e "\e[34mInstall Delice.\e[0m"
   dotnet tool update --global dotnet-delice
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-interactive ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-interactive ]; then
   echo -e "\e[34mInstall .NET Interactive.\e[0m"
   dotnet tool update --global Microsoft.dotnet-interactive
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-sos ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-sos ]; then
   echo -e "\e[34mInstall .NET SOS.\e[0m"
   dotnet tool update --global dotnet-sos
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-symbol ] || ! [ -d $HOME/.dotnet/sos ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-symbol ] || ! [ -d $HOME/.dotnet/sos ]; then
   echo -e "\e[34mInstall .NET Symbol.\e[0m"
   dotnet tool update --global dotnet-symbol
   $HOME/.dotnet/tools/dotnet-sos install
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-try ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/dotnet-try ]; then
   echo -e "\e[34mInstall .NET Try.\e[0m"
   dotnet tool update --global dotnet-try
 fi
-if ! [ -f $DOTNET_TOOLS/httprepl ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/httprepl ]; then
   echo -e "\e[34mInstall .NET HttpRepl.\e[0m"
   dotnet tool update --global Microsoft.dotnet-httprepl
 fi
-if ! [ -f $DOTNET_TOOLS/nukeeper ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/nukeeper ]; then
   echo -e "\e[34mInstall .NET Nukeeper.\e[0m"
   dotnet tool update --global nukeeper
 fi
-if ! [ -f $DOTNET_TOOLS/git-istage ] || $UPDATE; then
+if ! [ -f $DOTNET_TOOLS/git-istage ]; then
   echo -e "\e[34mInstall Git Istage.\e[0m"
   dotnet tool update --global git-istage
+fi
+
+if $UPDATE; then
+  dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}' | grep -v --color=never ':.*-' | cut -f1 -d':' | xargs -0d\\n -n1 dotnet tool update --global
+  dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}' | grep --color=never ':.*-' | cut -f1 -d':' | xargs -0d\\n -n1 dotnet tool update --global --prerelease
 fi
 
 # node

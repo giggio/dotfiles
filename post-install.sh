@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [ "$EUID" == "0" ]; then
+  echo "Please do not run as root"
+  exit 2
+fi
+
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 ALL_ARGS=$@

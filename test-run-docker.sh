@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# build with `docker build -t df .`
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILESDIR=/home/user/.dotfiles
 docker run -ti --name df \
@@ -14,4 +15,7 @@ docker run -ti --name df \
   -v $BASEDIR/install.conf.yaml:$DOTFILESDIR/install.conf.yaml \
   -v $BASEDIR/pre-install.sh:$DOTFILESDIR/pre-install.sh \
   -v $BASEDIR/post-install.sh:$DOTFILESDIR/post-install.sh \
+  -v $BASEDIR/_functions.sh:$DOTFILESDIR/_functions.sh \
+  -v $BASEDIR/_functions.spec.sh:$DOTFILESDIR/_functions.spec.sh \
+  -v $BASEDIR/_test-helpers.sh:$DOTFILESDIR/_test-helpers.sh \
   df

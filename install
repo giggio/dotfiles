@@ -10,17 +10,13 @@ fi
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 ALL_ARGS=$@
-CLEAN=false
+SKIP_POST_INSTALL=false
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
-    --clean|-c)
-    CLEAN=true
-    shift
-    ;;
     --update|-u)
     UPDATE=true
     shift
@@ -31,6 +27,10 @@ while [[ $# -gt 0 ]]; do
     ;;
     --verbose)
     VERBOSE=true
+    shift
+    ;;
+    --skip-post-install|-s)
+    SKIP_POST_INSTALL=true
     shift
     ;;
     *)
@@ -50,6 +50,8 @@ Flags:
   -c, --clean              Will clean installed packages.
   -u, --update             Will download and install/reinstall even if the tools are already installed
       --verbose            Show verbose output
+      --skip-post-install  Will skip post install steps (installation of packages etc)
+      --gh <user:pw>       GitHub username and password
   -h, --help               This help
 EOF
   exit 0
@@ -73,9 +75,11 @@ if [ -f /.dockerenv ] || grep docker /proc/1/cgroup -qa 2> /dev/null; then
 else
   export RUNNING_IN_CONTAINER=false
 fi
-$BASEDIR/pre-install.sh $ALL_ARGS
+sudo -E $BASEDIR/pre-install.sh $ALL_ARGS
 $BASEDIR/install.sh
-$BASEDIR/post-install.sh $ALL_ARGS
+if ! $SKIP_POST_INSTALL; then
+  $BASEDIR/post-install.sh $ALL_ARGS
+fi
 
 popd > /dev/null
 

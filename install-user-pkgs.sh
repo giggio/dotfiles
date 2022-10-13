@@ -136,7 +136,7 @@ else
 fi
 
 # golang
-if ! hash go &> /dev/null; then
+if ! hash go &> /dev/null || $UPDATE; then
   GO_ARCH=''
   case `uname -m` in
     x86_64)
@@ -153,14 +153,18 @@ if ! hash go &> /dev/null; then
       ;;
   esac
   if [ "$GO_ARCH" != '' ]; then
-    GO_VERSION=`curl -fsSL https://api.github.com/repos/golang/go/git/matching-refs/tags/go1. | \
+    GO_CURRENT_VERSION=`go version 2>/dev/null | sed -E 's/^.*go([[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+).*$/\1/'`
+    GO_AVAILABLE_VERSION=`curl -fsSL https://api.github.com/repos/golang/go/git/matching-refs/tags/go1. | \
     jq --raw-output '.[-1].ref' | \
     sed 's/refs\/tags\/go//'`
-    curl -fsSL --output /tmp/go.tar.gz https://go.dev/dl/go$GO_VERSION.linux-$GO_ARCH.tar.gz
-    rm -rf $HOME/.go/
-    tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src
-    mv /tmp/go $HOME/.go
-    rm /tmp/go.tar.gz
+    if [ "$GO_AVAILABLE_VERSION" != "$GO_CURRENT_VERSION" ]; then
+      echo -e "\e[34mInstall golang.\e[0m"
+      curl -fsSL --output /tmp/go.tar.gz https://go.dev/dl/go$GO_AVAILABLE_VERSION.linux-$GO_ARCH.tar.gz
+      rm -rf $HOME/.go/
+      tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src
+      mv /tmp/go $HOME/.go
+      rm /tmp/go.tar.gz
+    fi
   fi
 fi
 

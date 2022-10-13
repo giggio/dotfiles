@@ -124,7 +124,7 @@ if ! [ -f $DOTNET_TOOLS/dotnet-symbol ] || ! [ -d $HOME/.dotnet/sos ]; then
 fi
 if ! [ -f $DOTNET_TOOLS/dotnet-try ]; then
   echo -e "\e[34mInstall .NET Try.\e[0m"
-  dotnet tool update --global dotnet-try
+  dotnet tool update --global microsoft.dotnet-try
 fi
 if ! [ -f $DOTNET_TOOLS/httprepl ]; then
   echo -e "\e[34mInstall .NET HttpRepl.\e[0m"
@@ -140,8 +140,21 @@ if ! [ -f $DOTNET_TOOLS/git-istage ]; then
 fi
 
 if $UPDATE; then
-  dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}' | grep -v --color=never ':.*-' | cut -f1 -d':' | xargs -0d\\n -n1 dotnet tool update --global
-  dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}' | grep --color=never ':.*-' | cut -f1 -d':' | xargs -0d\\n -n1 dotnet tool update --global --prerelease
+  for TOOL_NAME_AND_VERSION in `dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}'`; do
+    TOOL_NAME=`echo $TOOL_NAME_AND_VERSION | cut -f1 -d':'`
+    TOOL_VERSION=`echo $TOOL_NAME_AND_VERSION | cut -f2 -d':'`
+    PRERELEASE=''
+    if echo $TOOL_VERSION | grep --color=never '-' > /dev/null; then
+      PRERELEASE='--prerelease'
+    fi
+    AVAILABLE_TOOL_VERSION=`dotnet tool search $TOOL_NAME $PRERELEASE | tail -n+3 | awk '{printf $1 ":"; print $2}' | grep "^$TOOL_NAME:" | cut -f2 -d':'`
+    if [ "$TOOL_VERSION" != "$AVAILABLE_TOOL_VERSION" ]; then
+      echo -e "\e[34mUpdating NET Tool $TOOL_NAME to $AVAILABLE_TOOL_VERSION.\e[0m"
+      dotnet tool update --global $TOOL_NAME $PRERELEASE
+    elif $VERBOSE; then
+      echo -e "\e[34m.NET Tool $TOOL_NAME is version $AVAILABLE_TOOL_VERSION and does not need an update.\e[0m"
+    fi
+  done
 fi
 
 # node

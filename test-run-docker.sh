@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# build with `docker build -t df .`
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILESDIR=/home/user/.dotfiles
 docker run -ti --name df \

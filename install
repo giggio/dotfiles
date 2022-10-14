@@ -10,7 +10,7 @@ fi
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 ALL_ARGS=$@
-CLEAN=false
+SKIP_POST_INSTALL=false
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
@@ -31,6 +31,10 @@ while [[ $# -gt 0 ]]; do
     ;;
     --verbose)
     VERBOSE=true
+    shift
+    ;;
+    --skip-post-install|-s)
+    SKIP_POST_INSTALL=true
     shift
     ;;
     *)
@@ -73,9 +77,11 @@ if [ -f /.dockerenv ] || grep docker /proc/1/cgroup -qa 2> /dev/null; then
 else
   export RUNNING_IN_CONTAINER=false
 fi
-$BASEDIR/pre-install.sh $ALL_ARGS
+sudo -E $BASEDIR/pre-install.sh $ALL_ARGS
 $BASEDIR/install.sh
-$BASEDIR/post-install.sh $ALL_ARGS
+if ! $SKIP_POST_INSTALL; then
+  $BASEDIR/post-install.sh $ALL_ARGS
+fi
 
 popd > /dev/null
 

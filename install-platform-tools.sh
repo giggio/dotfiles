@@ -183,6 +183,8 @@ NPM_PKGS_INSTALLED=`echo "$NPM_PKGS_INSTALLED_NOT_ORGS"$'\n'"$NPM_PKGS_INSTALLED
 NPM_PKGS_TO_INSTALL=`echo "@angular/cli
 bash-language-server
 bats
+bats-assert
+bats-support
 bower
 cross-env
 diff-so-fancy

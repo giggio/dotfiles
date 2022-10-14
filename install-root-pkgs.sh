@@ -162,6 +162,7 @@ gzip
 htop
 httpie
 hub
+inotify-tools
 iperf3
 jq
 libdb-dev

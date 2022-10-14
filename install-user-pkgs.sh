@@ -3,6 +3,7 @@
 set -euo pipefail
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. $BASEDIR/_functions.sh
 
 if [ "$EUID" == "0" ]; then
   echo "Please do not run this script as root"
@@ -99,17 +100,37 @@ elif $UPDATE; then
 fi
 
 # tfenv
-if ! $HOME/bin/tfenv list &> /dev/null || $UPDATE; then
+if ! $HOME/bin/tfenv list &> /dev/null; then
+  echo -e "\e[34mInstall Tfenv.\e[0m"
   $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.12.
   $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.13.
   $BASEDIR/tools/tfenv/bin/tfenv install latest
   $BASEDIR/tools/tfenv/bin/tfenv use latest
+elif $UPDATE; then
+  LATEST_TFENV=`getLatestVersion $($BASEDIR/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-')`
+  LATEST_012=`getLatestVersion $($BASEDIR/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-' | grep --color=never '^0.12')`
+  LATEST_013=`getLatestVersion $($BASEDIR/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-' | grep --color=never '^0.13')`
+  CURRENT_012=`$BASEDIR/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never '^0.12'`
+  CURRENT_013=`$BASEDIR/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never '^0.13'`
+  echo -e "\e[34mUpdate Tfenv.\e[0m"
+  if [ "$LATEST_012" != "$CURRENT_012" ]; then
+    $BASEDIR/tools/tfenv/bin/tfenv uninstall $CURRENT_012
+    $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.12.
+  fi
+  if [ "$LATEST_013" != "$CURRENT_013" ]; then
+    $BASEDIR/tools/tfenv/bin/tfenv uninstall $CURRENT_013
+    $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.13.
+  fi
+  if ! $BASEDIR/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never -q $LATEST_TFENV; then
+    $BASEDIR/tools/tfenv/bin/tfenv install latest
+    $BASEDIR/tools/tfenv/bin/tfenv use latest
+  fi
 fi
 
 # krew
-if ! hash krew 2>/dev/null; then
+if ! hash kubectl-krew 2>/dev/null; then
   echo -e "\e[34mInstall krew.\e[0m"
-  wget https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_amd64.tar.gz -O /tmp/krew.tar.gz
+  curl -fsSL --output /tmp/krew.tar.gz https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_amd64.tar.gz
   rm -rf /tmp/krew/
   mkdir /tmp/krew/
   tar -xvzf /tmp/krew.tar.gz -C /tmp/krew/
@@ -117,6 +138,8 @@ if ! hash krew 2>/dev/null; then
   rm -rf /tmp/krew/
   rm /tmp/krew.tar.gz
 elif $UPDATE; then
+  VERSION=`githubLatestReleaseVersion kubernetes-sigs/krew`
+  CURRENT_VERSION=`kubectl krew version | grep GitTag | awk '{print $2}'`
   kubectl krew upgrade
 else
   if $VERBOSE; then
@@ -125,7 +148,7 @@ else
 fi
 
 # docker-show-context
-if ! hash docker-show-context 2>/dev/null || $UPDATE; then
+if ! hash docker-show-context 2>/dev/null; then
   echo -e "\e[34mInstall docker-show-context.\e[0m"
   curl -fsSL --output $HOME/bin/docker-show-context https://github.com/pwaller/docker-show-context/releases/latest/download/docker-show-context_linux_amd64
   chmod +x $HOME/bin/docker-show-context
@@ -164,6 +187,8 @@ if ! hash go &> /dev/null || $UPDATE; then
       tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src
       mv /tmp/go $HOME/.go
       rm /tmp/go.tar.gz
+    elif $VERBOSE; then
+      echo "Not installing/updating golang, it is already installed or up to date."
     fi
   fi
 fi
@@ -192,9 +217,7 @@ esac
 if ! hash docker-slim 2>/dev/null; then
   echo -e "\e[34mInstall docker-slim.\e[0m"
   DSLIMTAR=/tmp/docker-slim.tar.gz
-  DS_VERSION=`curl -fsSL https://api.github.com/repos/docker-slim/docker-slim/git/matching-refs/tags/1. | \
-  jq --raw-output '.[-1].ref' | \
-  sed 's/refs\/tags\///'`
+  DS_VERSION=`githubLatestTag docker-slim/docker-slim`
   curl -fsSL --output $DSLIMTAR https://downloads.dockerslim.com/releases/$DS_VERSION/dist_$ARCH.tar.gz
   mkdir /tmp/dslim/
   tar -xvzf $DSLIMTAR -C /tmp/dslim/
@@ -202,7 +225,14 @@ if ! hash docker-slim 2>/dev/null; then
   rm -rf /tmp/dslim/
   rm $DSLIMTAR
 elif $UPDATE; then
-  docker-slim update
+  DS_CURRENT_VERSION=`docker-slim --version | cut -d'|' -f3`
+  DS_AVAILABLE_VERSION=`githubLatestTag docker-slim/docker-slim`
+  if [ "$DS_AVAILABLE_VERSION" != "$DS_CURRENT_VERSION" ]; then
+    echo -e "\e[34mUpdate docker-slim.\e[0m"
+    docker-slim update
+  elif $VERBOSE; then
+    echo "Not updating docker-slim, already up to date."
+  fi
 else
   if $VERBOSE; then
     echo "Not installing docker-slim, it is already installed."

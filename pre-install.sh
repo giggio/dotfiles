@@ -63,6 +63,21 @@ else
   fi
 fi
 
+# setup pysemver
+if ! hash pysemver 2>/dev/null; then
+  PIP_PKGS_INSTALLED=`pip3 list --format columns | tail -n +3 | awk '{print $1}'`
+  PIP_PKGS_TO_INSTALL="semver"
+  PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKGS_INSTALLED")`
+  if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
+    echo -e "\e[34mInstall packages "$PIP_PKGS_NOT_INSTALLED" with Pip for root.\e[0m"
+    pip3 install $PIP_PKGS_NOT_INSTALLED
+  else
+    if $VERBOSE; then
+      echo "Not installing Pip packages for root, they are already installed."
+    fi
+  fi
+fi
+
 if $UPDATE; then
   echo -e "\e[34mUpgrading all packages.\e[0m"
   sudo apt-get upgrade -y

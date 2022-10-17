@@ -61,99 +61,72 @@ PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKG
 if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
   echo -e "\e[34mInstall packages "$PIP_PKGS_NOT_INSTALLED" with Pip.\e[0m"
   pip3 install --user $PIP_PKGS_NOT_INSTALLED
-elif $UPDATE; then
-  PIP_OUTDATED=`pip3 list --user --format columns --outdated | tail -n +3 | awk '{print $1}'`
-  if [ "$PIP_OUTDATED" != '' ]; then
-    echo -e "\e[34mUpdate packages "$PIP_OUTDATED" with Pip.\e[0m"
-    pip3 install --user --upgrade $PIP_OUTDATED
-  fi
 else
   if $VERBOSE; then
     echo -e "\e[34mNot installing Pip packages, they are already installed.\e[0m"
   fi
 fi
+if $UPDATE; then
+  PIP_OUTDATED=`pip3 list --user --format columns --outdated | tail -n +3 | awk '{print $1}'`
+  if [ "$PIP_OUTDATED" != '' ]; then
+    echo -e "\e[34mUpdate packages "$PIP_OUTDATED" with Pip.\e[0m"
+    pip3 install --user --upgrade $PIP_OUTDATED
+  else
+    echo -e "\e[34mNot updating Pip packages, they are already up to date.\e[0m"
+  fi
+fi
 
 # .NET Tools
-DOTNET_TOOLS=$HOME/.dotnet/tools
-if ! [ -f $DOTNET_TOOLS/pwsh ]; then
-  echo -e "\e[34mInstall PowerShell.\e[0m"
-  dotnet tool update --global PowerShell
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-dump ]; then
-  echo -e "\e[34mInstall .NET Dump.\e[0m"
-  dotnet tool update --global dotnet-dump
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-gcdump ]; then
-  echo -e "\e[34mInstall .NET GC Dump.\e[0m"
-  dotnet tool update --global dotnet-gcdump
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-counters ]; then
-  echo -e "\e[34mInstall .NET Counters.\e[0m"
-  dotnet tool update --global dotnet-counters
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-trace ]; then
-  echo -e "\e[34mInstall .NET Trace.\e[0m"
-  dotnet tool update --global dotnet-trace
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-script ]; then
-  echo -e "\e[34mInstall .NET Script.\e[0m"
-  dotnet tool update --global dotnet-script
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-suggest ]; then
-  echo -e "\e[34mInstall .NET Suggest.\e[0m"
-  dotnet tool update --global dotnet-suggest
-fi
-if ! [ -f $DOTNET_TOOLS/tye ]; then
+DOTNET_TOOLS_DIR=$HOME/.dotnet/tools
+declare -A DOTNET_TOOLS=(
+  ["dotnet-aspnet-codegenerator"]="dotnet-aspnet-codegenerator"
+  ["dotnet-counters"]="dotnet-counters"
+  ["dotnet-delice"]="dotnet-delice"
+  ["dotnet-dump"]="dotnet-dump"
+  ["dotnet-gcdump"]="dotnet-gcdump"
+  ["dotnet-interactive"]="Microsoft.dotnet-interactive"
+  ["dotnet-script"]="dotnet-script"
+  ["dotnet-sos"]="dotnet-sos"
+  ["dotnet-suggest"]="dotnet-suggest"
+  ["dotnet-trace"]="dotnet-trace"
+  ["dotnet-try"]="microsoft.dotnet-try"
+  ["git-istage"]="git-istage"
+  ["httprepl"]="Microsoft.dotnet-httprepl"
+  ["nukeeper"]="nukeeper"
+  ["pwsh"]="PowerShell"
+)
+for DOTNET_TOOL in "${!DOTNET_TOOLS[@]}"; do
+  if ! [ -f $DOTNET_TOOLS_DIR/$DOTNET_TOOL ]; then
+    echo -e "\e[34mInstall .NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]}).\e[0m"
+    dotnet tool update --global $DOTNET_TOOL
+  elif $VERBOSE; then
+    echo -e "\e[34m.NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]}) is already installed.\e[0m"
+  fi
+done
+if ! [ -f $DOTNET_TOOLS_DIR/tye ]; then
   echo -e "\e[34mInstall Tye.\e[0m"
   dotnet tool update --global Microsoft.Tye --prerelease
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-aspnet-codegenerator ]; then
-  echo -e "\e[34mInstall ASP.NET Code Generator.\e[0m"
-  dotnet tool update --global dotnet-aspnet-codegenerator
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-delice ]; then
-  echo -e "\e[34mInstall Delice.\e[0m"
-  dotnet tool update --global dotnet-delice
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-interactive ]; then
-  echo -e "\e[34mInstall .NET Interactive.\e[0m"
-  dotnet tool update --global Microsoft.dotnet-interactive
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-sos ]; then
-  echo -e "\e[34mInstall .NET SOS.\e[0m"
-  dotnet tool update --global dotnet-sos
-fi
-if ! [ -f $DOTNET_TOOLS/dotnet-symbol ] || ! [ -d $HOME/.dotnet/sos ]; then
+if ! [ -f $DOTNET_TOOLS_DIR/dotnet-symbol ] || ! [ -d $HOME/.dotnet/sos ]; then
   echo -e "\e[34mInstall .NET Symbol.\e[0m"
   dotnet tool update --global dotnet-symbol
   $HOME/.dotnet/tools/dotnet-sos install
 fi
-if ! [ -f $DOTNET_TOOLS/dotnet-try ]; then
-  echo -e "\e[34mInstall .NET Try.\e[0m"
-  dotnet tool update --global microsoft.dotnet-try
-fi
-if ! [ -f $DOTNET_TOOLS/httprepl ]; then
-  echo -e "\e[34mInstall .NET HttpRepl.\e[0m"
-  dotnet tool update --global Microsoft.dotnet-httprepl
-fi
-if ! [ -f $DOTNET_TOOLS/nukeeper ]; then
-  echo -e "\e[34mInstall .NET Nukeeper.\e[0m"
-  dotnet tool update --global nukeeper
-fi
-if ! [ -f $DOTNET_TOOLS/git-istage ]; then
-  echo -e "\e[34mInstall Git Istage.\e[0m"
-  dotnet tool update --global git-istage
-fi
 
 if $UPDATE; then
-  for TOOL_NAME_AND_VERSION in `dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}'`; do
-    TOOL_NAME=`echo $TOOL_NAME_AND_VERSION | cut -f1 -d':'`
-    TOOL_VERSION=`echo $TOOL_NAME_AND_VERSION | cut -f2 -d':'`
-    PRERELEASE=''
-    if echo $TOOL_VERSION | grep --color=never '-' > /dev/null; then
-      PRERELEASE='--prerelease'
+  updateDotnet () {
+    local TOOL_NAME=$1
+    local TOOL_VERSION=$2
+    if [ -v 3 ]; then
+      local PRERELEASE="$3"
+    else
+      local PRERELEASE=''
     fi
-    AVAILABLE_TOOL_VERSION=`dotnet tool search $TOOL_NAME $PRERELEASE | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
+    local AVAILABLE_TOOL_VERSION=`dotnet tool search $TOOL_NAME $PRERELEASE | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
+    if [ "$AVAILABLE_TOOL_VERSION" == '' ]; then
+      # search again if it fails, just to make sure
+      AVAILABLE_TOOL_VERSION=`dotnet tool search $TOOL_NAME $PRERELEASE | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
+    fi
     if [ "$AVAILABLE_TOOL_VERSION" == '' ]; then
       echo -e "\e[34mTool $TOOL_NAME seems to have changed names, installing the new one and uninstalling the old one.\e[0m"
       dotnet tool uninstall -g $TOOL_NAME
@@ -164,7 +137,17 @@ if $UPDATE; then
     elif $VERBOSE; then
       echo -e "\e[34m.NET Tool $TOOL_NAME is version $AVAILABLE_TOOL_VERSION and does not need an update.\e[0m"
     fi
+  }
+  for TOOL_NAME_AND_VERSION in `dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}'`; do
+    TOOL_NAME=`echo $TOOL_NAME_AND_VERSION | cut -f1 -d':'`
+    TOOL_VERSION=`echo $TOOL_NAME_AND_VERSION | cut -f2 -d':'`
+    PRERELEASE=''
+    if echo $TOOL_VERSION | grep --color=never '-' > /dev/null; then
+      PRERELEASE='--prerelease'
+    fi
+    updateDotnet $TOOL_NAME $TOOL_VERSION $PRERELEASE &
   done
+  wait
 fi
 
 # node
@@ -173,7 +156,7 @@ if ! hash node 2>/dev/null && ! [ -f $HOME/.n/bin/node ]; then
   echo -e "\e[34mInstall Install latest Node version through n.\e[0m"
   $BASEDIR/tools/n/bin/n install latest
 elif $UPDATE; then
-  LATEST_NODE=`n ls-remote | head -n 2 | tail -n 1`
+  LATEST_NODE=`$BASEDIR/tools/n/bin/n ls-remote | head -n 2 | tail -n 1`
   if ! echo "`$BASEDIR/tools/n/bin/n ls`" | grep --color=never $LATEST_NODE -q; then
     echo -e "\e[34mInstall Install latest Node version through n.\e[0m"
     $BASEDIR/tools/n/bin/n install latest
@@ -184,6 +167,9 @@ else
   fi
 fi
 export PATH="$N_PREFIX/bin:$PATH"
+if ! hash yarn 2>/dev/null; then
+  corepack enable # makes yarn available
+fi
 
 # npm tools
 export NG_CLI_ANALYTICS=ci
@@ -228,43 +214,40 @@ NPM_PKGS_NOT_INSTALLED=`comm -23 <(echo "$NPM_PKGS_TO_INSTALL") <(echo "$NPM_PKG
 if [ "$NPM_PKGS_NOT_INSTALLED" != "" ]; then
   echo -e "\e[34mInstall packages "$NPM_PKGS_NOT_INSTALLED" with npm.\e[0m"
   npm install -g $NPM_PKGS_NOT_INSTALLED
-else
-  if $UPDATE; then
-    if [ "`npm outdated -g`" != '' ]; then
-      echo -e "\e[34mUpdating npm packages.\e[0m"
-      npm update -g
-    else
-      if $VERBOSE; then
-        echo -e "\e[34mNot installing Npm packages, they are already up to date.\e[0m"
-      fi
-    fi
-  elif $VERBOSE; then
-    echo -e "\e[34mNot installing Npm packages, they are already installed.\e[0m"
-  fi
 fi
-corepack enable # makes yarn available
+if $UPDATE; then
+  if [ "`npm outdated -g`" != '' ]; then
+    echo -e "\e[34mUpdating npm packages.\e[0m"
+    npm update -g
+  else
+    if $VERBOSE; then
+      echo -e "\e[34mNot installing Npm packages, they are already up to date.\e[0m"
+    fi
+  fi
+elif $VERBOSE; then
+  echo -e "\e[34mNot installing Npm packages, they are already installed.\e[0m"
+fi
 
 # krew tools
 if [ -e $HOME/.krew/bin/kubectl-krew ]; then
   if ! [[ $PATH =~ "$HOME/.krew/bin" ]]; then
     export PATH=$PATH:$HOME/.krew/bin
   fi
-  if $UPDATE; then
-    echo -e "\e[34mUpdating Krew plugins.\e[0m"
-    kubectl krew upgrade
-  else
-    KREW_PLUGINS_INSTALLED=`kubectl krew list | tail -n+1 | awk '{print $1}' | sort -u`
-    KREW_PLUGINS_TO_INSTALL=`echo "get-all
+  KREW_PLUGINS_INSTALLED=`kubectl krew list | tail -n+1 | awk '{print $1}' | sort -u`
+  KREW_PLUGINS_TO_INSTALL=`echo "get-all
 resource-capacity
 sniff
 tail" | sort`
-    KREW_PLUGINS_NOT_INSTALLED=`comm -23 <(echo "$KREW_PLUGINS_TO_INSTALL") <(echo "$KREW_PLUGINS_INSTALLED")`
-    if [ "$KREW_PLUGINS_NOT_INSTALLED" != "" ]; then
-      echo -e "\e[34mInstalling Krew plugins: $KREW_PLUGINS_NOT_INSTALLED\e[0m"
-      kubectl krew install $KREW_PLUGINS_NOT_INSTALLED
-    elif $VERBOSE; then
-      echo -e "\e[34mNot installing krew plugins, they are already installed.\e[0m"
-    fi
+  KREW_PLUGINS_NOT_INSTALLED=`comm -23 <(echo "$KREW_PLUGINS_TO_INSTALL") <(echo "$KREW_PLUGINS_INSTALLED")`
+  if [ "$KREW_PLUGINS_NOT_INSTALLED" != "" ]; then
+    echo -e "\e[34mInstalling Krew plugins: $KREW_PLUGINS_NOT_INSTALLED\e[0m"
+    kubectl krew install $KREW_PLUGINS_NOT_INSTALLED
+  elif $VERBOSE; then
+    echo -e "\e[34mNot installing krew plugins, they are already installed.\e[0m"
+  fi
+  if $UPDATE; then
+    echo -e "\e[34mUpdating Krew plugins.\e[0m"
+    kubectl krew upgrade
   fi
 else
   echo -e "\e[34mKrew not available, skipping...\e[0m"
@@ -340,10 +323,21 @@ fi
 
 if [ -e $HOME/.go/bin/go ]; then
   export PATH=$PATH:$HOME/.go/bin
+  echo -e "\e[34mInstalling go packages.\e[0m"
+  declare -A GO_PKGS=(
+    ["gox"]="mitchellh/gox"
+    ["gup"]="nao1215/gup"
+  )
+  for PKG in "${!GO_PKGS[@]}"; do
+    if ! hash $PKG 2>/dev/null; then
+      echo -e "\e[34mInstall go package $PKG (github.com/${GO_PKGS[$PKG]}@latest).\e[0m"
+      go install github.com/${GO_PKGS[$PKG]}@latest
+    elif $VERBOSE; then
+      echo -e "\e[34mGo package $PKG (github.com/${GO_PKGS[$PKG]}@latest) is already installed.\e[0m"
+    fi
+  done
   if $UPDATE; then
-    echo -e "\e[34mInstalling/updating go packages.\e[0m"
-  fi
-  if ! hash gox 2>/dev/null || $UPDATE; then
-    go install github.com/mitchellh/gox@latest
+    echo -e "\e[34mUpdating go packages.\e[0m"
+    gup update
   fi
 fi

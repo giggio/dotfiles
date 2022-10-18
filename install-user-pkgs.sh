@@ -1,24 +1,20 @@
 #!/bin/bash
 
-set -euo pipefail
-
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_functions.sh
+. $BASEDIR/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   echo "Please do not run this script as root"
   exit 2
 fi
 
-ALL_ARGS=$@
 GH_USERNAME_PASSWORD=''
 CURL_OPTION_GH_USERNAME_PASSWORD=''
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
-  key="$1"
-  case $key in
+  case "$1" in
     --gh)
     GH_USERNAME_PASSWORD=$2
     CURL_OPTION_GH_USERNAME_PASSWORD=" --user $2 "
@@ -42,6 +38,7 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
   cat <<EOF
@@ -61,7 +58,8 @@ fi
 
 if $VERBOSE; then
   echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
-  echo Update is $UPDATE
+  echo -e "\e[32m  Update is $UPDATE\e[0m"
+  echo -e "\e[32m  Github username and password is $GH_USERNAME_PASSWORD\e[0m"
 fi
 
 # dvm - deno

@@ -1,21 +1,18 @@
 #!/bin/bash
 
-set -euo pipefail
-
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. $BASEDIR/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   echo "Please do not run this script as root"
   exit 2
 fi
 
-ALL_ARGS=$@
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
-  key="$1"
-  case $key in
+  case "$1" in
     --update|-u)
     UPDATE=true
     shift
@@ -33,6 +30,7 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
   cat <<EOF
@@ -51,7 +49,7 @@ fi
 
 if $VERBOSE; then
   echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
-  echo Update is $UPDATE
+  echo -e "\e[32m  Update is $UPDATE\e[0m"
 fi
 
 PIP_PKGS_INSTALLED=`pip3 list --user --format columns | tail -n +3 | awk '{print $1}'`
@@ -115,6 +113,11 @@ fi
 
 if $UPDATE; then
   updateDotnet () {
+    if [ $# -lt 2 ]; then
+      echo "'updateDotnet' needs at least 2 arguments."
+      dumpStack
+      return
+    fi
     local TOOL_NAME=$1
     local TOOL_VERSION=$2
     if [ -v 3 ]; then

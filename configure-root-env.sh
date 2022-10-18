@@ -1,18 +1,17 @@
 #!/bin/bash
 
-set -euo pipefail
+BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. $BASEDIR/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   echo "Please run this script as root"
   exit 2
 fi
 
-ALL_ARGS=$@
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
-  key="$1"
-  case $key in
+  case "$1" in
     --help|-h)
     SHOW_HELP=true
     break
@@ -26,6 +25,7 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
   cat <<EOF

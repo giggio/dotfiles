@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. $BASEDIR/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   echo "Please run this script as root"
   exit 2
 fi
 
-ALL_ARGS=$@
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
-  key="$1"
-  case $key in
+  case "$1" in
     --update|-u)
     UPDATE=true
     shift
@@ -31,6 +30,7 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
   cat <<EOF
@@ -49,7 +49,7 @@ fi
 
 if $VERBOSE; then
   echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
-  echo Update is $UPDATE
+  echo -e "\e[32m  Update is $UPDATE\e[0m"
 fi
 
 if ! hash python2.7 2>/dev/null || ! hash python3 2>/dev/null; then

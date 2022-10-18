@@ -1,16 +1,13 @@
 #!/bin/bash
 
-set -euo pipefail
-
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_functions.sh
+. $BASEDIR/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   echo "Please run this script as root"
   exit 2
 fi
 
-ALL_ARGS=$@
 GH_USERNAME_PASSWORD=''
 CURL_OPTION_GH_USERNAME_PASSWORD=''
 UPDATE=false
@@ -18,8 +15,7 @@ CLEAN=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
-  key="$1"
-  case $key in
+  case "$1" in
     --gh)
     GH_USERNAME_PASSWORD=$2
     CURL_OPTION_GH_USERNAME_PASSWORD=" --user $2 "
@@ -47,6 +43,7 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
   cat <<EOF
@@ -67,7 +64,9 @@ fi
 
 if $VERBOSE; then
   echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
-  echo Update is $UPDATE
+  echo -e "\e[32m  Update is $UPDATE\e[0m"
+  echo -e "\e[32m  Github username and password is $GH_USERNAME_PASSWORD\e[0m"
+  echo -e "\e[32m  Clean is $CLEAN\e[0m"
 fi
 
 WSL=false
@@ -258,7 +257,6 @@ fi
 # microsoft repos
 if ! [ -f /etc/apt/trusted.gpg.d/microsoft-keyring.gpg ] || ! [ -f /etc/apt/sources.list.d/microsoft.list ]; then
   echo -e "\e[34mAdd Microsoft keyring and list file.\e[0m"
-  # addKey https://packages.microsoft.com/keys/microsoft.asc microsoft
   addSourceListAndKey https://packages.microsoft.com/keys/microsoft.asc "https://packages.microsoft.com/ubuntu/22.04/prod `lsb_release -cs` main" microsoft
 elif $VERBOSE; then
   echo "Not intalling the Microsoft repository, it is already present."
@@ -381,9 +379,11 @@ fi
 
 # helm 2 and 3
 installHelm3 () {
-  curl -fsSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-  mv /usr/local/bin/helm /usr/local/bin/helm3
-  update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm3 2
+  curl -fsSL --output /tmp/get-helm-3 https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+  sed -i 's/${BINARY_NAME:="helm"}/${BINARY_NAME:="helm3"}/' /tmp/get-helm-3
+  chmod +x /tmp/get-helm-3
+  /tmp/get-helm-3
+  rm /tmp/get-helm-3
 }
 if ! hash helm 2>/dev/null; then
   if ! hash helm3 2>/dev/null; then
@@ -417,8 +417,6 @@ elif $UPDATE; then
   if [ `helm3 version | sed -E 's/.*\{Version:"v([0-9]+\.[0-9]+\.[0-9]+).*/\1/'` != "$HELM3_LATEST_VERSION" ]; then
     echo -e "\e[34mUpdate Helm 3.\e[0m"
     installHelm3
-    update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm2 1
-    update-alternatives --set helm /usr/local/bin/helm3
   elif $VERBOSE; then
     echo "Not updating helm 3, it is already up to date."
   fi

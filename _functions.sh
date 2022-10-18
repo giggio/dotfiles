@@ -3,10 +3,10 @@ if ! (return 0 2>/dev/null); then
   exit 1
 fi
 
+FUNCTIONS_ARGS=("$@")
 CURL=curl
 while [[ $# -gt 0 ]]; do
-  key="$1"
-  case $key in
+  case "$1" in
     --curl)
     CURL=$2
     shift
@@ -17,7 +17,8 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
-
+set -- "${FUNCTIONS_ARGS[@]}"
+unset FUNCTIONS_ARGS
 
 getLatestVersion() {
   local MAX=0.0.0
@@ -179,4 +180,24 @@ addSourcesList () {
   elif $VERBOSE; then
     echo "Not creating file '/etc/apt/sources.list.d/$LIST_FILE.list', it already exists and has the correct value."
   fi
+}
+
+dumpStack () {
+    local i=0
+    local line_no
+    local function_name
+    local file_name
+    while caller $i; do
+      ((i++))
+    done | while read line_no function_name file_name; do
+      echo -e "\t$file_name:$line_no\t$function_name"
+    done >&2
+}
+
+showVars() {
+  ( set -o posix ; set )
+}
+
+getOptions () {
+  PARSED_ARGS=`getopt -o cuh --long gh:,clean,update,help,verbose,skip-post-install -n $(readlink -f $0) -- "$@"`
 }

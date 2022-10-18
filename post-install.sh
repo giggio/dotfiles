@@ -1,21 +1,18 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. $BASEDIR/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   echo "Please do not run as root"
   exit 2
 fi
 
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-ALL_ARGS=$@
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
-  key="$1"
-  case $key in
+  case "$1" in
     --update|-u)
     UPDATE=true
     shift
@@ -33,6 +30,7 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
   cat <<EOF
@@ -51,12 +49,12 @@ fi
 
 if $VERBOSE; then
   echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
-  echo Update is $UPDATE
+  echo -e "\e[32m  Update is $UPDATE\e[0m"
 fi
 
-sudo -E $BASEDIR/install-root-pkgs.sh $ALL_ARGS
-$BASEDIR/install-user-pkgs.sh $ALL_ARGS
-$BASEDIR/install-platform-tools.sh $ALL_ARGS
-sudo -E $BASEDIR/configure-root-env.sh $ALL_ARGS
-$BASEDIR/configure-user-env.sh $ALL_ARGS
+sudo -E $BASEDIR/install-root-pkgs.sh "$@"
+$BASEDIR/install-user-pkgs.sh "$@"
+$BASEDIR/install-platform-tools.sh "$@"
+sudo -E $BASEDIR/configure-root-env.sh "$@"
+$BASEDIR/configure-user-env.sh "$@"
 

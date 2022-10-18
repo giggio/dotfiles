@@ -203,15 +203,15 @@ getOptions () {
 }
 
 writeBlue () {
-  echo  -e "\e[34m$@\e[0m"
+  echo  -e "\e[34m`date +'%Y-%m-%dT%H:%M:%S'`: $@\e[0m"
 }
 
 writeGreen () {
-  echo  -e "\e[32m$@\e[0m"
+  echo  -e "\e[32m`date +'%Y-%m-%dT%H:%M:%S'`: $@\e[0m"
 }
 
 writeStdErrRed () {
-  >&2 echo  -e "\e[31m$@\e[0m"
+  >&2 echo  -e "\e[31m`date +'%Y-%m-%dT%H:%M:%S'`: $@\e[0m"
 }
 
 die () {

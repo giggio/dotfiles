@@ -410,6 +410,7 @@ if ! hash helm 2>/dev/null; then
     writeBlue "Not intalling Helm 2, it is already installed."
   fi
   update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm2 1
+  update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm3 2
   update-alternatives --set helm /usr/local/bin/helm3
 elif $UPDATE; then
   HELM3_LATEST_VERSION=`githubLatestReleaseVersion helm/helm`

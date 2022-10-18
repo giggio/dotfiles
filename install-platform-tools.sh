@@ -4,8 +4,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . $BASEDIR/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
-  echo "Please do not run this script as root"
-  exit 2
+  die "Please do not run this script as root"
 fi
 
 UPDATE=false
@@ -48,8 +47,8 @@ EOF
 fi
 
 if $VERBOSE; then
-  echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
-  echo -e "\e[32m  Update is $UPDATE\e[0m"
+  writeGreen "Running `basename "$0"` $ALL_ARGS
+  Update is $UPDATE"
 fi
 
 PIP_PKGS_INSTALLED=`pip3 list --user --format columns | tail -n +3 | awk '{print $1}'`
@@ -57,20 +56,20 @@ PIP_PKGS_TO_INSTALL="powerline-status
 xlsx2csv"
 PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKGS_INSTALLED")`
 if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
-  echo -e "\e[34mInstall packages "$PIP_PKGS_NOT_INSTALLED" with Pip.\e[0m"
+  writeBlue "Install packages "$PIP_PKGS_NOT_INSTALLED" with Pip."
   pip3 install --user $PIP_PKGS_NOT_INSTALLED
 else
   if $VERBOSE; then
-    echo -e "\e[34mNot installing Pip packages, they are already installed.\e[0m"
+    writeBlue "Not installing Pip packages, they are already installed."
   fi
 fi
 if $UPDATE; then
   PIP_OUTDATED=`pip3 list --user --format columns --outdated | tail -n +3 | awk '{print $1}'`
   if [ "$PIP_OUTDATED" != '' ]; then
-    echo -e "\e[34mUpdate packages "$PIP_OUTDATED" with Pip.\e[0m"
+    writeBlue "Update packages "$PIP_OUTDATED" with Pip."
     pip3 install --user --upgrade $PIP_OUTDATED
   else
-    echo -e "\e[34mNot updating Pip packages, they are already up to date.\e[0m"
+    writeBlue "Not updating Pip packages, they are already up to date."
   fi
 fi
 
@@ -95,18 +94,18 @@ declare -A DOTNET_TOOLS=(
 )
 for DOTNET_TOOL in "${!DOTNET_TOOLS[@]}"; do
   if ! [ -f $DOTNET_TOOLS_DIR/$DOTNET_TOOL ]; then
-    echo -e "\e[34mInstall .NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]}).\e[0m"
+    writeBlue "Install .NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]})."
     dotnet tool update --global $DOTNET_TOOL
   elif $VERBOSE; then
-    echo -e "\e[34m.NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]}) is already installed.\e[0m"
+    writeBlue ".NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]}) is already installed."
   fi
 done
 if ! [ -f $DOTNET_TOOLS_DIR/tye ]; then
-  echo -e "\e[34mInstall Tye.\e[0m"
+  writeBlue "Install Tye."
   dotnet tool update --global Microsoft.Tye --prerelease
 fi
 if ! [ -f $DOTNET_TOOLS_DIR/dotnet-symbol ] || ! [ -d $HOME/.dotnet/sos ]; then
-  echo -e "\e[34mInstall .NET Symbol.\e[0m"
+  writeBlue "Install .NET Symbol."
   dotnet tool update --global dotnet-symbol
   $HOME/.dotnet/tools/dotnet-sos install
 fi
@@ -114,7 +113,7 @@ fi
 if $UPDATE; then
   updateDotnet () {
     if [ $# -lt 2 ]; then
-      echo "'updateDotnet' needs at least 2 arguments."
+      writeStdErrRed "'updateDotnet' needs at least 2 arguments."
       dumpStack
       return
     fi
@@ -131,14 +130,14 @@ if $UPDATE; then
       AVAILABLE_TOOL_VERSION=`dotnet tool search $TOOL_NAME $PRERELEASE | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
     fi
     if [ "$AVAILABLE_TOOL_VERSION" == '' ]; then
-      echo -e "\e[34mTool $TOOL_NAME seems to have changed names, installing the new one and uninstalling the old one.\e[0m"
+      writeBlue "Tool $TOOL_NAME seems to have changed names, installing the new one and uninstalling the old one."
       dotnet tool uninstall -g $TOOL_NAME
       dotnet tool update --global `dotnet tool search $TOOL_NAME | tail -n+3 | awk '{print $1}'`
     elif [ "$TOOL_VERSION" != "$AVAILABLE_TOOL_VERSION" ]; then
-      echo -e "\e[34mUpdating NET Tool $TOOL_NAME to $AVAILABLE_TOOL_VERSION.\e[0m"
+      writeBlue "Updating NET Tool $TOOL_NAME to $AVAILABLE_TOOL_VERSION."
       dotnet tool update --global $TOOL_NAME $PRERELEASE
     elif $VERBOSE; then
-      echo -e "\e[34m.NET Tool $TOOL_NAME is version $AVAILABLE_TOOL_VERSION and does not need an update.\e[0m"
+      writeBlue ".NET Tool $TOOL_NAME is version $AVAILABLE_TOOL_VERSION and does not need an update."
     fi
   }
   for TOOL_NAME_AND_VERSION in `dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}'`; do
@@ -156,17 +155,17 @@ fi
 # node
 export N_PREFIX=$HOME/.n
 if ! hash node 2>/dev/null && ! [ -f $HOME/.n/bin/node ]; then
-  echo -e "\e[34mInstall Install latest Node version through n.\e[0m"
+  writeBlue "Install Install latest Node version through n."
   $BASEDIR/tools/n/bin/n install latest
 elif $UPDATE; then
   LATEST_NODE=`$BASEDIR/tools/n/bin/n ls-remote | head -n 2 | tail -n 1`
   if ! echo "`$BASEDIR/tools/n/bin/n ls`" | grep --color=never $LATEST_NODE -q; then
-    echo -e "\e[34mInstall Install latest Node version through n.\e[0m"
+    writeBlue "Install Install latest Node version through n."
     $BASEDIR/tools/n/bin/n install latest
   fi
 else
   if $VERBOSE; then
-    echo -e "\e[34mNot installing Node.js version.\e[0m"
+    writeBlue "Not installing Node.js version."
   fi
 fi
 export PATH="$N_PREFIX/bin:$PATH"
@@ -215,20 +214,20 @@ vtop
 yaml-cli" | sort`
 NPM_PKGS_NOT_INSTALLED=`comm -23 <(echo "$NPM_PKGS_TO_INSTALL") <(echo "$NPM_PKGS_INSTALLED")`
 if [ "$NPM_PKGS_NOT_INSTALLED" != "" ]; then
-  echo -e "\e[34mInstall packages "$NPM_PKGS_NOT_INSTALLED" with npm.\e[0m"
+  writeBlue "Install packages "$NPM_PKGS_NOT_INSTALLED" with npm."
   npm install -g $NPM_PKGS_NOT_INSTALLED
 fi
 if $UPDATE; then
   if [ "`npm outdated -g`" != '' ]; then
-    echo -e "\e[34mUpdating npm packages.\e[0m"
+    writeBlue "Updating npm packages."
     npm update -g
   else
     if $VERBOSE; then
-      echo -e "\e[34mNot installing Npm packages, they are already up to date.\e[0m"
+      writeBlue "Not installing Npm packages, they are already up to date."
     fi
   fi
 elif $VERBOSE; then
-  echo -e "\e[34mNot installing Npm packages, they are already installed.\e[0m"
+  writeBlue "Not installing Npm packages, they are already installed."
 fi
 
 # krew tools
@@ -243,17 +242,17 @@ sniff
 tail" | sort`
   KREW_PLUGINS_NOT_INSTALLED=`comm -23 <(echo "$KREW_PLUGINS_TO_INSTALL") <(echo "$KREW_PLUGINS_INSTALLED")`
   if [ "$KREW_PLUGINS_NOT_INSTALLED" != "" ]; then
-    echo -e "\e[34mInstalling Krew plugins: $KREW_PLUGINS_NOT_INSTALLED\e[0m"
+    writeBlue "Installing Krew plugins: $KREW_PLUGINS_NOT_INSTALLED"
     kubectl krew install $KREW_PLUGINS_NOT_INSTALLED
   elif $VERBOSE; then
-    echo -e "\e[34mNot installing krew plugins, they are already installed.\e[0m"
+    writeBlue "Not installing krew plugins, they are already installed."
   fi
   if $UPDATE; then
-    echo -e "\e[34mUpdating Krew plugins.\e[0m"
+    writeBlue "Updating Krew plugins."
     kubectl krew upgrade
   fi
 else
-  echo -e "\e[34mKrew not available, skipping...\e[0m"
+  writeBlue "Krew not available, skipping..."
 fi
 
 # gem/ruby
@@ -265,15 +264,15 @@ if [ -e $HOME/.rbenv/bin/rbenv ]; then
   GEMS_TO_INSTALL="lolcat"
   GEMS_NOT_INSTALLED=`comm -23 <(echo "$GEMS_TO_INSTALL") <(echo "$GEMS_INSTALLED")`
   if [ "$GEMS_NOT_INSTALLED" != "" ]; then
-    echo -e "\e[34mInstall gems "$GEMS_NOT_INSTALLED".\e[0m"
+    writeBlue "Install gems "$GEMS_NOT_INSTALLED"."
     gem install $GEMS_NOT_INSTALLED
   else
     if $VERBOSE; then
-      echo -e "\e[34mNot installing gems, they are already installed.\e[0m"
+      writeBlue "Not installing gems, they are already installed."
     fi
   fi
 else
-  echo -e "\e[34mRbenv not available, skipping...\e[0m"
+  writeBlue "Rbenv not available, skipping..."
 fi
 
 if [ -f $HOME/.cargo/env ]; then
@@ -302,45 +301,45 @@ tokei"
   CRATES_TO_INSTALL_NO_LOCK="bandwhich" # see https://github.com/imsnif/bandwhich/issues/258
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED" != "" ]; then
-    echo -e "\e[34mInstall crates $CRATES_NOT_INSTALLED.\e[0m"
+    writeBlue "Install crates $CRATES_NOT_INSTALLED."
     cargo install --locked $CRATES_NOT_INSTALLED
   else
     if $VERBOSE; then
-      echo -e "\e[34mNot installing crates, they are already installed.\e[0m"
+      writeBlue "Not installing crates, they are already installed."
     fi
   fi
   CRATES_NOT_INSTALLED_NO_LOCK=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL_NO_LOCK")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED_NO_LOCK" != "" ]; then
-    echo -e "\e[34mInstall crates $CRATES_NOT_INSTALLED_NO_LOCK without --locked.\e[0m"
+    writeBlue "Install crates $CRATES_NOT_INSTALLED_NO_LOCK without --locked."
     cargo install $CRATES_NOT_INSTALLED_NO_LOCK
   else
     if $VERBOSE; then
-      echo -e "\e[34mNot installing crates without --locked, they are already installed.\e[0m"
+      writeBlue "Not installing crates without --locked, they are already installed."
     fi
   fi
   if $UPDATE; then
-    echo -e "\e[34mUpdating crates.\e[0m"
+    writeBlue "Updating crates."
     cargo install-update -a
   fi
 fi
 
 if [ -e $HOME/.go/bin/go ]; then
   export PATH=$PATH:$HOME/.go/bin
-  echo -e "\e[34mInstalling go packages.\e[0m"
+  writeBlue "Installing go packages."
   declare -A GO_PKGS=(
     ["gox"]="mitchellh/gox"
     ["gup"]="nao1215/gup"
   )
   for PKG in "${!GO_PKGS[@]}"; do
     if ! hash $PKG 2>/dev/null; then
-      echo -e "\e[34mInstall go package $PKG (github.com/${GO_PKGS[$PKG]}@latest).\e[0m"
+      writeBlue "Install go package $PKG (github.com/${GO_PKGS[$PKG]}@latest)."
       go install github.com/${GO_PKGS[$PKG]}@latest
     elif $VERBOSE; then
-      echo -e "\e[34mGo package $PKG (github.com/${GO_PKGS[$PKG]}@latest) is already installed.\e[0m"
+      writeBlue "Go package $PKG (github.com/${GO_PKGS[$PKG]}@latest) is already installed."
     fi
   done
   if $UPDATE; then
-    echo -e "\e[34mUpdating go packages.\e[0m"
+    writeBlue "Updating go packages."
     gup update
   fi
 fi

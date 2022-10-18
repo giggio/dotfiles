@@ -4,8 +4,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . $BASEDIR/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
-  echo "Please run this script as root"
-  exit 2
+  die "Please run this script as root"
 fi
 
 SHOW_HELP=false
@@ -43,26 +42,26 @@ EOF
 fi
 
 if $VERBOSE; then
-  echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
+  writeGreen "Running `basename "$0"` $ALL_ARGS"
 fi
 
 if ! [[ `locale -a` =~ 'en_US.utf8' ]]; then
-  echo -e "\e[34mGenerate location.\e[0m"
+  writeBlue "Generate location."
   locale-gen en_US.UTF-8
 else
   if $VERBOSE; then
-    echo "Not generating location, it is already generated."
+    writeBlue "Not generating location, it is already generated."
   fi
 fi
 
 if ! [ -f /etc/sudoers.d/10-cron ]; then
-  echo -e "\e[34mAllow cron to start without su.\e[0m"
+  writeBlue "Allow cron to start without su."
   echo "#allow cron to start without su
 %sudo ALL=NOPASSWD: /etc/init.d/cron start" | tee /etc/sudoers.d/10-cron
   chmod 440 /etc/sudoers.d/10-cron
 else
   if $VERBOSE; then
-    echo "Not generating sudoers file for Cron, it is already there."
+    writeBlue "Not generating sudoers file for Cron, it is already there."
   fi
 fi
 
@@ -73,7 +72,7 @@ function setAlternative() {
     update-alternatives --set $NAME $EXEC_PATH
   else
     if $VERBOSE; then
-      echo "Not updating alternative to $NAME, it is already set."
+      writeBlue "Not updating alternative to $NAME, it is already set."
     fi
   fi
 }
@@ -83,7 +82,7 @@ if $WSL && ! $RUNNING_IN_CONTAINER; then
     setAlternative x-www-browser wslview
   else
     if $VERBOSE; then
-      echo "Not setting browser to wslview, wslview is not available."
+      writeBlue "Not setting browser to wslview, wslview is not available."
     fi
   fi
 fi

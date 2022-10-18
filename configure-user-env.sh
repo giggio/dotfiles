@@ -4,8 +4,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . $BASEDIR/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
-  echo "Please do not run this script as root"
-  exit 2
+  die "Please do not run this script as root"
 fi
 
 SHOW_HELP=false
@@ -42,6 +41,6 @@ EOF
 fi
 
 if $VERBOSE; then
-  echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
+  writeGreen "Running `basename "$0"` $ALL_ARGS"
 fi
 

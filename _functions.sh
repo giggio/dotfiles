@@ -1,5 +1,5 @@
 if ! (return 0 2>/dev/null); then
-  >&2 echo "This script should be sourced."
+  >&2 echo  -e "\e[31mThis script should be sourced.\e[0m"
   exit 1
 fi
 
@@ -150,11 +150,11 @@ addKey () {
   KEYRING_FILE=/etc/apt/trusted.gpg.d/$KEYRING_FILE
   curl -fsSL --output $KEYRING_TMP_FILE $KEYRING_URL
   if [ `file --mime-type -b $KEYRING_TMP_FILE` == 'application/pgp-keys' ]; then
-    echo "Converting $KEYRING_TMP_FILE to $KEYRING_FILE with gpg --dearmor"
+    writeBlue "Converting $KEYRING_TMP_FILE to $KEYRING_FILE with gpg --dearmor"
     cat $KEYRING_TMP_FILE | gpg --dearmor > $KEYRING_FILE
     rm $KEYRING_TMP_FILE
   else
-    echo "Saving gpg key to $KEYRING_FILE"
+    writeBlue "Saving gpg key to $KEYRING_FILE"
     mv $KEYRING_TMP_FILE $KEYRING_FILE
   fi
 }
@@ -174,11 +174,11 @@ addSourcesList () {
   KEYRING_FILE=/etc/apt/trusted.gpg.d/$KEYRING_FILE
   LIST_FILE_CONTENTS="deb [arch=`dpkg --print-architecture` signed-by=$KEYRING_FILE] $LIST_INFO"
   if [ ! -f "/etc/apt/sources.list.d/$LIST_FILE.list" ] || [ "`cat /etc/apt/sources.list.d/$LIST_FILE.list`" != "$LIST_FILE_CONTENTS" ]; then
-    echo "Creating or updating file '/etc/apt/sources.list.d/$LIST_FILE.list' with value: '$LIST_FILE_CONTENTS'"
+    writeBlue "Creating or updating file '/etc/apt/sources.list.d/$LIST_FILE.list' with value: '$LIST_FILE_CONTENTS'"
     echo "$LIST_FILE_CONTENTS" > /etc/apt/sources.list.d/$LIST_FILE.list
     apt-get update
   elif $VERBOSE; then
-    echo "Not creating file '/etc/apt/sources.list.d/$LIST_FILE.list', it already exists and has the correct value."
+    writeBlue "Not creating file '/etc/apt/sources.list.d/$LIST_FILE.list', it already exists and has the correct value."
   fi
 }
 
@@ -200,4 +200,21 @@ showVars() {
 
 getOptions () {
   PARSED_ARGS=`getopt -o cuh --long gh:,clean,update,help,verbose,skip-post-install -n $(readlink -f $0) -- "$@"`
+}
+
+writeBlue () {
+  echo  -e "\e[34m$@\e[0m"
+}
+
+writeGreen () {
+  echo  -e "\e[32m$@\e[0m"
+}
+
+writeStdErrRed () {
+  >&2 echo  -e "\e[31m$@\e[0m"
+}
+
+die () {
+  writeStdErrRed "$@"
+  exit 1
 }

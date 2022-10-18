@@ -4,8 +4,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . $BASEDIR/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
-  echo "Please run this script as root"
-  exit 2
+  die "Please do not run this script as root"
 fi
 
 GH_USERNAME_PASSWORD=''
@@ -63,10 +62,10 @@ EOF
 fi
 
 if $VERBOSE; then
-  echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
-  echo -e "\e[32m  Update is $UPDATE\e[0m"
-  echo -e "\e[32m  Github username and password is $GH_USERNAME_PASSWORD\e[0m"
-  echo -e "\e[32m  Clean is $CLEAN\e[0m"
+  writeGreen "Running `basename "$0"` $ALL_ARGS
+  Update is $UPDATE
+  Github username and password is $GH_USERNAME_PASSWORD
+  Clean is $CLEAN"
 fi
 
 WSL=false
@@ -77,10 +76,10 @@ fi
 REPOS=`apt-cache policy | grep http | awk '{print $2"/dists/"$3}' | sort -u`
 printf -v REPOS $"$REPOS\n"
 if [ "$REPOS" == "" ] || $UPDATE; then
-  echo -e "\e[34mUpdate APT metadata.\e[0m"
+  writeBlue "Update APT metadata."
   apt-get update
 elif $VERBOSE; then
-  echo "Not running apt-get update, repositories are already in place."
+  writeBlue "Not running apt-get update, repositories are already in place."
 fi
 
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
@@ -95,23 +94,23 @@ silversearcher-ag
 software-properties-common" | sort`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
-  echo -e "\e[34mInstall base packages with APT: $APT_PKGS_NOT_INSTALLED\e[0m"
+  writeBlue "Install base packages with APT: $APT_PKGS_NOT_INSTALLED"
   apt-get install -y $APT_PKGS_NOT_INSTALLED
 elif $VERBOSE; then
-  echo "Not installing any of the base packages, they are already installed."
+  writeBlue "Not installing any of the base packages, they are already installed."
 fi
 
 if ! [[ "$REPOS" =~ 'git-core/ppa' ]]; then
-  echo -e "\e[34mAdd git PPA.\e[0m"
+  writeBlue "Add git PPA."
   add-apt-repository --yes ppa:git-core/ppa
 elif $VERBOSE; then
-  echo "Not adding Git PPA, it is already present."
+  writeBlue "Not adding Git PPA, it is already present."
 fi
 if ! [[ "$REPOS" =~ ubuntu.com/ubuntu/dists/.*/universe[[:space:]] ]]; then
-  echo -e "\e[34mEnable the Universe repository.\e[0m"
+  writeBlue "Enable the Universe repository."
   add-apt-repository universe --yes
 elif $VERBOSE; then
-  echo "Not adding the Universe repository, it is already present."
+  writeBlue "Not adding the Universe repository, it is already present."
 fi
 
 # apt packages
@@ -165,10 +164,10 @@ zlib1g-dev" | sort`
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
-  echo -e "\e[34mRun custom installations with APT: "$APT_PKGS_NOT_INSTALLED" \e[0m"
+  writeBlue "Run custom installations with APT: "$APT_PKGS_NOT_INSTALLED" "
   apt-get install -y $APT_PKGS_NOT_INSTALLED
 elif $VERBOSE; then
-  echo "Not installing packages with APT, they are all already installed."
+  writeBlue "Not installing packages with APT, they are all already installed."
 fi
 
 # build Vim 9 if needed
@@ -181,7 +180,7 @@ installVim () {
   vim --version
 }
 if dpkg --compare-versions "$VIM_VERSION" lt 9.0; then
-  echo -e "\e[34mInstall Vim from source.\e[0m"
+  writeBlue "Install Vim from source."
   if [ -d $HOME/p/vim ];then rm -rf $HOME/p/vim; fi
   mkdir -p $HOME/p/
   git clone https://github.com/vim/vim $HOME/p/vim
@@ -193,7 +192,7 @@ elif $UPDATE; then
     mkdir -p $HOME/p/
     git clone https://github.com/vim/vim $HOME/p/vim
   fi
-  echo -e "\e[34mUpdate Vim from source.\e[0m"
+  writeBlue "Update Vim from source."
   pushd $HOME/p/vim > /dev/null
   git clean -fd > /dev/null
   git checkout -- :/ > /dev/null
@@ -203,18 +202,18 @@ elif $UPDATE; then
   git reset --hard origin/master > /dev/null
   git fetch origin master > /dev/null
   if `checkIfNeedsGitPull`; then
-    echo -e "\e[34mVim needs update.\e[0m"
+    writeBlue "Vim needs update."
     git pull origin master
     installVim
   elif $VERBOSE; then
-    echo "Not updating Vim, it is already up to date."
+    writeBlue "Not updating Vim, it is already up to date."
   fi
   popd > /dev/null
 fi
 
 # libssl1.1 (not available in Ubuntu 22.04)
 if ! dpkg-query --no-pager --showformat='${Package}\n' --show 'libssl1.1' > /dev/null; then
-  echo -e "\e[34mInstall libssl1.1.\e[0m"
+  writeBlue "Install libssl1.1."
   curl -fsSL --output /tmp/libssl1.1.deb http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
   dpkg -i /tmp/libssl1.1.deb
   rm /tmp/libssl1.1.deb
@@ -222,18 +221,18 @@ fi
 
 # google chrome
 if ! hash google-chrome 2>/dev/null; then
-  echo -e "\e[34mInstall Google Chrome.\e[0m"
+  writeBlue "Install Google Chrome."
   addSourceListAndKey https://dl-ssl.google.com/linux/linux_signing_key.pub 'http://dl.google.com/linux/chrome/deb/ stable main' google-chrome google
   apt-get install -y google-chrome-stable
 elif $VERBOSE; then
-  echo "Not intalling Google Chrome, it is already installed."
+  writeBlue "Not intalling Google Chrome, it is already installed."
 fi
 
 # yq
 if ! hash yq 2>/dev/null; then
-  echo -e "\e[34mInstall YQ.\e[0m"
+  writeBlue "Install YQ."
   if ! [[ "$REPOS" =~ 'rmescandon/yq' ]]; then
-    echo -e "\e[34mAdd git PPA.\e[0m"
+    writeBlue "Add git PPA."
     if [[ `apt-key fingerprint CC86BB64 2> /dev/null` == '' ]]; then
       apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
     fi
@@ -241,12 +240,12 @@ if ! hash yq 2>/dev/null; then
   fi
   apt-get install yq -y
 elif $VERBOSE; then
-  echo "Not intalling Yq, it is already installed."
+  writeBlue "Not intalling Yq, it is already installed."
 fi
 
 # hashicorp vault
 if ! hash vault 2>/dev/null; then
-  echo -e "\e[34mInstall Hashicorp Vault.\e[0m"
+  writeBlue "Install Hashicorp Vault."
   if [ -e /usr/local/bin/vault ]; then # todo remove after a while, there was no repo for vault, so this is a temporary cleanup. It's been here since 2022-10-10
     rm /usr/local/bin/vault
   fi
@@ -256,20 +255,20 @@ fi
 
 # microsoft repos
 if ! [ -f /etc/apt/trusted.gpg.d/microsoft-keyring.gpg ] || ! [ -f /etc/apt/sources.list.d/microsoft.list ]; then
-  echo -e "\e[34mAdd Microsoft keyring and list file.\e[0m"
+  writeBlue "Add Microsoft keyring and list file."
   addSourceListAndKey https://packages.microsoft.com/keys/microsoft.asc "https://packages.microsoft.com/ubuntu/22.04/prod `lsb_release -cs` main" microsoft
 elif $VERBOSE; then
-  echo "Not intalling the Microsoft repository, it is already present."
+  writeBlue "Not intalling the Microsoft repository, it is already present."
 fi
 if ! [ -f /etc/apt/preferences.d/20-microsoft-packages ]; then
-  echo -e "\e[34mAdding pin priority to Microsoft packages to /etc/apt/preferences.d/20-microsoft-packages.\e[0m"
+  writeBlue "Adding pin priority to Microsoft packages to /etc/apt/preferences.d/20-microsoft-packages."
   cat <<EOF >> /etc/apt/preferences.d/20-microsoft-packages
 Package: *
 Pin: origin "packages.microsoft.com"
 Pin-Priority: 1001
 EOF
 elif $VERBOSE; then
-  echo "Not adding pin priority to Microsoft packages, it is already present."
+  writeBlue "Not adding pin priority to Microsoft packages, it is already present."
 fi
 
 # dotnet
@@ -277,32 +276,32 @@ APT_PKGS_TO_INSTALL=`echo "dotnet-sdk-6.0" | sort`
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
-  echo -e "\e[34mInstall .NET cli.\e[0m"
+  writeBlue "Install .NET cli."
   apt-get install -y $APT_PKGS_NOT_INSTALLED
 elif $VERBOSE; then
-  echo "Not intalling .NET SDK, it is already installed."
+  writeBlue "Not intalling .NET SDK, it is already installed."
 fi
 
 # az
 if ! hash az 2>/dev/null; then
-  echo -e "\e[34mInstall Az.\e[0m"
+  writeBlue "Install Az."
   addSourcesList "https://packages.microsoft.com/repos/azure-cli/ `lsb_release -cs` main" azure-cli microsoft
   apt-get install -y azure-cli
 elif $VERBOSE; then
-  echo "Not intalling Az, it is already installed."
+  writeBlue "Not intalling Az, it is already installed."
 fi
 
 # kubectl
 if ! hash kubectl 2>/dev/null; then
   if $WSL && ! $RUNNING_IN_CONTAINER; then
-    echo -e "\e[34mNot installing Kubectl, already on WSL.\e[0m"
+    writeBlue "Not installing Kubectl, already on WSL."
   else
-    echo -e "\e[34mInstall Kubectl.\e[0m"
+    writeBlue "Install Kubectl."
     addSourceListAndKey https://packages.cloud.google.com/apt/doc/apt-key.gpg 'https://apt.kubernetes.io/ kubernetes-xenial main' kubernetes
     apt-get install -y kubectl
   fi
 elif $VERBOSE; then
-  echo "Not intalling Kubectl, it is already installed."
+  writeBlue "Not intalling Kubectl, it is already installed."
 fi
 
 # kubespy
@@ -317,18 +316,18 @@ installKubespy () {
   rm /tmp/kubespy -rf
 }
 if ! hash kubespy 2>/dev/null; then
-  echo -e "\e[34mInstall Kubespy.\e[0m"
+  writeBlue "Install Kubespy."
   installKubespy
 elif $UPDATE; then
   KUBESPY_LATEST_VERSION=`githubLatestReleaseVersion pulumi/kubespy`
   if versionsDifferent `kubespy version` "$KUBESPY_LATEST_VERSION"; then
-    echo -e "\e[34mUpdate Kubespy.\e[0m"
+    writeBlue "Update Kubespy."
     installKubespy
   elif $VERBOSE; then
-    echo "Not updating kubespy, it is already up to date."
+    writeBlue "Not updating kubespy, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not intalling Kubespy, it is already installed."
+  writeBlue "Not intalling Kubespy, it is already installed."
 fi
 
 # dive
@@ -337,43 +336,43 @@ installDive () {
   installDeb $DIVE_DL_URL
 }
 if ! hash dive 2>/dev/null; then
-  echo -e "\e[34mInstall Dive.\e[0m"
+  writeBlue "Install Dive."
   installDive
 elif $UPDATE; then
   DIVE_LATEST_VERSION=`githubLatestReleaseVersion wagoodman/dive`
   if versionsDifferent  `dive --version | cut -f2 -d' '` "$DIVE_LATEST_VERSION"; then
-    echo -e "\e[34mUpdate Dive.\e[0m"
+    writeBlue "Update Dive."
     installDive
   elif $VERBOSE; then
-    echo "Not updating Dive, it is already up to date."
+    writeBlue "Not updating Dive, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not intalling Dive, it is already installed."
+  writeBlue "Not intalling Dive, it is already installed."
 fi
 
 # docker
 if ! hash docker 2>/dev/null; then
   if $RUNNING_IN_CONTAINER; then
-    echo -e "\e[34mInstall Docker cli only.\e[0m"
+    writeBlue "Install Docker cli only."
     addSourceListAndKey https://download.docker.com/linux/ubuntu/gpg "https://download.docker.com/linux/ubuntu `lsb_release -cs` stable" docker
     apt-get install -y docker-ce-cli
   elif $WSL; then
-    echo -e "\e[34mNot installing Docker, already on WSL.\e[0m"
+    writeBlue "Not installing Docker, already on WSL."
   else
-    echo -e "\e[34mInstall Docker.\e[0m"
+    writeBlue "Install Docker."
     curl -fsSL https://get.docker.com | bash
   fi
 elif $VERBOSE; then
-  echo "Not intalling Docker, it is already installed."
+  writeBlue "Not intalling Docker, it is already installed."
 fi
 
 if $WSL && ! $RUNNING_IN_CONTAINER; then
   if ! [[ $APT_PKGS_INSTALLED =~ wslu ]]; then
-    echo -e "\e[34mInstall WSL Utilities.\e[0m"
+    writeBlue "Install WSL Utilities."
     add-apt-repository --yes ppa:wslutilities/wslu
     apt-get install -y wslu
   elif $VERBOSE; then
-    echo "Not intalling WSL Utilities package, it is already installed."
+    writeBlue "Not intalling WSL Utilities package, it is already installed."
   fi
 fi
 
@@ -387,18 +386,18 @@ installHelm3 () {
 }
 if ! hash helm 2>/dev/null; then
   if ! hash helm3 2>/dev/null; then
-    echo -e "\e[34mInstall Helm 3.\e[0m"
+    writeBlue "Install Helm 3."
     if [ -e /usr/local/bin/helm ]; then
       rm /usr/local/bin/helm
     fi
     installHelm3
   elif $VERBOSE; then
-    echo "Not intalling Helm 3, it is already installed."
+    writeBlue "Not intalling Helm 3, it is already installed."
   fi
 
   # helm 2
   if ! hash helm2 2>/dev/null; then
-    echo -e "\e[34mInstall Helm 2.\e[0m"
+    writeBlue "Install Helm 2."
     curl -fsSL --output /tmp/helm2.tar.gz https://get.helm.sh/helm-v2.17.0-linux-amd64.tar.gz
     rm /tmp/helm2 -rf
     mkdir -p /tmp/helm2
@@ -408,20 +407,20 @@ if ! hash helm 2>/dev/null; then
     mv /tmp/helm2/linux-amd64/tiller /usr/local/bin/
     rm /tmp/helm2 -rf
   elif $VERBOSE; then
-    echo "Not intalling Helm 2, it is already installed."
+    writeBlue "Not intalling Helm 2, it is already installed."
   fi
   update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm2 1
   update-alternatives --set helm /usr/local/bin/helm3
 elif $UPDATE; then
   HELM3_LATEST_VERSION=`githubLatestReleaseVersion helm/helm`
   if [ `helm3 version | sed -E 's/.*\{Version:"v([0-9]+\.[0-9]+\.[0-9]+).*/\1/'` != "$HELM3_LATEST_VERSION" ]; then
-    echo -e "\e[34mUpdate Helm 3.\e[0m"
+    writeBlue "Update Helm 3."
     installHelm3
   elif $VERBOSE; then
-    echo "Not updating helm 3, it is already up to date."
+    writeBlue "Not updating helm 3, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not intalling Helm, it is already installed."
+  writeBlue "Not intalling Helm, it is already installed."
 fi
 
 # chart releaser - cr
@@ -436,18 +435,18 @@ installCR () {
   rm /tmp/cr -rf
 }
 if ! hash cr 2>/dev/null; then
-  echo -e "\e[34mInstall Chart releaser (CR).\e[0m"
+  writeBlue "Install Chart releaser (CR)."
   installCR
 elif $UPDATE; then
   CR_LATEST_VERSION=`githubLatestReleaseVersion helm/chart-releaser`
   if versionsDifferent  "`cr version | grep GitVersion | awk '{print $2}'`" "$CR_LATEST_VERSION"; then
-    echo -e "\e[34mUpdate Chart releaser (CR).\e[0m"
+    writeBlue "Update Chart releaser (CR)."
     installCR
   elif $VERBOSE; then
-    echo "Not updating cr, it is already up to date."
+    writeBlue "Not updating cr, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not intalling Chart Releaser, it is already installed."
+  writeBlue "Not intalling Chart Releaser, it is already installed."
 fi
 
 # istioctl
@@ -457,18 +456,18 @@ installIstio () {
   rm -rf $HOME/.istioctl
 }
 if ! hash istioctl 2>/dev/null; then
-  echo -e "\e[34mInstall Istioctl.\e[0m"
+  writeBlue "Install Istioctl."
   installIstio
 elif $UPDATE; then
   ISTIO_LATEST_VERSION=`githubLatestReleaseVersion istio/istio`
   if [ "`istioctl version --remote=false`" != "$ISTIO_LATEST_VERSION" ]; then
-    echo -e "\e[34mUpdate Istioctl.\e[0m"
+    writeBlue "Update Istioctl."
     installIstio
   elif $VERBOSE; then
-    echo "Not updating istioctl, it is already up to date."
+    writeBlue "Not updating istioctl, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not intalling Istioctl, it is already installed."
+  writeBlue "Not intalling Istioctl, it is already installed."
 fi
 
 # exa
@@ -482,7 +481,7 @@ case `uname -m` in
     ARCH=armv7
     ;;
   *)
-    echo "Exa will not be installed: unsupported architecture: `uname -m`"
+    writeBlue "Exa will not be installed: unsupported architecture: `uname -m`"
     ;;
 esac
 installExa () {
@@ -496,18 +495,18 @@ installExa () {
 }
 if [ "$ARCH" != '' ]; then
   if ! hash exa 2>/dev/null; then
-    echo -e "\e[34mInstall Exa.\e[0m"
+    writeBlue "Install Exa."
     installExa
   elif $UPDATE; then
     EXA_LATEST_VERSION=`githubLatestReleaseVersion ogham/exa`
     if versionsDifferent "`exa --version | grep --color=never +git | awk '{print $1}'`" "$EXA_LATEST_VERSION"; then
-      echo -e "\e[34mUpdate Exa.\e[0m"
+      writeBlue "Update Exa."
       installExa
     elif $VERBOSE; then
-      echo "Not updating exa, it is already up to date."
+      writeBlue "Not updating exa, it is already up to date."
     fi
   elif $VERBOSE; then
-    echo "Not intalling Exa, it is already installed."
+    writeBlue "Not intalling Exa, it is already installed."
   fi
 fi
 
@@ -521,18 +520,18 @@ installTFLint () {
   rm -rf /tmp/tflint
 }
 if ! hash tflint 2>/dev/null; then
-  echo -e "\e[34mInstall TFLint.\e[0m"
+  writeBlue "Install TFLint."
   installTFLint
 elif $UPDATE; then
   TFLINT_LATEST_VERSION=`githubLatestReleaseVersion terraform-linters/tflint`
   if [ `tflint --version | head -n1 | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9]+)$/\1/'` != "$TFLINT_LATEST_VERSION" ]; then
-    echo -e "\e[34mUpdate TFLint.\e[0m"
+    writeBlue "Update TFLint."
     installTFLint
   elif $VERBOSE; then
-    echo "Not updating Tflint, it is already up to date."
+    writeBlue "Not updating Tflint, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not intalling TFLint, it is already installed."
+  writeBlue "Not intalling TFLint, it is already installed."
 fi
 
 # delta
@@ -548,7 +547,7 @@ case `uname -m` in
     ARCH=armhf
     ;;
   *)
-    echo "Delta will not be installed: unsupported architecture: `uname -m`"
+    writeBlue "Delta will not be installed: unsupported architecture: `uname -m`"
     ;;
 esac
 installDelta () {
@@ -557,7 +556,7 @@ installDelta () {
 }
 if [ "$ARCH" != '' ]; then
   if ! hash delta 2>/dev/null; then
-    echo -e "\e[34mInstall Delta.\e[0m"
+    writeBlue "Install Delta."
     if dpkg -l git-delta &> /dev/null; then
       apt-get purge -y git-delta
     fi
@@ -568,23 +567,23 @@ if [ "$ARCH" != '' ]; then
   elif $UPDATE; then
     DELTA_LATEST_VERSION=`githubLatestReleaseVersion dandavison/delta`
     if [ `delta --version | awk '{print $2}'` != "$DELTA_LATEST_VERSION" ]; then
-      echo -e "\e[34mUpdate Delta.\e[0m"
+      writeBlue "Update Delta."
       installDelta
     elif $VERBOSE; then
-      echo "Not updating Delta, it is already up to date."
+      writeBlue "Not updating Delta, it is already up to date."
     fi
   elif $VERBOSE; then
-    echo "Not intalling Delta, it is already installed."
+    writeBlue "Not intalling Delta, it is already installed."
   fi
 fi
 
 # Github cli
 if ! hash gh 2>/dev/null; then
-  echo -e "\e[34mInstall Github cli.\e[0m"
+  writeBlue "Install Github cli."
   addSourceListAndKey https://cli.github.com/packages/githubcli-archive-keyring.gpg "https://cli.github.com/packages stable main" githubcli
   apt-get install gh -y
 elif $VERBOSE; then
-  echo "Not intalling Github CLI, it is already installed."
+  writeBlue "Not intalling Github CLI, it is already installed."
 fi
 
 # k9s
@@ -597,18 +596,18 @@ installK9s () {
   rm /tmp/k9s.tar.gz
 }
 if ! hash k9s 2>/dev/null; then
-  echo -e "\e[34mInstall k9s.\e[0m"
+  writeBlue "Install k9s."
   installK9s
 elif $UPDATE; then
   K9S_LATEST_VERSION=`githubLatestReleaseVersion derailed/k9s`
   if versionsDifferent "`k9s version --short | grep Version | awk '{print $2}'`" "$K9S_LATEST_VERSION"; then
-    echo -e "\e[34mUpdate k9s.\e[0m"
+    writeBlue "Update k9s."
     installK9s
   elif $VERBOSE; then
-    echo "Not updating k9s, it is already up to date."
+    writeBlue "Not updating k9s, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not installing K9s, it is already installed."
+  writeBlue "Not installing K9s, it is already installed."
 fi
 
 # aws cli
@@ -624,81 +623,81 @@ installAWS () {
   rm /tmp/aws -rf
 }
 if ! hash aws 2>/dev/null; then
-  echo -e "\e[34mInstall AWS cli.\e[0m"
+  writeBlue "Install AWS cli."
   installAWS
 elif $UPDATE; then
   AWS_LATEST_VERSION=`githubLatestTagByVersion aws/aws-cli`
   if [ "`aws --version | sed -E 's/aws-cli\/([0-9]+\.[0-9]+\.[0-9]+).*/\1/'`" != "$AWS_LATEST_VERSION" ]; then
-    echo -e "\e[34mUpdate AWS cli.\e[0m"
+    writeBlue "Update AWS cli."
     installAWS
   elif $VERBOSE; then
-    echo "Not updating aws, it is already up to date."
+    writeBlue "Not updating aws, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not installing AWS cli, it is already installed."
+  writeBlue "Not installing AWS cli, it is already installed."
 fi
 
 # k3d
 if ! hash k3d 2>/dev/null; then
-  echo -e "\e[34mInstall K3d.\e[0m"
+  writeBlue "Install K3d."
   curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
 elif $UPDATE; then
   K3D_LATEST_VERSION=`githubLatestReleaseVersion rancher/k3d`
   if versionsDifferent  "`k3d --version | grep --color=never k3d | awk '{print $3}'`" "$K3D_LATEST_VERSION"]; then
-    echo -e "\e[34mUpdate K3d.\e[0m"
+    writeBlue "Update K3d."
     curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
   elif $VERBOSE; then
-    echo "Not updating k3d, it is already up to date."
+    writeBlue "Not updating k3d, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not installing k3d, it is already installed."
+  writeBlue "Not installing k3d, it is already installed."
 fi
 
 # starship
 if ! hash starship 2>/dev/null; then
-  echo -e "\e[34mInstall Starship.\e[0m"
+  writeBlue "Install Starship."
   sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
 elif $UPDATE; then
   STARSHIP_LATEST_VERSION=`githubLatestReleaseVersion starship/starship`
   if [ `starship --version | grep --color=never starship | awk '{print $2}'` != "$STARSHIP_LATEST_VERSION" ]; then
-    echo -e "\e[34mUpdate Starship.\e[0m"
+    writeBlue "Update Starship."
     sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
   elif $VERBOSE; then
-    echo "Not updating starship, it is already up to date."
+    writeBlue "Not updating starship, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not installing Starship, it is already installed."
+  writeBlue "Not installing Starship, it is already installed."
 fi
 
 # act
 if ! hash act 2>/dev/null; then
-  echo -e "\e[34mInstall Act.\e[0m"
+  writeBlue "Install Act."
   curl -fsSL https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin
 elif $UPDATE; then
   ACT_LATEST_VERSION=`githubLatestReleaseVersion nektos/act`
   if [ `act --version | awk '{print $3}'` != "$ACT_LATEST_VERSION" ]; then
-    echo -e "\e[34mUpdate Act.\e[0m"
+    writeBlue "Update Act."
     curl -fsSL https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin
   elif $VERBOSE; then
-    echo "Not updating act, it is already up to date."
+    writeBlue "Not updating act, it is already up to date."
   fi
 elif $VERBOSE; then
-  echo "Not installing Act, it is already installed."
+  writeBlue "Not installing Act, it is already installed."
 fi
 
 # upgrade
 if $UPDATE; then
-  echo -e "\e[34mUpgrade with APT.\e[0m"
+  writeBlue "Upgrade with APT."
   apt-get upgrade -y
 else
   if $VERBOSE; then
-    echo "Not updating with APT."
+    writeBlue "Not updating with APT."
   fi
 fi
 
 if $CLEAN; then
-  echo -e "\e[34mCleanning up packages.\e[0m"
+  writeBlue "Cleanning up packages."
   apt-get autoremove -y
 elif $VERBOSE; then
-  echo "Not auto removing with APT."
+  writeBlue "Not auto removing with APT."
 fi

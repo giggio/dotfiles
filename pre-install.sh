@@ -4,8 +4,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . $BASEDIR/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
-  echo "Please run this script as root"
-  exit 2
+  die "Please run this script as root"
 fi
 
 UPDATE=false
@@ -48,22 +47,22 @@ EOF
 fi
 
 if $VERBOSE; then
-  echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
-  echo -e "\e[32m  Update is $UPDATE\e[0m"
+  writeGreen "Running `basename "$0"` $ALL_ARGS
+  Update is $UPDATE"
 fi
 
 if ! hash python2.7 2>/dev/null || ! hash python3 2>/dev/null; then
-  echo -e "\e[34mInstalling Python 2 and 3.\e[0m"
+  writeBlue "Installing Python 2 and 3."
   apt-get update
   apt-get install -y python2.7 python3 python3-pip
 fi
 if ! update-alternatives --display python &>/dev/null; then
-  echo -e "\e[34mSetting the default Python to version 3.\e[0m"
+  writeBlue "Setting the default Python to version 3."
   update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
   update-alternatives --install /usr/bin/python python /usr/bin/python3 2
   update-alternatives  --set python /usr/bin/python3
 elif $VERBOSE; then
-  echo "Not Adding Python alternatives, they are already present."
+  writeBlue "Not Adding Python alternatives, they are already present."
 fi
 
 # setup pysemver
@@ -72,18 +71,18 @@ if ! hash pysemver 2>/dev/null; then
   PIP_PKGS_TO_INSTALL="semver"
   PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKGS_INSTALLED")`
   if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
-    echo -e "\e[34mInstall packages "$PIP_PKGS_NOT_INSTALLED" with Pip for root.\e[0m"
+    writeBlue "Install packages "$PIP_PKGS_NOT_INSTALLED" with Pip for root."
     pip3 install $PIP_PKGS_NOT_INSTALLED
   elif $VERBOSE; then
-    echo "Not installing Pip packages for root, they are already installed."
+    writeBlue "Not installing Pip packages for root, they are already installed."
   fi
 fi
 
 if ([ -L /etc/localtime ] && [ `realpath /etc/localtime` == "/usr/share/zoneinfo/America/Sao_Paulo" ]) || $RUNNING_IN_CONTAINER; then
   if $VERBOSE; then
-    echo "Not updating time zones."
+    writeBlue "Not updating time zones."
   fi
 else
-  echo -e "\e[34mSetting default time zone to São Paulo.\e[0m"
+  writeBlue "Setting default time zone to São Paulo."
   ln -fs /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 fi

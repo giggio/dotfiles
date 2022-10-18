@@ -4,8 +4,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . $BASEDIR/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
-  echo "Please do not run as root"
-  exit 2
+  die "Please do not run this script as root"
 fi
 
 UPDATE=false
@@ -48,17 +47,17 @@ EOF
 fi
 
 if $VERBOSE; then
-  echo -e "\e[32mRunning `basename "$0"` $ALL_ARGS\e[0m"
-  echo -e "\e[32m  Update is $UPDATE\e[0m"
+  writeGreen "Running `basename "$0"` $ALL_ARGS
+  Update is $UPDATE"
 fi
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTBOT_DIR="$BASEDIR/dotbot"
 
-echo -e "\e[34mUpdating dotbot submodules.\e[0m"
+writeBlue "Updating dotbot submodules."
 pushd "$DOTBOT_DIR" > /dev/null
 git submodule update --init --recursive
 popd > /dev/null
 
-echo -e "\e[34mWorking on unpriviledged setup.\e[0m"
+writeBlue "Working on unpriviledged setup."
 "$DOTBOT_DIR/bin/dotbot" -d "${BASEDIR}" -c "$BASEDIR/install.conf.yaml"

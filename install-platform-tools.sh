@@ -95,7 +95,7 @@ declare -A DOTNET_TOOLS=(
 for DOTNET_TOOL in "${!DOTNET_TOOLS[@]}"; do
   if ! [ -f $DOTNET_TOOLS_DIR/$DOTNET_TOOL ]; then
     writeBlue "Install .NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]})."
-    dotnet tool update --global $DOTNET_TOOL
+    dotnet tool update --global ${DOTNET_TOOLS[$DOTNET_TOOL]}
   elif $VERBOSE; then
     writeBlue ".NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]}) is already installed."
   fi

@@ -149,6 +149,7 @@ nmap
 pandoc
 pkg-config
 python3-pip
+shellcheck
 socat
 tmux
 traceroute

@@ -38,6 +38,7 @@
   repo = "!f() { exec vsts code repo \"$@\"; }; f"
   vpr = "!f() { exec vsts code pr \"$@\"; }; f"
   squash = "!f() { git reset --hard $1; git merge --squash HEAD@{1}; git commit; }; f"
+  continue = "-c core.editor=true rebase --continue"
 [pull]
   ff = only
 [push]

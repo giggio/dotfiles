@@ -354,22 +354,22 @@ elif $VERBOSE; then
   writeBlue "Not intalling Dive, it is already installed."
 fi
 
-# docker
+# docker and docker-compose
 if ! hash docker 2>/dev/null; then
-  if $RUNNING_IN_CONTAINER; then
-    writeBlue "Install Docker cli only."
+  if $RUNNING_IN_CONTAINER || $WSL; then
+    writeBlue "Install Docker cli and compose plugin with apt, without daemon."
     addSourceListAndKey https://download.docker.com/linux/ubuntu/gpg "https://download.docker.com/linux/ubuntu `lsb_release -cs` stable" docker
-    apt-get install -y docker-ce-cli
-  elif $WSL; then
-    writeBlue "Not installing Docker, already on WSL."
+    apt-get install -y docker-ce-cli docker-compose-plugin
   else
-    writeBlue "Install Docker."
+    writeBlue "Install Docker and compose plugin through install script."
     curl -fsSL https://get.docker.com | bash
   fi
+  curl -fsSL https://raw.githubusercontent.com/docker/compose-switch/master/install_on_linux.sh | sh
 elif $VERBOSE; then
   writeBlue "Not intalling Docker, it is already installed."
 fi
 
+# wslu
 if $WSL && ! $RUNNING_IN_CONTAINER; then
   if ! [[ $APT_PKGS_INSTALLED =~ wslu ]]; then
     writeBlue "Install WSL Utilities."

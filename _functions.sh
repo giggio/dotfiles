@@ -126,6 +126,20 @@ installDeb () {
   rm $DEB
 }
 
+installBinToHomeBin () {
+  if [ -v 2 ]; then
+    BIN=$HOME/bin/$2
+  else
+    BIN=$1
+    BIN=`echo "${BIN##*/}"` # get file name
+    BIN=`echo "${BIN%%\?*}"` # remove query string
+    BIN=`echo "${BIN%%\#*}"` # remove fragment
+    BIN=$HOME/bin/$BIN
+  fi
+  curl -fsSL --output "$BIN" "$1"
+  chmod +x "$BIN"
+}
+
 addSourceListAndKey () {
   local KEYRING_URL=$1
   local LIST_INFO=$2

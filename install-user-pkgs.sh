@@ -160,6 +160,26 @@ elif $VERBOSE; then
   writeBlue "Not installing docker-show-context, it is already installed."
 fi
 
+# ctop
+installCtop () {
+  CTOP_DL_URL=`githubReleaseDownloadUrl bcicen/ctop linux-amd64`
+  installBinToHomeBin "$CTOP_DL_URL" ctop
+}
+if ! hash ctop 2>/dev/null; then
+  writeBlue "Install Ctop."
+  installCtop
+elif $UPDATE; then
+  CTOP_LATEST_VERSION=`githubLatestReleaseVersion bcicen/ctop`
+  if versionsDifferent  "`ctop -v | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9]+).*/\1/g'`" "$CTOP_LATEST_VERSION"; then
+    writeBlue "Update Ctop."
+    installCtop
+  elif $VERBOSE; then
+    writeBlue "Not updating Ctop, it is already up to date."
+  fi
+elif $VERBOSE; then
+  writeBlue "Not intalling Ctop, it is already installed."
+fi
+
 # golang
 GO_ARCH=''
 case `uname -m` in

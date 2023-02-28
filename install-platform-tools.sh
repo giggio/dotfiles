@@ -185,6 +185,7 @@ done
 NPM_PKGS_INSTALLED_ORGS=`echo "$NPM_PKGS_INSTALLED_ORGS" | tail -n +2`
 NPM_PKGS_INSTALLED=`echo "$NPM_PKGS_INSTALLED_NOT_ORGS"$'\n'"$NPM_PKGS_INSTALLED_ORGS" | sort`
 NPM_PKGS_TO_INSTALL=`echo "@angular/cli
+@githubnext/github-copilot-cli
 bash-language-server
 bats
 bats-assert

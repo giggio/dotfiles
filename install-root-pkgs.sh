@@ -297,14 +297,10 @@ elif $VERBOSE; then
 fi
 
 # kubectl
-if ! hash kubectl 2>/dev/null; then
-  if $WSL && ! $RUNNING_IN_CONTAINER; then
-    writeBlue "Not installing Kubectl, already on WSL."
-  else
-    writeBlue "Install Kubectl."
-    addSourceListAndKey https://packages.cloud.google.com/apt/doc/apt-key.gpg 'https://apt.kubernetes.io/ kubernetes-xenial main' kubernetes
-    apt-get install -y kubectl
-  fi
+if ! hash kubectl 2>/dev/null || ( $WSL && [[ "`which kubectl`" =~ '/mnt/' ]] ); then
+  writeBlue "Install Kubectl."
+  addSourceListAndKey https://packages.cloud.google.com/apt/doc/apt-key.gpg 'https://apt.kubernetes.io/ kubernetes-xenial main' kubernetes
+  apt-get install -y kubectl
 elif $VERBOSE; then
   writeBlue "Not intalling Kubectl, it is already installed."
 fi

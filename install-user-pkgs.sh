@@ -204,8 +204,8 @@ if [ "$GO_ARCH" != '' ]; then
     mv /tmp/go $HOME/.go
     rm /tmp/go.tar.gz
   }
-  GO_AVAILABLE_VERSION=`githubLatestTagByDate golang/go go1. | \
-  sed 's/refs\/tags\/go//'`
+  GO_TAGS=`githubTags golang/go | sed 's/^go//'`
+  GO_AVAILABLE_VERSION=`getLatestVersion "$GO_TAGS"`
   if ! hash go  2>/dev/null && ! [ -d $HOME/.go/ ] &> /dev/null; then
     writeBlue "Install golang."
     installGolang

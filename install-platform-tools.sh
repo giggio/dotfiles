@@ -326,6 +326,9 @@ fi
 
 if [ -e $HOME/.go/bin/go ]; then
   export PATH=$PATH:$HOME/.go/bin
+  if ! [[ -v GOPROXY ]]; then
+    export GOPROXY=https://proxy.golang.org
+  fi
   writeBlue "Installing go packages."
   declare -A GO_PKGS=(
     ["gox"]="mitchellh/gox"

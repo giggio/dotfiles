@@ -52,15 +52,22 @@ githubLatestReleaseVersion () {
   # parameter expected to be owner/repo
   R=`curl -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$1/releases?per_page=100 \
   | jq --raw-output '.[] | select(.prerelease == false).tag_name'`
+  # todo: grep for stable? like:
+  # grep -E '^(?P<major>0|[1-9][0-9]*)\.(?P<minor>0|[1-9][0-9]*)\.(?P<patch>0|[1-9][0-9]*)$'
+  # see: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
   getLatestVersion "$R"
+}
+
+githubTags () {
+  # parameter expected to be owner/repo
+  curl -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$1/git/matching-refs/tags/?per_page=100 \
+  | jq --raw-output '.[].ref' \
+  | sed 's/^refs\/tags\///'
 }
 
 githubLatestTagByVersion () {
   # parameter expected to be owner/repo
-  T=`curl -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$1/git/matching-refs/tags/?per_page=100 \
-  | jq --raw-output '.[].ref' \
-  | sed 's/refs\/tags\///'`
-  getLatestVersion "$T"
+  getLatestVersion "`githubTags $1`"
 }
 
 githubReleaseDownloadUrl () {

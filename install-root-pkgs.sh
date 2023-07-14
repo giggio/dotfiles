@@ -151,6 +151,7 @@ pkg-config
 python3-pip
 shellcheck
 socat
+scdaemon
 tmux
 traceroute
 tree
@@ -215,7 +216,7 @@ fi
 # libssl1.1 (not available in Ubuntu 22.04)
 if ! dpkg-query --no-pager --showformat='${Package}\n' --show 'libssl1.1' > /dev/null; then
   writeBlue "Install libssl1.1."
-  curl -fsSL --output /tmp/libssl1.1.deb http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+  curl -fsSL --output /tmp/libssl1.1.deb http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
   dpkg -i /tmp/libssl1.1.deb
   rm /tmp/libssl1.1.deb
 fi
@@ -593,7 +594,7 @@ fi
 
 # k9s
 installK9s () {
-  curl -fsSL --output /tmp/k9s.tar.gz https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_x86_64.tar.gz
+  curl -fsSL --output /tmp/k9s.tar.gz https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz
   mkdir /tmp/k9s/
   tar -xvzf /tmp/k9s.tar.gz -C /tmp/k9s/
   mv /tmp/k9s/k9s /usr/local/bin/

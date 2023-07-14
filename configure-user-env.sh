@@ -44,3 +44,14 @@ if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS"
 fi
 
+keyId=275F6749AFD2379D1033548C1237AB122E6F4761
+if [[ "`gpg --list-keys $keyId 2> /dev/null | grep ^uid | grep [ultimate]`" == '' ]]; then
+  gpgPublicKeyFile=`mktemp`
+  gpgOwnerTrustFile=`mktemp`
+  curl -fsSL https://links.giggio.net/pgp --output $gpgPublicKeyFile
+  echo "$keyId:6:" > $gpgOwnerTrustFile
+  gpg --import $gpgPublicKeyFile
+  gpg --import-ownertrust $gpgOwnerTrustFile
+  rm $gpgPublicKeyFile
+  rm $gpgOwnerTrustFile
+fi

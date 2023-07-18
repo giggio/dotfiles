@@ -31,3 +31,6 @@
 [submodule "nvim"]
 	path = nvim
 	url = ../nvimfiles.git
+[submodule "nuscripts"]
+	path = nuscripts
+	url = ../nuscripts.git

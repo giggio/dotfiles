@@ -36,6 +36,7 @@
     ~/.config/git: config/git
     ~/.config/starship.toml: config/starship.toml
     ~/.config/navi/config.yaml: config/navi-config.yaml
+    ~/.config/nushell: nuscripts
     ~/.bashrc:
       path: home/.bashrc
       force: true

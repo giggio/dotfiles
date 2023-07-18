@@ -294,6 +294,7 @@ gping
 grex
 just
 navi
+nu
 procs
 ripgrep
 sccache

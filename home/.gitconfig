@@ -14,6 +14,8 @@
   ci = commit
   co = checkout
   br = branch
+  pf = push --force-with-lease
+  pushtag = push origin --tags
   fixup = commit --all --amend --no-edit
   open = !explorer `git config remote.origin.url`
   browse = !git open

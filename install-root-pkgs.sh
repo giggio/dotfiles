@@ -687,6 +687,26 @@ elif $VERBOSE; then
   writeBlue "Not installing Act, it is already installed."
 fi
 
+# carapace
+installCarapace () {
+  CARAPACE_DL_URL=`githubReleaseDownloadUrl rsteube/carapace-bin linux_amd64.deb`
+  installDeb $CARAPACE_DL_URL
+}
+if ! hash carapace 2>/dev/null; then
+  writeBlue "Install Carapace."
+  installCarapace
+elif $UPDATE; then
+  CARAPACE_LATEST_VERSION=`githubLatestReleaseVersion rsteube/carapace-bin`
+  if versionsDifferent  `carapace --version` "$CARAPACE_LATEST_VERSION"; then
+    writeBlue "Update Carapace."
+    installCarapace
+  elif $VERBOSE; then
+    writeBlue "Not updating Carapace, it is already up to date."
+  fi
+elif $VERBOSE; then
+  writeBlue "Not intalling Carapace, it is already installed."
+fi
+
 # upgrade
 if $UPDATE; then
   writeBlue "Upgrade with APT."

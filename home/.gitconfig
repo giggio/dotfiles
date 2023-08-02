@@ -17,7 +17,33 @@
   pf = push --force-with-lease
   pushtag = push origin --tags
   fixup = commit --all --amend --no-edit
-  open = !explorer `git config remote.origin.url`
+  open = "!openInBrowser() { \
+            if [ -z \"$1\" ]; then \
+              echo \"URL is empty.\"; \
+              return; \
+            fi; \
+            echo "Opening $1" ...; \
+            THIS_OS="$(uname -s)"; \
+            case "$THIS_OS" in \
+              Linux*) xdg-open $1;; \
+              MSYS_NT*|MINGW*|CYGWIN*) explorer $1;; \
+              *) echo \"unknown: $THIS_OS\";; \
+            esac; \
+          }; \
+          browse() { \
+            REMOTE=origin; \
+            if ! [ -z \"$1\" ]; then \
+              REMOTE=$1; \
+            fi; \
+            ORIGIN=`git config remote.$REMOTE.url`; \
+            case $ORIGIN in \
+              '') return;; \
+              https://*) openInBrowser $ORIGIN;; \
+              *) \
+                HTTPS_URL=$(echo \"$ORIGIN\" | awk -F '@' '{print $2}' | awk -F ' ' '{print $1}' | sed 's/:/\\//g' | sed 's/.git//g' | awk '{print \"https://\"$1}' ); \
+                openInBrowser "$HTTPS_URL";; \
+            esac; \
+          }; browse"
   browse = !git open
   up = push upstream master
   sync = pull upstream master --rebase
@@ -35,7 +61,7 @@
             echo "Serving repo at: $public_url"; \
             echo "Press CTRL C to stop."; \
             sleep infinity; \
-         }; f"
+          }; f"
   pr = "!f() { exec vsts code pr \"$@\"; }; f"
   repo = "!f() { exec vsts code repo \"$@\"; }; f"
   vpr = "!f() { exec vsts code pr \"$@\"; }; f"

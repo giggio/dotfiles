@@ -368,7 +368,10 @@ fi
 
 # wslu
 if $WSL && ! $RUNNING_IN_CONTAINER; then
-  if ! [[ $APT_PKGS_INSTALLED =~ wslu ]]; then
+  if [[ $APT_PKGS_INSTALLED =~ ubuntu-wsl ]]; then
+    apt-get remove ubuntu-wsl -y
+  fi
+  if ! [[ $APT_PKGS_INSTALLED =~ (^|$'\n')wslu($|$'\n') ]]; then
     writeBlue "Install WSL Utilities."
     add-apt-repository --yes ppa:wslutilities/wslu
     apt-get install -y wslu

@@ -101,3 +101,5 @@
 [credential]
   helper = store --file $HOME/.cache/git/credential/.git-credentials
 [gpg]
+[pack]
+  windowMemory = 0

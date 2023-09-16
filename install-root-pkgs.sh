@@ -475,43 +475,47 @@ elif $VERBOSE; then
   writeBlue "Not intalling Istioctl, it is already installed."
 fi
 
-# exa
+# eza (exa fork)
 # amd64, arm64, armhf
 ARCH=''
 case `uname -m` in
   x86_64)
     ARCH=x86_64
     ;;
+  aarch64)
+    ARCH=aarch64
+    ;;
   armv7l)
-    ARCH=armv7
+    ARCH=arm
     ;;
   *)
-    writeBlue "Exa will not be installed: unsupported architecture: `uname -m`"
+    writeBlue "Eza will not be installed: unsupported architecture: `uname -m`"
     ;;
 esac
-installExa () {
-  EXA_DL_URL=`githubReleaseDownloadUrl ogham/exa "^exa-linux-$ARCH(?!-musl)"`
-  curl -fsSL --output /tmp/exa.zip $EXA_DL_URL
-  rm -rf /tmp/exa
-  unzip -qo /tmp/exa.zip -d /tmp/exa
-  mv /tmp/exa/bin/exa /usr/local/bin/
-  rm /tmp/exa.zip
-  rm -rf /tmp/exa
+installEza () {
+  EZA_DL_URL=`githubReleaseDownloadUrl eza-community/eza "^eza_$ARCH-unknown-linux"`
+  curl -fsSL --output /tmp/eza.tar.gz "$EZA_DL_URL"
+  rm -rf /tmp/eza
+  mkdir /tmp/eza
+  tar -xvzf /tmp/eza.tar.gz -C /tmp/eza/
+  mv /tmp/eza/eza /usr/local/bin/
+  rm /tmp/eza.tar.gz
+  rm -rf /tmp/eza
 }
 if [ "$ARCH" != '' ]; then
-  if ! hash exa 2>/dev/null; then
-    writeBlue "Install Exa."
-    installExa
+  if ! hash eza 2>/dev/null; then
+    writeBlue "Install Eza."
+    installEza
   elif $UPDATE; then
-    EXA_LATEST_VERSION=`githubLatestReleaseVersion ogham/exa`
-    if versionsDifferent "`exa --version | grep --color=never +git | awk '{print $1}'`" "$EXA_LATEST_VERSION"; then
-      writeBlue "Update Exa."
-      installExa
+    EZA_LATEST_VERSION=`githubLatestReleaseVersion eza-community/eza`
+    if versionsDifferent "`eza --version | grep --color=never +git | cut -d' ' -f1`" "$EZA_LATEST_VERSION"; then
+      writeBlue "Update Eza."
+      installEza
     elif $VERBOSE; then
-      writeBlue "Not updating exa, it is already up to date."
+      writeBlue "Not updating eza, it is already up to date."
     fi
   elif $VERBOSE; then
-    writeBlue "Not intalling Exa, it is already installed."
+    writeBlue "Not intalling Eza, it is already installed."
   fi
 fi
 

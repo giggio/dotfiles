@@ -246,33 +246,33 @@ setup() {
     "prerelease": false,
     "assets": [
       {
-        "name": "exa-accoutrements-v0.10.1.zip",
+        "name": "eza-accoutrements-v0.10.1.zip",
         "browser_download_url": "a"
       },
       {
-        "name": "exa-linux-armv7-v0.10.1.zip",
+        "name": "eza-linux-armv7-v0.10.1.zip",
         "browser_download_url": "b"
       },
       {
-        "name": "exa-linux-x86_64-musl-v0.10.1.zip",
+        "name": "eza-linux-x86_64-musl-v0.10.1.zip",
         "browser_download_url": "c"
       },
       {
-        "name": "exa-linux-x86_64-v0.10.1.zip",
+        "name": "eza-linux-x86_64-v0.10.1.zip",
         "browser_download_url": "right one"
       },
       {
-        "name": "exa-macos-x86_64-v0.10.1.zip",
+        "name": "eza-macos-x86_64-v0.10.1.zip",
         "browser_download_url": "d"
       },
       {
-        "name": "exa-vendored-source-v0.10.1.zip",
+        "name": "eza-vendored-source-v0.10.1.zip",
         "browser_download_url": "e"
       }
     ]
   }
 ]'
-  run githubReleaseDownloadUrl x/y "^exa-linux-x86_64(?!-musl)"
+  run githubReleaseDownloadUrl x/y "^eza-linux-x86_64(?!-musl)"
   assert_output 'right one'
 }
 

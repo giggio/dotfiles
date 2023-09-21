@@ -282,7 +282,8 @@ if [ -f $HOME/.cargo/env ]; then
   CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
   # todo: how to work with as-tree, which is not on crates.io?
   # See issue: https://github.com/jez/as-tree/issues/14
-  CRATES_TO_INSTALL="cargo-update
+  CRATES_TO_INSTALL="bandwhich
+cargo-update
 cargo-edit
 cargo-expand
 cargo-outdated
@@ -300,7 +301,7 @@ ripgrep
 sccache
 tealdeer
 tokei"
-  CRATES_TO_INSTALL_NO_LOCK="bandwhich" # see https://github.com/imsnif/bandwhich/issues/258
+  CRATES_TO_INSTALL_NO_LOCK=""
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED" != "" ]; then
     writeBlue "Install crates $CRATES_NOT_INSTALLED."

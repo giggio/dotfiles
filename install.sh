@@ -8,12 +8,17 @@ if [ "$EUID" == "0" ]; then
 fi
 
 UPDATE=false
+QUICK=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --update|-u)
     UPDATE=true
+    shift
+    ;;
+    --quick)
+    QUICK=true
     shift
     ;;
     --help|-h)
@@ -41,6 +46,7 @@ Usage:
 Flags:
   -u, --update             Will download and install/reinstall even if the tools are already installed
       --verbose            Show verbose output
+      --quick              Only does the dotbot install, no other setup
   -h, --help               help
 EOF
   exit 0
@@ -54,10 +60,12 @@ fi
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTBOT_DIR="$BASEDIR/dotbot"
 
-writeBlue "Updating dotbot submodules."
-pushd "$DOTBOT_DIR" > /dev/null
-git submodule update --init --recursive
-popd > /dev/null
+if ! $QUICK; then
+  writeBlue "Updating dotbot submodules."
+  pushd "$DOTBOT_DIR" > /dev/null
+  git submodule update --init --recursive
+  popd > /dev/null
+fi
 
 writeBlue "Working on unpriviledged setup."
 "$DOTBOT_DIR/bin/dotbot" -d "${BASEDIR}" -c "$BASEDIR/install.conf.yaml"

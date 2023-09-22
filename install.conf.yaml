@@ -41,6 +41,9 @@
     ~/.bashrc:
       path: home/.bashrc
       force: true
+    ~/.npmrc:
+      path: home/.npmrc
+      force: true
     ~/.fzf: tools/fzf
     ~/.gitconfig: home/.gitconfig
     ~/.profile:

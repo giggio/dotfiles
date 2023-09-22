@@ -220,7 +220,7 @@ showVars() {
 }
 
 getOptions () {
-  PARSED_ARGS=`getopt -o cuh --long gh:,clean,update,help,verbose,skip-post-install -n $(readlink -f $0) -- "$@"`
+  PARSED_ARGS=`getopt -o cuh --long gh:,clean,update,help,verbose,quick,skip-post-install -n $(readlink -f $0) -- "$@"`
 }
 
 writeBlue () {

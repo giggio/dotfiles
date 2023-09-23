@@ -714,6 +714,27 @@ elif $VERBOSE; then
   writeBlue "Not intalling Carapace, it is already installed."
 fi
 
+# kn / knative
+installKnative () {
+  KNATIVE_DL_URL=`githubReleaseDownloadUrl knative/client kn-linux-amd64`
+  installBinToUsrLocalBin "$KNATIVE_DL_URL" kn
+}
+if ! hash kn 2>/dev/null; then
+  writeBlue "Install Knative."
+  installKnative
+elif $UPDATE; then
+  KN_ALL_RELEASES=`githubAllReleasesVersions knative/client | grep --color=never knative | sed -E 's/knative-(.*)/\1/'`
+  KN_LATEST_VERSION=`getLatestVersion "$KN_ALL_RELEASES"`
+  if versionsDifferent "`kn version -oyaml | grep --color=never Version | awk '{print $2}'`" "$KN_LATEST_VERSION"; then
+    writeBlue "Update Knative."
+    installKnative
+  elif $VERBOSE; then
+    writeBlue "Not updating Knative, it is already up to date."
+  fi
+elif $VERBOSE; then
+  writeBlue "Not intalling Knative, it is already installed."
+fi
+
 # upgrade
 if $UPDATE; then
   writeBlue "Upgrade with APT."

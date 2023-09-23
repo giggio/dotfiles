@@ -50,16 +50,23 @@ getLatestVersion() {
 
 githubLatestReleaseVersion () {
   # parameter expected to be owner/repo
-  R=`curl -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$1/releases?per_page=100 \
-  | jq --raw-output '.[] | select(.prerelease == false).tag_name'`
+  R=`githubAllReleasesVersions "$1"`
   # todo: grep for stable? like:
   # grep -E '^(?P<major>0|[1-9][0-9]*)\.(?P<minor>0|[1-9][0-9]*)\.(?P<patch>0|[1-9][0-9]*)$'
   # see: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
   getLatestVersion "$R"
 }
 
+githubAllReleasesVersions () {
+  # parameter expected to be owner/repo
+  # shellcheck disable=SC2086
+  curl -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$1/releases?per_page=100 \
+  | jq --raw-output '.[] | select(.prerelease == false).tag_name'
+}
+
 githubTags () {
   # parameter expected to be owner/repo
+  # shellcheck disable=SC2086
   curl -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$1/git/matching-refs/tags/?per_page=100 \
   | jq --raw-output '.[].ref' \
   | sed 's/^refs\/tags\///'
@@ -67,7 +74,7 @@ githubTags () {
 
 githubLatestTagByVersion () {
   # parameter expected to be owner/repo
-  getLatestVersion "`githubTags $1`"
+  getLatestVersion "`githubTags "$1"`"
 }
 
 githubReleaseDownloadUrl () {
@@ -80,6 +87,7 @@ githubReleaseDownloadUrl () {
       NAME_FILTER='|test("'"$2"'")'
     fi
   fi
+  # shellcheck disable=SC2086
   $CURL -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$REPO/releases | \
   jq --raw-output "[.[] | select(.prerelease == false)][0].assets[] | select(.name$NAME_FILTER).browser_download_url"
 }
@@ -90,6 +98,7 @@ githubLatestTagByDate () {
   if [ -v 2 ]; then
     TAG_FILTER="$2"
   fi
+  # shellcheck disable=SC2086
   $CURL -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$REPO/git/matching-refs/tags/$TAG_FILTER | jq --raw-output '.[-1].ref'
 }
 
@@ -142,6 +151,20 @@ installBinToHomeBin () {
     BIN=`echo "${BIN%%\?*}"` # remove query string
     BIN=`echo "${BIN%%\#*}"` # remove fragment
     BIN=$HOME/bin/$BIN
+  fi
+  curl -fsSL --output "$BIN" "$1"
+  chmod +x "$BIN"
+}
+
+installBinToUsrLocalBin () {
+  if [ -v 2 ]; then
+    BIN=/usr/local/bin/$2
+  else
+    BIN=$1
+    BIN=`echo "${BIN##*/}"` # get file name
+    BIN=`echo "${BIN%%\?*}"` # remove query string
+    BIN=`echo "${BIN%%\#*}"` # remove fragment
+    BIN=/usr/local/bin/$BIN
   fi
   curl -fsSL --output "$BIN" "$1"
   chmod +x "$BIN"

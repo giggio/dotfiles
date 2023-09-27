@@ -8,6 +8,7 @@
 - create:
     - ~/.cache
     - ~/.config
+    - ~/.config/carapace
     - ~/p
     - ~/bin
 - shell:
@@ -38,6 +39,8 @@
     ~/.config/starship.toml: config/starship.toml
     ~/.config/navi/config.yaml: config/navi-config.yaml
     ~/.config/nushell: nuscripts
+    ~/.config/carapace/specs: config/carapace/specs
+    ~/.config/carapace/overlays: config/carapace/overlays
     ~/.bashrc:
       path: home/.bashrc
       force: true

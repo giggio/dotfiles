@@ -1,0 +1,6 @@
+# yaml-language-server: null
+---
+name: k3d
+description: k3d is a wrapper CLI that helps you to easily create k3s clusters inside docker
+completion:
+  positionalany: ["$_bridge.Cobra([k3d])"]

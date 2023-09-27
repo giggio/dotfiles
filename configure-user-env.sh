@@ -55,3 +55,7 @@ if [[ "`gpg --list-keys $keyId 2> /dev/null | grep ^uid | grep [ultimate]`" == '
   rm $gpgPublicKeyFile
   rm $gpgOwnerTrustFile
 fi
+
+if hash carapace 2>/dev/null && ! [ -f "$HOME"/.config/carapace/schema.json ]; then
+  carapace _carapace > /dev/null
+fi

@@ -735,6 +735,16 @@ elif $VERBOSE; then
   writeBlue "Not intalling Knative, it is already installed."
 fi
 
+# knative func
+if ! hash kn 2>/dev/null; then
+  writeBlue "Install Knative func."
+  KNATIVE_FUNC_DL_URL=`githubReleaseDownloadUrl knative/func func_linux_amd64`
+  installBinToUsrLocalBin "$KNATIVE_FUNC_DL_URL" kn-func
+  # we don' have an update because func version does not match the release version from Github
+elif $VERBOSE; then
+  writeBlue "Not intalling Knative func, it is already installed."
+fi
+
 # upgrade
 if $UPDATE; then
   writeBlue "Upgrade with APT."

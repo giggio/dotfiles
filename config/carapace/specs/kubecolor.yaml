@@ -1,0 +1,6 @@
+# add completers to kubecolor to be equal to those from kubectl
+---
+name: kubecolor
+description: Colorize your kubectl output
+completion:
+  positionalany: ["$_bridge.CarapaceBin([kubectl])"]

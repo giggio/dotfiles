@@ -227,7 +227,7 @@ if ! hash google-chrome 2>/dev/null; then
   addSourceListAndKey https://dl-ssl.google.com/linux/linux_signing_key.pub 'http://dl.google.com/linux/chrome/deb/ stable main' google-chrome google
   apt-get install -y google-chrome-stable
 elif $VERBOSE; then
-  writeBlue "Not intalling Google Chrome, it is already installed."
+  writeBlue "Not installing Google Chrome, it is already installed."
 fi
 
 # yq
@@ -242,7 +242,7 @@ if ! hash yq 2>/dev/null; then
   fi
   apt-get install yq -y
 elif $VERBOSE; then
-  writeBlue "Not intalling Yq, it is already installed."
+  writeBlue "Not installing Yq, it is already installed."
 fi
 
 # hashicorp vault
@@ -260,7 +260,7 @@ if ! [ -f /etc/apt/trusted.gpg.d/microsoft-keyring.gpg ] || ! [ -f /etc/apt/sour
   writeBlue "Add Microsoft keyring and list file."
   addSourceListAndKey https://packages.microsoft.com/keys/microsoft.asc "https://packages.microsoft.com/ubuntu/22.04/prod `lsb_release -cs` main" microsoft
 elif $VERBOSE; then
-  writeBlue "Not intalling the Microsoft repository, it is already present."
+  writeBlue "Not installing the Microsoft repository, it is already present."
 fi
 if ! [ -f /etc/apt/preferences.d/20-microsoft-packages ]; then
   writeBlue "Adding pin priority to Microsoft packages to /etc/apt/preferences.d/20-microsoft-packages."
@@ -284,7 +284,7 @@ if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
   writeBlue "Install .NET cli."
   apt-get install -y $APT_PKGS_NOT_INSTALLED
 elif $VERBOSE; then
-  writeBlue "Not intalling .NET SDK, it is already installed."
+  writeBlue "Not installing .NET SDK, it is already installed."
 fi
 
 # az
@@ -293,7 +293,7 @@ if ! hash az 2>/dev/null; then
   addSourcesList "https://packages.microsoft.com/repos/azure-cli/ `lsb_release -cs` main" azure-cli microsoft
   apt-get install -y azure-cli
 elif $VERBOSE; then
-  writeBlue "Not intalling Az, it is already installed."
+  writeBlue "Not installing Az, it is already installed."
 fi
 
 # kubectl
@@ -302,7 +302,7 @@ if ! hash kubectl 2>/dev/null || ( $WSL && [[ "`which kubectl`" =~ '/mnt/' ]] );
   addSourceListAndKey https://packages.cloud.google.com/apt/doc/apt-key.gpg 'https://apt.kubernetes.io/ kubernetes-xenial main' kubernetes
   apt-get install -y kubectl
 elif $VERBOSE; then
-  writeBlue "Not intalling Kubectl, it is already installed."
+  writeBlue "Not installing Kubectl, it is already installed."
 fi
 
 # kubespy
@@ -328,7 +328,7 @@ elif $UPDATE; then
     writeBlue "Not updating kubespy, it is already up to date."
   fi
 elif $VERBOSE; then
-  writeBlue "Not intalling Kubespy, it is already installed."
+  writeBlue "Not installing Kubespy, it is already installed."
 fi
 
 # dive
@@ -348,7 +348,7 @@ elif $UPDATE; then
     writeBlue "Not updating Dive, it is already up to date."
   fi
 elif $VERBOSE; then
-  writeBlue "Not intalling Dive, it is already installed."
+  writeBlue "Not installing Dive, it is already installed."
 fi
 
 # docker and docker-compose
@@ -363,7 +363,7 @@ if ! hash docker 2>/dev/null; then
   fi
   curl -fsSL https://raw.githubusercontent.com/docker/compose-switch/master/install_on_linux.sh | sh
 elif $VERBOSE; then
-  writeBlue "Not intalling Docker, it is already installed."
+  writeBlue "Not installing Docker, it is already installed."
 fi
 
 # wslu
@@ -376,7 +376,7 @@ if $WSL && ! $RUNNING_IN_CONTAINER; then
     add-apt-repository --yes ppa:wslutilities/wslu
     apt-get install -y wslu
   elif $VERBOSE; then
-    writeBlue "Not intalling WSL Utilities package, it is already installed."
+    writeBlue "Not installing WSL Utilities package, it is already installed."
   fi
 fi
 
@@ -396,7 +396,7 @@ if ! hash helm 2>/dev/null; then
     fi
     installHelm3
   elif $VERBOSE; then
-    writeBlue "Not intalling Helm 3, it is already installed."
+    writeBlue "Not installing Helm 3, it is already installed."
   fi
 
   # helm 2
@@ -411,7 +411,7 @@ if ! hash helm 2>/dev/null; then
     mv /tmp/helm2/linux-amd64/tiller /usr/local/bin/
     rm /tmp/helm2 -rf
   elif $VERBOSE; then
-    writeBlue "Not intalling Helm 2, it is already installed."
+    writeBlue "Not installing Helm 2, it is already installed."
   fi
   update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm2 1
   update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm3 2
@@ -425,7 +425,7 @@ elif $UPDATE; then
     writeBlue "Not updating helm 3, it is already up to date."
   fi
 elif $VERBOSE; then
-  writeBlue "Not intalling Helm, it is already installed."
+  writeBlue "Not installing Helm, it is already installed."
 fi
 
 # chart releaser - cr
@@ -451,7 +451,7 @@ elif $UPDATE; then
     writeBlue "Not updating cr, it is already up to date."
   fi
 elif $VERBOSE; then
-  writeBlue "Not intalling Chart Releaser, it is already installed."
+  writeBlue "Not installing Chart Releaser, it is already installed."
 fi
 
 # istioctl
@@ -472,7 +472,7 @@ elif $UPDATE; then
     writeBlue "Not updating istioctl, it is already up to date."
   fi
 elif $VERBOSE; then
-  writeBlue "Not intalling Istioctl, it is already installed."
+  writeBlue "Not installing Istioctl, it is already installed."
 fi
 
 # eza (exa fork)
@@ -515,7 +515,7 @@ if [ "$ARCH" != '' ]; then
       writeBlue "Not updating eza, it is already up to date."
     fi
   elif $VERBOSE; then
-    writeBlue "Not intalling Eza, it is already installed."
+    writeBlue "Not installing Eza, it is already installed."
   fi
 fi
 
@@ -540,7 +540,7 @@ elif $UPDATE; then
     writeBlue "Not updating Tflint, it is already up to date."
   fi
 elif $VERBOSE; then
-  writeBlue "Not intalling TFLint, it is already installed."
+  writeBlue "Not installing TFLint, it is already installed."
 fi
 
 # delta
@@ -582,7 +582,7 @@ if [ "$ARCH" != '' ]; then
       writeBlue "Not updating Delta, it is already up to date."
     fi
   elif $VERBOSE; then
-    writeBlue "Not intalling Delta, it is already installed."
+    writeBlue "Not installing Delta, it is already installed."
   fi
 fi
 
@@ -592,7 +592,7 @@ if ! hash gh 2>/dev/null; then
   addSourceListAndKey https://cli.github.com/packages/githubcli-archive-keyring.gpg "https://cli.github.com/packages stable main" githubcli
   apt-get install gh -y
 elif $VERBOSE; then
-  writeBlue "Not intalling Github CLI, it is already installed."
+  writeBlue "Not installing Github CLI, it is already installed."
 fi
 
 # k9s
@@ -711,7 +711,7 @@ elif $UPDATE; then
     writeBlue "Not updating Carapace, it is already up to date."
   fi
 elif $VERBOSE; then
-  writeBlue "Not intalling Carapace, it is already installed."
+  writeBlue "Not installing Carapace, it is already installed."
 fi
 
 # kn / knative
@@ -732,7 +732,7 @@ elif $UPDATE; then
     writeBlue "Not updating Knative, it is already up to date."
   fi
 elif $VERBOSE; then
-  writeBlue "Not intalling Knative, it is already installed."
+  writeBlue "Not installing Knative, it is already installed."
 fi
 
 # knative func
@@ -742,7 +742,32 @@ if ! hash kn 2>/dev/null; then
   installBinToUsrLocalBin "$KNATIVE_FUNC_DL_URL" kn-func
   # we don' have an update because func version does not match the release version from Github
 elif $VERBOSE; then
-  writeBlue "Not intalling Knative func, it is already installed."
+  writeBlue "Not installing Knative func, it is already installed."
+fi
+
+# kubecolor
+installKubecolor () {
+  KUBECOLOR_DL_URL=`githubReleaseDownloadUrl kubecolor/kubecolor Linux_x86_64`
+  curl -fsSL --output /tmp/kubecolor.tar.gz "$KUBECOLOR_DL_URL"
+  rm /tmp/kubecolor -rf
+  mkdir -p /tmp/kubecolor
+  tar -xvzf /tmp/kubecolor.tar.gz -C /tmp/kubecolor/
+  rm /tmp/kubecolor.tar.gz
+  mv /tmp/kubecolor/kubecolor /usr/local/bin/
+  rm /tmp/kubecolor -rf
+}
+if ! hash kubecolor 2>/dev/null; then
+  writeBlue "Install Kubecolor."
+  installKubecolor
+elif $UPDATE; then
+  if versionsDifferent "`kubecolor --kubecolor-version`" "`githubLatestReleaseVersion kubecolor/kubecolor`"; then
+    writeBlue "Update Kubecolor."
+    installKubecolor
+  elif $VERBOSE; then
+    writeBlue "Not updating Kubecolor, it is already up to date."
+  fi
+elif $VERBOSE; then
+  writeBlue "Not installing Kubecolor, it is already installed."
 fi
 
 # upgrade

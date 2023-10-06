@@ -115,6 +115,7 @@ fi
 
 # apt packages
 APT_PKGS_TO_INSTALL=`echo "asciinema
+apt-file
 autoconf
 bat
 bison
@@ -136,6 +137,7 @@ libffi-dev
 libgdbm-dev
 libgdbm6
 libncurses5-dev
+libnss-myhostname
 libpython3-dev
 libreadline-dev
 libssl-dev

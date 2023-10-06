@@ -156,6 +156,7 @@ installBinToHomeBin () {
   chmod +x "$BIN"
 }
 
+# use it like this: installBinToUsrLocalBin "`githubReleaseDownloadUrl knative/client kn-linux-amd64`" kn
 installBinToUsrLocalBin () {
   if [ -v 2 ]; then
     BIN=/usr/local/bin/$2
@@ -166,8 +167,35 @@ installBinToUsrLocalBin () {
     BIN=`echo "${BIN%%\#*}"` # remove fragment
     BIN=/usr/local/bin/$BIN
   fi
+  rm -f "$BIN"
   curl -fsSL --output "$BIN" "$1"
   chmod +x "$BIN"
+}
+
+# use it like this: installTarToUsrLocalBin "`githubReleaseDownloadUrl dotnet/cli-lab`" path/in/tar/dotnet-core-uninstall dotnet-core-uninstall
+# first parameter is url,
+# second parameter is file path inside tar file,
+# third parameter is optional and is the executable name - if not supplied it will be inferred from the second parameter
+installTarToUsrLocalBin () {
+  TAR_FILE_NAME=$1
+  TAR_FILE_NAME="${TAR_FILE_NAME##*/}" # get file name
+  TAR_FILE_NAME="${TAR_FILE_NAME%%\?*}" # remove query string
+  TAR_FILE_NAME="${TAR_FILE_NAME%%\#*}" # remove fragment
+  if [ -v 3 ]; then
+    BIN=/usr/local/bin/$3
+  else
+    BIN=$2
+    BIN="${BIN##*/}"
+    BIN=/usr/local/bin/$BIN
+  fi
+  rm -f "/tmp/$TAR_FILE_NAME"
+  curl -fsSL --output "/tmp/$TAR_FILE_NAME" "$1"
+  rm -rf "/tmp/$TAR_FILE_NAME.dir"
+  mkdir -p "/tmp/$TAR_FILE_NAME.dir"
+  tar -xzf "/tmp/$TAR_FILE_NAME" -C "/tmp/$TAR_FILE_NAME.dir/" "$2"
+  rm -f "$BIN"
+  mv "/tmp/$TAR_FILE_NAME.dir/$2" "$BIN"
+  rm "/tmp/$TAR_FILE_NAME"
 }
 
 addSourceListAndKey () {

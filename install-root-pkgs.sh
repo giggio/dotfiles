@@ -289,6 +289,15 @@ elif $VERBOSE; then
   writeBlue "Not installing .NET SDK, it is already installed."
 fi
 
+# dotnet-install
+if ! hash dotnet-install 2>/dev/null; then
+  writeBlue "Install dotnet-install."
+  installBinToUsrLocalBin https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
+  ln -s /usr/local/bin/dotnet-install.sh /usr/local/bin/dotnet-install
+elif $VERBOSE; then
+  writeBlue "Not installing dotnet-install, it is already installed."
+fi
+
 # dotnet-uninstall # todo: not yet available, see: https://github.com/dotnet/cli-lab/issues/217
 # if ! hash dotnet-uninstall 2>/dev/null; then
 #   writeBlue "Install dotnet-uninstall."

@@ -287,6 +287,14 @@ elif $VERBOSE; then
   writeBlue "Not installing .NET SDK, it is already installed."
 fi
 
+# dotnet-uninstall # todo: not yet available, see: https://github.com/dotnet/cli-lab/issues/217
+# if ! hash dotnet-uninstall 2>/dev/null; then
+#   writeBlue "Install dotnet-uninstall."
+#   installTarToUsrLocalBin https://github.com/dotnet/cli-lab/releases/download/1.6.0/dotnet-core-uninstall.tar.gz dotnet-core-uninstall # fixed version because that repo may release other things
+# elif $VERBOSE; then
+#   writeBlue "Not installing dotnet-uninstall, it is already installed."
+# fi
+
 # az
 if ! hash az 2>/dev/null; then
   writeBlue "Install Az."

@@ -60,3 +60,4 @@
     ~/bin/n: tools/n/bin/n
     ~/bin/terraform: tools/tfenv/bin/terraform
     ~/bin/tfenv: tools/tfenv/bin/tfenv
+    ~/bin/dotnet-uninstall: home/bin/dotnet-uninstall

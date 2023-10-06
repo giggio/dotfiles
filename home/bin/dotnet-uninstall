@@ -1,0 +1,167 @@
+#!/bin/bash
+
+set -euo pipefail
+# similar to dotnet-install
+# sudo dotnet-install --channel 8.0 --quality preview --install-dir /usr/share/dotnet
+
+writeStdErrRed () {
+  >&2 echo  -e "\e[31m$@\e[0m"
+}
+
+die () {
+  writeStdErrRed "$@"
+  exit 1
+}
+
+LOCATION='/usr/share/dotnet'
+function usage() {
+  if ! [ -v 1 ]; then
+    writeStdErrRed "Usage: $0"
+  fi
+  cat <<< "dotnet-uninstall --help
+.NET SDK Uninstaller
+Usage: dotnet-uninstall.sh [-c|--channel <CHANNEL>] [-v|--version <VERSION>] [-q|--quality <QUALITY>]
+       dotnet-uninstall.sh -h|--help
+
+dotnet-uninstall is a simple command line interface for uninstalling the dotnet sdk from a specified location.
+
+Options:
+  -c,--channel <CHANNEL>         Download from the channel specified, Defaults to 'LTS'.
+    Possible values:
+    - STS - the most recent Standard Term Support release
+    - LTS - the most recent Long Term Support release
+    - 2-part version in a format A.B - represents a specific release
+        examples: 2.0; 1.0
+    - 3-part version in a format A.B.Cxx - represents a specific SDK release
+        examples: 5.0.1xx, 5.0.2xx.
+        Supported since 5.0 release
+    Note: The version parameter overrides the channel parameter when any version other than 'latest' is used.
+  -v,--version <VERSION>         Use specific VERSION, Defaults to 'Latest'.
+    Possible values:
+    - latest - the latest build on specific channel
+    - 3-part version in a format A.B.C - represents specific version of build
+        examples: 2.0.0-preview2-006120; 1.1.0
+  -q,--quality <QUALITY>         Download the latest build of specified quality in the channel.
+    The possible values are: daily, signed, validated, preview, GA.
+    Works only in combination with channel. Not applicable for STS and LTS channels and will be ignored if those channels are used.
+    For SDK use channel in A.B.Cxx format. Using quality for SDK together with channel in A.B format is not supported.
+    Supported since 5.0 release.
+    Note: The version parameter overrides the channel parameter when any version other than 'latest' is used, and therefore overrides the quality.
+  -i,--install-dir <LOCATION>    The location to uninstall from. Defaults to $LOCATION
+  -v,--verbose                   Verbose output
+  -h,--help                      Shows this help message
+"
+  if [ -v 1 ]; then
+    exit 0
+  else
+    exit 1
+  fi
+}
+
+SHOW_HELP=false
+VERBOSE=false
+CHANNEL=''
+CHANNEL_TO_UNINSTALL=''
+VERSION=''
+VERSION_TO_UNINSTALL=''
+QUALITY=''
+QUALITY_TO_UNINSTALL=''
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --channel|-c)
+    CHANNEL="$1 $2"
+    CHANNEL_TO_UNINSTALL="$2"
+    shift
+    shift
+    ;;
+    --version|-v)
+    VERSION="$1 $2"
+    VERSION_TO_UNINSTALL="$2"
+    shift
+    shift
+    ;;
+    --quality|-q)
+    QUALITY="$1 $2"
+    QUALITY_TO_UNINSTALL="$2"
+    shift
+    shift
+    ;;
+    --install-dir|-i)
+    LOCATION="$2"
+    shift
+    shift
+    ;;
+    --help|-h)
+    SHOW_HELP=true
+    break
+    ;;
+    --verbose)
+    VERBOSE=true
+    shift
+    ;;
+    *)
+    shift
+    ;;
+  esac
+done
+
+if $SHOW_HELP; then
+  usage 1
+fi
+
+if [ "$VERSION" == '' ] && [ "$QUALITY" == '' ] && [ "$CHANNEL" == '' ]; then
+  usage
+fi
+
+if [ "$VERSION_TO_UNINSTALL" != '' ] && [ "$VERSION_TO_UNINSTALL" != 'latest' ]; then
+  if ! echo -n "$VERSION_TO_UNINSTALL" | grep --color=never -Pz '^\d+\.\d+\.\d+(-(\w+\.?)+)?(\+(\w+\.?)+)?$' > /dev/null; then
+    usage
+  fi
+fi
+if [ "$QUALITY_TO_UNINSTALL" != '' ] && [ "$QUALITY_TO_UNINSTALL" != 'daily' ] && [ "$QUALITY_TO_UNINSTALL" != 'signed' ] && [ "$QUALITY_TO_UNINSTALL" != 'validated' ] && [ "$QUALITY_TO_UNINSTALL" != 'preview' ] && [ "$QUALITY_TO_UNINSTALL" != 'GA' ]; then
+  usage
+fi
+if [ "$CHANNEL_TO_UNINSTALL" != '' ] && [ "$CHANNEL_TO_UNINSTALL" != 'STS' ] && [ "$CHANNEL_TO_UNINSTALL" != 'LTS' ]; then
+  if ! echo -n "$CHANNEL_TO_UNINSTALL" | grep --color=never -Pz '^\d+\.\d(\.\d{3})?$' > /dev/null; then
+    usage
+  fi
+fi
+
+TAR_DL_URL=`dotnet-install.sh $VERSION $CHANNEL $QUALITY --dry-run | grep --color=never 'URL #0' | sed -E 's/.*(https:\/\/.*)/\1/g'`
+if $VERBOSE; then
+  echo "Download url is '$TAR_DL_URL'."
+fi
+TAR_FILE_NAME="$TAR_DL_URL"
+TAR_FILE_NAME="${TAR_FILE_NAME##*/}" # get file name
+TAR_FILE_NAME="${TAR_FILE_NAME%%\?*}" # remove query string
+TAR_FILE_NAME="${TAR_FILE_NAME%%\#*}" # remove fragment
+TAR_FULL_FILE_NAME="/tmp/$TAR_FILE_NAME"
+if ! [ -f "$TAR_FULL_FILE_NAME" ]; then
+  if $VERBOSE; then
+    echo "Downloading '$TAR_DL_URL' to '$TAR_FULL_FILE_NAME'."
+  fi
+  curl -fsSL --output "$TAR_FULL_FILE_NAME" "$TAR_DL_URL"
+fi
+if $VERBOSE; then
+  echo "Listing files from '$TAR_FULL_FILE_NAME'."
+fi
+ALL_FILES_AND_DIRS=`tar -ztf "$TAR_FULL_FILE_NAME"`
+ALL_FILES=`echo "$ALL_FILES_AND_DIRS" | grep --color=never -v -E -e '^\.\/[^\/]+$' -e '.*\/$'` # also excludes top level files
+if $VERBOSE; then
+  echo "Files to be deleted are:"
+  echo "$ALL_FILES"
+fi
+if $VERBOSE; then
+  echo "Deleting files from $LOCATION."
+fi
+pushd "$LOCATION" > /dev/null
+RM_VERBOSE=''
+if $VERBOSE; then
+  RM_VERBOSE='-v'
+fi
+rm -f $RM_VERBOSE $ALL_FILES
+find . -empty -type d -delete
+popd > /dev/null
+if $VERBOSE; then
+  echo "Done."
+fi

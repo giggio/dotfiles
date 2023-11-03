@@ -265,3 +265,20 @@ elif $UPDATE; then
 elif $VERBOSE; then
   writeBlue "Not installing docker-slim, it is already installed."
 fi
+
+# bin
+if ! hash bin 2>/dev/null; then
+  writeBlue "Install Bin."
+  BIN_DL_URL=`githubReleaseDownloadUrl marcosnils/bin linux_amd64`
+  curl -fsSL --output /tmp/bin "$BIN_DL_URL"
+  chmod +x /tmp/bin
+  mkdir -p "$HOME"/.config/bin/
+  echo '{ "default_path": "'"$HOME"'/bin", "bins": { } }' > "$HOME"/.config/bin/config.json
+  /tmp/bin install github.com/marcosnils/bin
+  rm /tmp/bin
+elif $UPDATE; then
+  writeBlue "Update Bin."
+  bin update bin --yes
+elif $VERBOSE; then
+  writeBlue "Not installing Bin, it is already installed."
+fi

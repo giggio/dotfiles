@@ -7,7 +7,6 @@ if [ "$EUID" == "0" ]; then
   die "Please do not run this script as root"
 fi
 
-GH_USERNAME_PASSWORD=''
 CURL_OPTION_GH_USERNAME_PASSWORD=''
 UPDATE=false
 SHOW_HELP=false
@@ -15,8 +14,7 @@ VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --gh)
-    GH_USERNAME_PASSWORD=$2
-    CURL_OPTION_GH_USERNAME_PASSWORD=" --user $2 "
+    CURL_OPTION_GH_USERNAME_PASSWORD=" -H 'Authorization: token $2' "
     shift
     shift
     ;;
@@ -57,8 +55,7 @@ fi
 
 if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS
-  Update is $UPDATE
-  Github username and password is $GH_USERNAME_PASSWORD"
+  Update is $UPDATE"
 fi
 
 # dvm - deno
@@ -99,10 +96,14 @@ fi
 
 # rust
 if ! [ -x $HOME/.cargo/bin/rustc ]; then
+  writeBlue "Install Rust tools."
   curl -fsSL https://sh.rustup.rs | bash -s -- -y --no-modify-path
   $HOME/.cargo/bin/rustup toolchain install {stable,beta,nightly}
 elif $UPDATE; then
+  writeBlue "Update Rust tools."
   $HOME/.cargo/bin/rustup update
+elif $VERBOSE; then
+  writeBlue "Not installing Rust tools, it is already installed."
 fi
 
 # tfenv
@@ -131,6 +132,8 @@ elif $UPDATE; then
     $BASEDIR/tools/tfenv/bin/tfenv install latest
     $BASEDIR/tools/tfenv/bin/tfenv use latest
   fi
+elif $VERBOSE; then
+  writeBlue "Not installing Tfenv, it is already installed."
 fi
 
 # krew
@@ -144,8 +147,7 @@ if ! hash kubectl-krew 2>/dev/null && ! [ -e $HOME/.krew/bin/kubectl-krew ]; the
   rm -rf /tmp/krew/
   rm /tmp/krew.tar.gz
 elif $UPDATE; then
-  VERSION=`githubLatestReleaseVersion kubernetes-sigs/krew`
-  CURRENT_VERSION=`kubectl krew version | grep GitTag | awk '{print $2}'`
+  writeBlue "Update krew."
   kubectl krew upgrade
 elif $VERBOSE; then
   writeBlue "Not installing Krew, it is already installed."
@@ -200,7 +202,7 @@ if [ "$GO_ARCH" != '' ]; then
   installGolang () {
     curl -fsSL --output /tmp/go.tar.gz https://go.dev/dl/go$GO_AVAILABLE_VERSION.linux-$GO_ARCH.tar.gz
     rm -rf $HOME/.go/
-    tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src
+    tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src go/go.env
     mv /tmp/go $HOME/.go
     rm /tmp/go.tar.gz
   }
@@ -224,6 +226,7 @@ fi
 
 #fzf
 if ! [ -e $HOME/.fzf/bin/fzf ] || $UPDATE; then
+  writeBlue "Install/update fzf."
   $HOME/.fzf/install --no-update-rc --no-completion --no-key-bindings --no-bash
 fi
 

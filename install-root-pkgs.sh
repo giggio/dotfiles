@@ -7,7 +7,6 @@ if [ "$EUID" != "0" ]; then
   die "Please do not run this script as root"
 fi
 
-GH_USERNAME_PASSWORD=''
 CURL_OPTION_GH_USERNAME_PASSWORD=''
 UPDATE=false
 CLEAN=false
@@ -16,8 +15,7 @@ VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --gh)
-    GH_USERNAME_PASSWORD=$2
-    CURL_OPTION_GH_USERNAME_PASSWORD=" --user $2 "
+    CURL_OPTION_GH_USERNAME_PASSWORD=" -H 'Authorization: token $2' "
     shift
     shift
     ;;
@@ -64,7 +62,6 @@ fi
 if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS
   Update is $UPDATE
-  Github username and password is $GH_USERNAME_PASSWORD
   Clean is $CLEAN"
 fi
 
@@ -512,7 +509,7 @@ case `uname -m` in
     ;;
 esac
 installEza () {
-  EZA_DL_URL=`githubReleaseDownloadUrl eza-community/eza "^eza_$ARCH-unknown-linux"`
+  EZA_DL_URL=`githubReleaseDownloadUrl eza-community/eza "^eza_$ARCH-unknown-linux-gnu.tar.gz"`
   curl -fsSL --output /tmp/eza.tar.gz "$EZA_DL_URL"
   rm -rf /tmp/eza
   mkdir /tmp/eza
@@ -716,14 +713,14 @@ fi
 # carapace
 installCarapace () {
   CARAPACE_DL_URL=`githubReleaseDownloadUrl rsteube/carapace-bin linux_amd64.deb`
-  installDeb $CARAPACE_DL_URL
+  installDeb "$CARAPACE_DL_URL"
 }
 if ! hash carapace 2>/dev/null; then
   writeBlue "Install Carapace."
   installCarapace
 elif $UPDATE; then
   CARAPACE_LATEST_VERSION=`githubLatestReleaseVersion rsteube/carapace-bin`
-  if versionsDifferent  `carapace --version` "$CARAPACE_LATEST_VERSION"; then
+  if versionsDifferent "`carapace --version`" "$CARAPACE_LATEST_VERSION"; then
     writeBlue "Update Carapace."
     installCarapace
   elif $VERBOSE; then

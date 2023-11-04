@@ -56,4 +56,5 @@ $BASEDIR/install-user-pkgs.sh "$@"
 $BASEDIR/install-platform-tools.sh "$@"
 sudo -E $BASEDIR/configure-root-env.sh "$@"
 $BASEDIR/configure-user-env.sh "$@"
+sudo -E "$BASEDIR"/configure-systemd.sh "$@"
 

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [ "$EUID" != "0" ]; then
+  >&2 echo "Please run this script as root"
+  exit 2
+fi
+FORCE=false
+if [ "$#" -ge 1 ]; then
+  if [ "$1" == '--force' ] || [ "$1" == '-f' ]; then
+    FORCE=true
+  fi
+fi
+CACHED=`grep ^Cached /proc/meminfo | awk '{print $2}'`
+if $FORCE; then
+  echo "Running with force."
+fi
+if $FORCE || [ "$CACHED" -gt '4194304' ]; then
+  sync
+  echo 3 > /proc/sys/vm/drop_caches
+  echo "Cached memory cleaned."
+elif [ "$((10 % `date -u +%M`))" == '0' ]; then # only log every 10 minutes
+  echo "Cached memory is low ($CACHED kBs), no need to clean."
+fi

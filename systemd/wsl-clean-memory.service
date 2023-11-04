@@ -1,0 +1,5 @@
+[Unit]
+Description=Clean WSL Memory if needed
+
+[Service]
+ExecStart=/usr/local/sbin/wsl-clean-memory

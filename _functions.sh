@@ -22,7 +22,7 @@ unset FUNCTIONS_ARGS
 
 getLatestVersion() {
   local MAX=0.0.0
-  while read VERSION; do
+  while read -r VERSION; do
     if [ "$VERSION" == '' ]; then
       continue
     fi
@@ -41,10 +41,10 @@ getLatestVersion() {
     elif [[ "$MAX" =~ ^[[:digit:]]+$ ]]; then
       MAX_TO_MATCH="$MAX.0.0"
     fi
-    if [[ `pysemver compare $MAX_TO_MATCH $VERSION_TO_MATCH 2> /dev/null` == '-1' ]]; then
+    if [[ `pysemver compare "$MAX_TO_MATCH" "$VERSION_TO_MATCH" 2> /dev/null` == '-1' ]]; then
       MAX=$VERSION
     fi
-  done <<< `echo "$1"`
+  done <<< "$1"
   echo "$MAX"
 }
 
@@ -109,22 +109,19 @@ checkIfNeedsGitPull () {
   BASE=`git merge-base @ "$UPSTREAM"`
   if [ "$LOCAL" = "$REMOTE" ]; then
     # up to date
-    echo 'false'
+    return 1
   elif [ "$LOCAL" = "$BASE" ]; then
-    echo 'true'
+    return 0
   elif [ "$REMOTE" = "$BASE" ]; then
     # Needs to push, so no
-    echo 'false'
-  else
-    # Diverged, so no
-    echo 'false'
+    return 1
   fi
+  # Diverged, so no
+  return 1
 }
 
 versionsEqual () {
-  V1=`echo "$1" | sed 's/^v//'`
-  V2=`echo "$2" | sed 's/^v//'`
-  [ "$V1" == "$V2" ]
+  [ "${1/#v/}" == "${2/#v/}" ]
 }
 
 versionsDifferent () {
@@ -133,13 +130,13 @@ versionsDifferent () {
 
 installDeb () {
   DEB=$1
-  DEB=`echo "${DEB##*/}"` # get file name
-  DEB=`echo "${DEB%%\?*}"` # remove query string
-  DEB=`echo "${DEB%%\#*}"` # remove fragment
+  DEB="${DEB##*/}" # get file name
+  DEB="${DEB%%\?*}" # remove query string
+  DEB="${DEB%%\#*}" # remove fragment
   DEB=/tmp/$DEB
-  curl -fsSL --output $DEB $1
-  apt-get install $DEB
-  rm $DEB
+  curl -fsSL --output "$DEB" "$1"
+  apt-get install "$DEB"
+  rm "$DEB"
 }
 
 installBinToHomeBin () {
@@ -147,9 +144,9 @@ installBinToHomeBin () {
     BIN=$HOME/bin/$2
   else
     BIN=$1
-    BIN=`echo "${BIN##*/}"` # get file name
-    BIN=`echo "${BIN%%\?*}"` # remove query string
-    BIN=`echo "${BIN%%\#*}"` # remove fragment
+    BIN="${BIN##*/}" # get file name
+    BIN="${BIN%%\?*}" # remove query string
+    BIN="${BIN%%\#*}" # remove fragment
     BIN=$HOME/bin/$BIN
   fi
   curl -fsSL --output "$BIN" "$1"
@@ -162,9 +159,9 @@ installBinToUsrLocalBin () {
     BIN=/usr/local/bin/$2
   else
     BIN=$1
-    BIN=`echo "${BIN##*/}"` # get file name
-    BIN=`echo "${BIN%%\?*}"` # remove query string
-    BIN=`echo "${BIN%%\#*}"` # remove fragment
+    BIN="${BIN##*/}" # get file name
+    BIN="${BIN%%\?*}" # remove query string
+    BIN="${BIN%%\#*}" # remove fragment
     BIN=/usr/local/bin/$BIN
   fi
   rm -f "$BIN"
@@ -220,14 +217,14 @@ addKey () {
   fi
   local KEYRING_TMP_FILE=/tmp/$KEYRING_FILE
   KEYRING_FILE=/etc/apt/trusted.gpg.d/$KEYRING_FILE
-  curl -fsSL --output $KEYRING_TMP_FILE $KEYRING_URL
-  if [ `file --mime-type -b $KEYRING_TMP_FILE` == 'application/pgp-keys' ]; then
+  curl -fsSL --output "$KEYRING_TMP_FILE" "$KEYRING_URL"
+  if [ "`file --mime-type -b "$KEYRING_TMP_FILE"`" == 'application/pgp-keys' ]; then
     writeBlue "Converting $KEYRING_TMP_FILE to $KEYRING_FILE with gpg --dearmor"
-    cat $KEYRING_TMP_FILE | gpg --dearmor > $KEYRING_FILE
-    rm $KEYRING_TMP_FILE
+    < "$KEYRING_TMP_FILE" gpg --dearmor > "$KEYRING_FILE"
+    rm "$KEYRING_TMP_FILE"
   else
     writeBlue "Saving gpg key to $KEYRING_FILE"
-    mv $KEYRING_TMP_FILE $KEYRING_FILE
+    mv "$KEYRING_TMP_FILE" "$KEYRING_FILE"
   fi
 }
 
@@ -245,25 +242,25 @@ addSourcesList () {
   fi
   KEYRING_FILE=/etc/apt/trusted.gpg.d/$KEYRING_FILE
   LIST_FILE_CONTENTS="deb [arch=`dpkg --print-architecture` signed-by=$KEYRING_FILE] $LIST_INFO"
-  if [ ! -f "/etc/apt/sources.list.d/$LIST_FILE.list" ] || [ "`cat /etc/apt/sources.list.d/$LIST_FILE.list`" != "$LIST_FILE_CONTENTS" ]; then
+  if [ ! -f "/etc/apt/sources.list.d/$LIST_FILE.list" ] || [ "`cat /etc/apt/sources.list.d/"$LIST_FILE".list`" != "$LIST_FILE_CONTENTS" ]; then
     writeBlue "Creating or updating file '/etc/apt/sources.list.d/$LIST_FILE.list' with value: '$LIST_FILE_CONTENTS'"
-    echo "$LIST_FILE_CONTENTS" > /etc/apt/sources.list.d/$LIST_FILE.list
+    echo "$LIST_FILE_CONTENTS" > /etc/apt/sources.list.d/"$LIST_FILE".list
     apt-get update
   elif $VERBOSE; then
     writeBlue "Not creating file '/etc/apt/sources.list.d/$LIST_FILE.list', it already exists and has the correct value."
   fi
 }
 
-dumpStack () {
-    local i=0
-    local line_no
-    local function_name
-    local file_name
-    while caller $i; do
-      ((i++))
-    done | while read line_no function_name file_name; do
-      echo -e "\t$file_name:$line_no\t$function_name"
-    done >&2
+dump_stack () {
+  local i=0
+  local line_no
+  local function_name
+  local file_name
+  while caller $i; do
+    ((i++))
+  done | while read -r line_no function_name file_name; do
+    echo -e "\t$file_name:$line_no\t$function_name"
+  done >&2
 }
 
 showVars() {
@@ -271,19 +268,20 @@ showVars() {
 }
 
 getOptions () {
-  PARSED_ARGS=`getopt -o cuh --long gh:,clean,update,help,verbose,quick,skip-post-install -n $(readlink -f $0) -- "$@"`
+  # shellcheck disable=SC2034
+  PARSED_ARGS=`getopt -o cuh --long gh:,clean,update,help,verbose,quick,skip-post-install -n "$(readlink -f "$0")" -- "$@"`
 }
 
 writeBlue () {
-  echo  -e "\e[34m`date +'%Y-%m-%dT%H:%M:%S'`: $@\e[0m"
+  echo  -e "\e[34m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
 }
 
 writeGreen () {
-  echo  -e "\e[32m`date +'%Y-%m-%dT%H:%M:%S'`: $@\e[0m"
+  echo  -e "\e[32m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
 }
 
 writeStdErrRed () {
-  >&2 echo  -e "\e[31m`date +'%Y-%m-%dT%H:%M:%S'`: $@\e[0m"
+  >&2 echo  -e "\e[31m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
 }
 
 die () {

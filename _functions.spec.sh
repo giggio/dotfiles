@@ -1,12 +1,13 @@
 #!/usr/bin/env bats
+# shellcheck disable=SC2317
 
 setup() {
 
   load '_test-helpers.sh'
-  rm -f $BATS_TMPDIR/bats-mock.*
+  rm -f "$BATS_TMPDIR"/bats-mock.*
   curl_mock="`mock_create`"
 
-  . $BATS_TEST_DIRNAME/_functions.sh --curl "$curl_mock"
+  . "$BATS_TEST_DIRNAME"/_functions.sh --curl "$curl_mock"
 }
 
 @test "Test simple version compare" {
@@ -178,8 +179,8 @@ setup() {
   }
 ]'
   run githubReleaseDownloadUrl x/y
-  assert_equal "`mock_get_call_num $curl_mock`" '1'
-  assert_equal "`mock_get_call_args $curl_mock`" '-fsSL https://api.github.com/repos/x/y/releases'
+  assert_equal "`mock_get_call_num "$curl_mock"`" '1'
+  assert_equal "`mock_get_call_args "$curl_mock"`" '-fsSL https://api.github.com/repos/x/y/releases'
   assert_output 'z'
 }
 

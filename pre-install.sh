@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_common-setup.sh
+. "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   die "Please run this script as root"
@@ -36,7 +36,7 @@ if $SHOW_HELP; then
 Packages for the installation, setup basic tools for dotbot.
 
 Usage:
-  `readlink -f $0` [flags]
+  `readlink -f "$0"` [flags]
 
 Flags:
   -u, --update             Will download and install/reinstall even if the tools are already installed
@@ -71,14 +71,16 @@ if ! hash pysemver 2>/dev/null; then
   PIP_PKGS_TO_INSTALL="semver"
   PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKGS_INSTALLED")`
   if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
-    writeBlue "Install packages "$PIP_PKGS_NOT_INSTALLED" with Pip for root."
+    # shellcheck disable=SC2086
+    writeBlue Install packages $PIP_PKGS_NOT_INSTALLED with Pip for root.
+    # shellcheck disable=SC2086
     pip3 install $PIP_PKGS_NOT_INSTALLED
   elif $VERBOSE; then
     writeBlue "Not installing Pip packages for root, they are already installed."
   fi
 fi
 
-if ([ -L /etc/localtime ] && [ `realpath /etc/localtime` == "/usr/share/zoneinfo/America/Sao_Paulo" ]) || $RUNNING_IN_CONTAINER; then
+if { [ -L /etc/localtime ] && [ "`realpath /etc/localtime`" == "/usr/share/zoneinfo/America/Sao_Paulo" ] ; } || $RUNNING_IN_CONTAINER; then
   if $VERBOSE; then
     writeBlue "Not updating time zones."
   fi

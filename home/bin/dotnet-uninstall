@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 # similar to dotnet-install
 # sudo dotnet-install --channel 8.0 --quality preview --install-dir /usr/share/dotnet
 
 writeStdErrRed () {
-  >&2 echo  -e "\e[31m$@\e[0m"
+  >&2 echo  -e "\e[31m$*\e[0m"
 }
 
 die () {
@@ -127,7 +127,7 @@ if [ "$CHANNEL_TO_UNINSTALL" != '' ] && [ "$CHANNEL_TO_UNINSTALL" != 'STS' ] && 
   fi
 fi
 
-TAR_DL_URL=`dotnet-install.sh $VERSION $CHANNEL $QUALITY --dry-run | grep --color=never 'URL #0' | sed -E 's/.*(https:\/\/.*)/\1/g'`
+TAR_DL_URL=`dotnet-install.sh "$VERSION" "$CHANNEL" "$QUALITY" --dry-run | grep --color=never 'URL #0' | sed -E 's/.*(https:\/\/.*)/\1/g'`
 if $VERBOSE; then
   echo "Download url is '$TAR_DL_URL'."
 fi
@@ -159,7 +159,7 @@ RM_VERBOSE=''
 if $VERBOSE; then
   RM_VERBOSE='-v'
 fi
-rm -f $RM_VERBOSE $ALL_FILES
+rm -f $RM_VERBOSE "$ALL_FILES"
 find . -empty -type d -delete
 popd > /dev/null
 if $VERBOSE; then

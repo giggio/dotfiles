@@ -4,7 +4,8 @@ if ! (return 0 2>/dev/null); then
 fi
 
 set -euo pipefail
-ALL_ARGS=$@
-. $BASEDIR/_functions.sh
+# shellcheck disable=SC2034
+ALL_ARGS=$*
+. "$BASEDIR"/_functions.sh
 getOptions "$@"
 eval set -- "$PARSED_ARGS"

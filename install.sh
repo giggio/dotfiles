@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_common-setup.sh
+. "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   die "Please do not run this script as root"
@@ -41,7 +41,7 @@ if $SHOW_HELP; then
 Installs the dotfiles.
 
 Usage:
-  `readlink -f $0` [flags]
+  `readlink -f "$0"` [flags]
 
 Flags:
   -u, --update             Will download and install/reinstall even if the tools are already installed

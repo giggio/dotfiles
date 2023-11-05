@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_common-setup.sh
+source "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   die "Please do not run this script as root"
@@ -36,7 +36,7 @@ if $SHOW_HELP; then
 Install platform tools (.NET tools, Npm tools, Pip tools etc).
 
 Usage:
-  `readlink -f $0` [flags]
+  `readlink -f "$0"` [flags]
 
 Flags:
   -u, --update             Will download and install/reinstall even if the tools are already installed
@@ -56,7 +56,9 @@ PIP_PKGS_TO_INSTALL="powerline-status
 xlsx2csv"
 PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKGS_INSTALLED")`
 if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
-  writeBlue "Install packages "$PIP_PKGS_NOT_INSTALLED" with Pip."
+  # shellcheck disable=SC2086
+  writeBlue Install packages $PIP_PKGS_NOT_INSTALLED with Pip.
+  # shellcheck disable=SC2086
   pip3 install --user $PIP_PKGS_NOT_INSTALLED
 else
   if $VERBOSE; then
@@ -66,7 +68,9 @@ fi
 if $UPDATE; then
   PIP_OUTDATED=`pip3 list --user --format columns --outdated | tail -n +3 | awk '{print $1}'`
   if [ "$PIP_OUTDATED" != '' ]; then
-    writeBlue "Update packages "$PIP_OUTDATED" with Pip."
+    # shellcheck disable=SC2086
+    writeBlue Update packages $PIP_OUTDATED with Pip.
+    # shellcheck disable=SC2086
     pip3 install --user --upgrade $PIP_OUTDATED
   else
     writeBlue "Not updating Pip packages, they are already up to date."
@@ -93,28 +97,28 @@ declare -A DOTNET_TOOLS=(
   ["pwsh"]="PowerShell"
 )
 for DOTNET_TOOL in "${!DOTNET_TOOLS[@]}"; do
-  if ! [ -f $DOTNET_TOOLS_DIR/$DOTNET_TOOL ]; then
+  if ! [ -f "$DOTNET_TOOLS_DIR/$DOTNET_TOOL" ]; then
     writeBlue "Install .NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]})."
-    dotnet tool update --global ${DOTNET_TOOLS[$DOTNET_TOOL]}
+    dotnet tool update --global "${DOTNET_TOOLS[$DOTNET_TOOL]}"
   elif $VERBOSE; then
     writeBlue ".NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]}) is already installed."
   fi
 done
-if ! [ -f $DOTNET_TOOLS_DIR/tye ]; then
+if ! [ -f "$DOTNET_TOOLS_DIR"/tye ]; then
   writeBlue "Install Tye."
   dotnet tool update --global Microsoft.Tye --prerelease
 fi
-if ! [ -f $DOTNET_TOOLS_DIR/dotnet-symbol ] || ! [ -d $HOME/.dotnet/sos ]; then
+if ! [ -f "$DOTNET_TOOLS_DIR"/dotnet-symbol ] || ! [ -d "$HOME"/.dotnet/sos ]; then
   writeBlue "Install .NET Symbol."
   dotnet tool update --global dotnet-symbol
-  $HOME/.dotnet/tools/dotnet-sos install
+  "$HOME"/.dotnet/tools/dotnet-sos install
 fi
 
 if $UPDATE; then
   updateDotnet () {
     if [ $# -lt 2 ]; then
       writeStdErrRed "'updateDotnet' needs at least 2 arguments."
-      dumpStack
+      dump_stack
       return
     fi
     local TOOL_NAME=$1
@@ -124,44 +128,45 @@ if $UPDATE; then
     else
       local PRERELEASE=''
     fi
-    local AVAILABLE_TOOL_VERSION=`dotnet tool search $TOOL_NAME $PRERELEASE | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
+    local AVAILABLE_TOOL_VERSION
+    AVAILABLE_TOOL_VERSION=`dotnet tool search "$TOOL_NAME" "$PRERELEASE" | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
     if [ "$AVAILABLE_TOOL_VERSION" == '' ]; then
       # search again if it fails, just to make sure
-      AVAILABLE_TOOL_VERSION=`dotnet tool search $TOOL_NAME $PRERELEASE | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
+      AVAILABLE_TOOL_VERSION=`dotnet tool search "$TOOL_NAME" "$PRERELEASE" | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
     fi
     if [ "$AVAILABLE_TOOL_VERSION" == '' ]; then
       writeBlue "Tool $TOOL_NAME seems to have changed names, installing the new one and uninstalling the old one."
-      dotnet tool uninstall -g $TOOL_NAME
-      dotnet tool update --global `dotnet tool search $TOOL_NAME | tail -n+3 | awk '{print $1}'`
+      dotnet tool uninstall -g "$TOOL_NAME"
+      dotnet tool update --global "`dotnet tool search "$TOOL_NAME" | tail -n+3 | awk '{print $1}'`"
     elif [ "$TOOL_VERSION" != "$AVAILABLE_TOOL_VERSION" ]; then
       writeBlue "Updating NET Tool $TOOL_NAME to $AVAILABLE_TOOL_VERSION."
-      dotnet tool update --global $TOOL_NAME $PRERELEASE
+      dotnet tool update --global "$TOOL_NAME" "$PRERELEASE"
     elif $VERBOSE; then
       writeBlue ".NET Tool $TOOL_NAME is version $AVAILABLE_TOOL_VERSION and does not need an update."
     fi
   }
   for TOOL_NAME_AND_VERSION in `dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}'`; do
-    TOOL_NAME=`echo $TOOL_NAME_AND_VERSION | cut -f1 -d':'`
-    TOOL_VERSION=`echo $TOOL_NAME_AND_VERSION | cut -f2 -d':'`
+    TOOL_NAME=`echo "$TOOL_NAME_AND_VERSION" | cut -f1 -d':'`
+    TOOL_VERSION=`echo "$TOOL_NAME_AND_VERSION" | cut -f2 -d':'`
     PRERELEASE=''
-    if echo $TOOL_VERSION | grep --color=never '-' > /dev/null; then
+    if echo "$TOOL_VERSION" | grep --color=never '-' > /dev/null; then
       PRERELEASE='--prerelease'
     fi
-    updateDotnet $TOOL_NAME $TOOL_VERSION $PRERELEASE &
+    updateDotnet "$TOOL_NAME" "$TOOL_VERSION" $PRERELEASE &
   done
   wait
 fi
 
 # node
 export N_PREFIX=$HOME/.n
-if ! hash node 2>/dev/null && ! [ -f $HOME/.n/bin/node ]; then
+if ! hash node 2>/dev/null && ! [ -f "$HOME"/.n/bin/node ]; then
   writeBlue "Install Install latest Node version through n."
-  $BASEDIR/tools/n/bin/n install latest
+  "$BASEDIR"/tools/n/bin/n install latest
 elif $UPDATE; then
-  LATEST_NODE=`$BASEDIR/tools/n/bin/n ls-remote | head -n 2 | tail -n 1`
-  if ! echo "`$BASEDIR/tools/n/bin/n ls`" | grep --color=never $LATEST_NODE -q; then
+  LATEST_NODE=`"$BASEDIR"/tools/n/bin/n ls-remote | head -n 2 | tail -n 1`
+  if ! "$BASEDIR"/tools/n/bin/n ls | grep --color=never "$LATEST_NODE" -q; then
     writeBlue "Install Install latest Node version through n."
-    $BASEDIR/tools/n/bin/n install latest
+    "$BASEDIR"/tools/n/bin/n install latest
   fi
 else
   if $VERBOSE; then
@@ -175,15 +180,7 @@ fi
 
 # npm tools
 export NG_CLI_ANALYTICS=ci
-NPM_PKGS_INSTALLED_NOT_ORGS=$(ls `npm prefix -g`/lib/node_modules | grep -v @)
-NPM_PKGS_INSTALLED_ORGS=''
-for ORG_DIR in $(ls -d `npm prefix -g`/lib/node_modules/* | grep --color=never @); do
-  for PKG in `ls $ORG_DIR`; do
-    NPM_PKGS_INSTALLED_ORGS+=$'\n'`basename $ORG_DIR`/$PKG
-  done
-done
-NPM_PKGS_INSTALLED_ORGS=`echo "$NPM_PKGS_INSTALLED_ORGS" | tail -n +2`
-NPM_PKGS_INSTALLED=`echo "$NPM_PKGS_INSTALLED_NOT_ORGS"$'\n'"$NPM_PKGS_INSTALLED_ORGS" | sort`
+NPM_PKGS_INSTALLED=$(npm ls -g --parseable --depth 0 | tail -n +2 | sed -E "s/$(npm prefix -g | sed 's/\//\\\//g')\/lib\/node_modules\///g" | sort)
 NPM_PKGS_TO_INSTALL=`echo "@angular/cli
 @githubnext/github-copilot-cli
 bash-language-server
@@ -215,7 +212,9 @@ vtop
 yaml-cli" | sort`
 NPM_PKGS_NOT_INSTALLED=`comm -23 <(echo "$NPM_PKGS_TO_INSTALL") <(echo "$NPM_PKGS_INSTALLED")`
 if [ "$NPM_PKGS_NOT_INSTALLED" != "" ]; then
-  writeBlue "Install packages "$NPM_PKGS_NOT_INSTALLED" with npm."
+  # shellcheck disable=SC2086
+  writeBlue Install packages $NPM_PKGS_NOT_INSTALLED with npm.
+  # shellcheck disable=SC2086
   npm install -g $NPM_PKGS_NOT_INSTALLED
 fi
 if $UPDATE; then
@@ -232,8 +231,8 @@ elif $VERBOSE; then
 fi
 
 # krew tools
-if [ -e $HOME/.krew/bin/kubectl-krew ]; then
-  if ! [[ $PATH =~ "$HOME/.krew/bin" ]]; then
+if [ -e "$HOME"/.krew/bin/kubectl-krew ]; then
+  if ! [[ $PATH =~ $HOME/.krew/bin ]]; then
     export PATH=$PATH:$HOME/.krew/bin
   fi
   KREW_PLUGINS_INSTALLED=`kubectl krew list | tail -n+1 | awk '{print $1}' | sort -u`
@@ -244,6 +243,7 @@ tail" | sort`
   KREW_PLUGINS_NOT_INSTALLED=`comm -23 <(echo "$KREW_PLUGINS_TO_INSTALL") <(echo "$KREW_PLUGINS_INSTALLED")`
   if [ "$KREW_PLUGINS_NOT_INSTALLED" != "" ]; then
     writeBlue "Installing Krew plugins: $KREW_PLUGINS_NOT_INSTALLED"
+    # shellcheck disable=SC2086
     kubectl krew install $KREW_PLUGINS_NOT_INSTALLED
   elif $VERBOSE; then
     writeBlue "Not installing krew plugins, they are already installed."
@@ -257,15 +257,17 @@ else
 fi
 
 # gem/ruby
-if [ -e $HOME/.rbenv/bin/rbenv ]; then
-  if ! [[ $PATH =~ "$HOME/.rbenv/bin" ]]; then
+if [ -e "$HOME"/.rbenv/bin/rbenv ]; then
+  if ! [[ $PATH =~ $HOME/.rbenv/bin ]]; then
     export PATH="$HOME/.rbenv/shims:$HOME/.rbenv/bin:$PATH"
   fi
   GEMS_INSTALLED=`gem list -q --no-versions | sort`
   GEMS_TO_INSTALL="lolcat"
   GEMS_NOT_INSTALLED=`comm -23 <(echo "$GEMS_TO_INSTALL") <(echo "$GEMS_INSTALLED")`
   if [ "$GEMS_NOT_INSTALLED" != "" ]; then
-    writeBlue "Install gems "$GEMS_NOT_INSTALLED"."
+    # shellcheck disable=SC2086
+    writeBlue Install gems $GEMS_NOT_INSTALLED.
+    # shellcheck disable=SC2086
     gem install $GEMS_NOT_INSTALLED
   else
     if $VERBOSE; then
@@ -276,7 +278,8 @@ else
   writeBlue "Rbenv not available, skipping..."
 fi
 
-if [ -f $HOME/.cargo/env ]; then
+if [ -f "$HOME"/.cargo/env ]; then
+  # shellcheck source=/dev/null
   source "$HOME/.cargo/env"
   # rust/cargo
   CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
@@ -297,7 +300,6 @@ just
 navi
 nu
 procs
-ripgrep
 sccache
 tealdeer
 tokei"
@@ -305,6 +307,7 @@ tokei"
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED" != "" ]; then
     writeBlue "Install crates $CRATES_NOT_INSTALLED."
+    # shellcheck disable=SC2086
     cargo install --locked $CRATES_NOT_INSTALLED
   else
     if $VERBOSE; then
@@ -313,7 +316,9 @@ tokei"
   fi
   CRATES_NOT_INSTALLED_NO_LOCK=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL_NO_LOCK")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED_NO_LOCK" != "" ]; then
-    writeBlue "Install crates $CRATES_NOT_INSTALLED_NO_LOCK without --locked."
+    # shellcheck disable=SC2086
+    writeBlue Install crates $CRATES_NOT_INSTALLED_NO_LOCK without --locked.
+    # shellcheck disable=SC2086
     cargo install $CRATES_NOT_INSTALLED_NO_LOCK
   else
     if $VERBOSE; then
@@ -326,7 +331,7 @@ tokei"
   fi
 fi
 
-if [ -e $HOME/.go/bin/go ]; then
+if [ -e "$HOME"/.go/bin/go ]; then
   export PATH=$PATH:$HOME/.go/bin
   if ! [[ -v GOPROXY ]]; then
     export GOPROXY=https://proxy.golang.org
@@ -337,9 +342,9 @@ if [ -e $HOME/.go/bin/go ]; then
     ["gup"]="nao1215/gup"
   )
   for PKG in "${!GO_PKGS[@]}"; do
-    if ! hash $PKG 2>/dev/null; then
+    if ! hash "$PKG" 2>/dev/null; then
       writeBlue "Install go package $PKG (github.com/${GO_PKGS[$PKG]}@latest)."
-      go install github.com/${GO_PKGS[$PKG]}@latest
+      go install github.com/"${GO_PKGS[$PKG]}"@latest
     elif $VERBOSE; then
       writeBlue "Go package $PKG (github.com/${GO_PKGS[$PKG]}@latest) is already installed."
     fi

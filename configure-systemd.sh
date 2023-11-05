@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -38,7 +38,7 @@ if $SHOW_HELP; then
 Configures systemd.
 
 Usage:
-  `readlink -f $0` [flags]
+  `readlink -f "$0"` [flags]
 
 Flags:
   -u, --update             Will reconfigure systemd even if configuration is already present

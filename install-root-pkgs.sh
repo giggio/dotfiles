@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_common-setup.sh
+. "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   die "Please do not run this script as root"
@@ -47,7 +47,7 @@ if $SHOW_HELP; then
 Installs root packages.
 
 Usage:
-  `readlink -f $0` [flags]
+  `readlink -f "$0"` [flags]
 
 Flags:
       --gh <user:pw>       GitHub username and password
@@ -70,14 +70,8 @@ if grep microsoft /proc/version -q; then
   WSL=true
 fi
 
-REPOS=`apt-cache policy | grep http | awk '{print $2"/dists/"$3}' | sort -u`
-printf -v REPOS $"$REPOS\n"
-if [ "$REPOS" == "" ] || $UPDATE; then
-  writeBlue "Update APT metadata."
-  apt-get update
-elif $VERBOSE; then
-  writeBlue "Not running apt-get update, repositories are already in place."
-fi
+writeBlue "Update APT metadata."
+apt-get update
 
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_TO_INSTALL=`echo "apt-transport-https
@@ -92,11 +86,13 @@ software-properties-common" | sort`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
   writeBlue "Install base packages with APT: $APT_PKGS_NOT_INSTALLED"
+  # shellcheck disable=SC2086
   apt-get install -y $APT_PKGS_NOT_INSTALLED
 elif $VERBOSE; then
   writeBlue "Not installing any of the base packages, they are already installed."
 fi
 
+REPOS=`apt-cache policy | grep http | awk '{print $2"/dists/"$3}' | sort -u`
 if ! [[ "$REPOS" =~ 'git-core/ppa' ]]; then
   writeBlue "Add git PPA."
   add-apt-repository --yes ppa:git-core/ppa
@@ -148,6 +144,7 @@ nmap
 pandoc
 pkg-config
 python3-pip
+ripgrep
 shellcheck
 socat
 scdaemon
@@ -160,12 +157,12 @@ w3m
 whois
 zip
 zlib1g-dev" | sort`
-# todo, add ripgrep when issue is fixed (move from cargo install)
-# see: https://github.com/sharkdp/bat/issues/938
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
-  writeBlue "Run custom installations with APT: "$APT_PKGS_NOT_INSTALLED" "
+  # shellcheck disable=SC2086
+  writeBlue Run custom installations with APT: $APT_PKGS_NOT_INSTALLED
+  # shellcheck disable=SC2086
   apt-get install -y $APT_PKGS_NOT_INSTALLED
 elif $VERBOSE; then
   writeBlue "Not installing packages with APT, they are all already installed."
@@ -182,19 +179,19 @@ installVim () {
 }
 if dpkg --compare-versions "$VIM_VERSION" lt 9.0; then
   writeBlue "Install Vim from source."
-  if [ -d $HOME/p/vim ];then rm -rf $HOME/p/vim; fi
-  mkdir -p $HOME/p/
-  git clone https://github.com/vim/vim $HOME/p/vim
-  pushd $HOME/p/vim > /dev/null
+  if [ -d "$HOME"/p/vim ]; then rm -rf "$HOME"/p/vim; fi
+  mkdir -p "$HOME"/p/
+  git clone https://github.com/vim/vim "$HOME"/p/vim
+  pushd "$HOME"/p/vim > /dev/null
   installVim
   popd > /dev/null
 elif $UPDATE; then
-  if ! [ -d $HOME/p/vim ];then
-    mkdir -p $HOME/p/
-    git clone https://github.com/vim/vim $HOME/p/vim
+  if ! [ -d "$HOME"/p/vim ];then
+    mkdir -p "$HOME"/p/
+    git clone https://github.com/vim/vim "$HOME"/p/vim
   fi
   writeBlue "Update Vim from source."
-  pushd $HOME/p/vim > /dev/null
+  pushd "$HOME"/p/vim > /dev/null
   git clean -fd > /dev/null
   git checkout -- :/ > /dev/null
   if [ "`git rev-parse --abbrev-ref HEAD`" != "master" ]; then
@@ -202,7 +199,8 @@ elif $UPDATE; then
   fi
   git reset --hard origin/master > /dev/null
   git fetch origin master > /dev/null
-  if `checkIfNeedsGitPull`; then
+  # shellcheck disable=SC2119
+  if checkIfNeedsGitPull; then
     writeBlue "Vim needs update."
     git pull origin master
     installVim
@@ -281,6 +279,7 @@ APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort 
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
   writeBlue "Install .NET cli."
+  # shellcheck disable=SC2086
   apt-get install -y $APT_PKGS_NOT_INSTALLED
 elif $VERBOSE; then
   writeBlue "Not installing .NET SDK, it is already installed."
@@ -324,7 +323,7 @@ fi
 # kubespy
 installKubespy () {
   KUBESPY_DL_URL=`githubReleaseDownloadUrl pulumi/kubespy linux`
-  curl -fsSL --output /tmp/kubespy.tar.gz $KUBESPY_DL_URL
+  curl -fsSL --output /tmp/kubespy.tar.gz "$KUBESPY_DL_URL"
   rm /tmp/kubespy -rf
   mkdir -p /tmp/kubespy
   tar -xvzf /tmp/kubespy.tar.gz -C /tmp/kubespy/
@@ -337,7 +336,7 @@ if ! hash kubespy 2>/dev/null; then
   installKubespy
 elif $UPDATE; then
   KUBESPY_LATEST_VERSION=`githubLatestReleaseVersion pulumi/kubespy`
-  if versionsDifferent `kubespy version` "$KUBESPY_LATEST_VERSION"; then
+  if versionsDifferent "`kubespy version`" "$KUBESPY_LATEST_VERSION"; then
     writeBlue "Update Kubespy."
     installKubespy
   elif $VERBOSE; then
@@ -350,14 +349,14 @@ fi
 # dive
 installDive () {
   DIVE_DL_URL=`githubReleaseDownloadUrl wagoodman/dive linux_amd64.deb`
-  installDeb $DIVE_DL_URL
+  installDeb "$DIVE_DL_URL"
 }
 if ! hash dive 2>/dev/null; then
   writeBlue "Install Dive."
   installDive
 elif $UPDATE; then
   DIVE_LATEST_VERSION=`githubLatestReleaseVersion wagoodman/dive`
-  if versionsDifferent  `dive --version | cut -f2 -d' '` "$DIVE_LATEST_VERSION"; then
+  if versionsDifferent  "`dive --version | cut -f2 -d' '`" "$DIVE_LATEST_VERSION"; then
     writeBlue "Update Dive."
     installDive
   elif $VERBOSE; then
@@ -399,6 +398,7 @@ fi
 # helm 2 and 3
 installHelm3 () {
   curl -fsSL --output /tmp/get-helm-3 https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+  # shellcheck disable=SC2016 # this is replacing shell instructions in a file, we don't want it to be interpreted
   sed -i 's/${BINARY_NAME:="helm"}/${BINARY_NAME:="helm3"}/' /tmp/get-helm-3
   chmod +x /tmp/get-helm-3
   /tmp/get-helm-3
@@ -434,7 +434,7 @@ if ! hash helm 2>/dev/null; then
   update-alternatives --set helm /usr/local/bin/helm3
 elif $UPDATE; then
   HELM3_LATEST_VERSION=`githubLatestReleaseVersion helm/helm`
-  if [ `helm3 version | sed -E 's/.*\{Version:"v([0-9]+\.[0-9]+\.[0-9]+).*/\1/'` != "$HELM3_LATEST_VERSION" ]; then
+  if [ "`helm3 version | sed -E 's/.*\{Version:"v([0-9]+\.[0-9]+\.[0-9]+).*/\1/'`" != "$HELM3_LATEST_VERSION" ]; then
     writeBlue "Update Helm 3."
     installHelm3
   elif $VERBOSE; then
@@ -447,7 +447,7 @@ fi
 # chart releaser - cr
 installCR () {
   CR_DL_URL=`githubReleaseDownloadUrl helm/chart-releaser linux_amd64.tar.gz$`
-  curl -fsSL --output /tmp/cr.tar.gz $CR_DL_URL
+  curl -fsSL --output /tmp/cr.tar.gz "$CR_DL_URL"
   rm /tmp/cr -rf
   mkdir -p /tmp/cr
   tar -xvzf /tmp/cr.tar.gz -C /tmp/cr/
@@ -473,8 +473,8 @@ fi
 # istioctl
 installIstio () {
   curl -fsSL https://istio.io/downloadIstioctl | sh -
-  mv $HOME/.istioctl/bin/istioctl /usr/local/bin/
-  rm -rf $HOME/.istioctl
+  mv "$HOME"/.istioctl/bin/istioctl /usr/local/bin/
+  rm -rf "$HOME"/.istioctl
 }
 if ! hash istioctl 2>/dev/null; then
   writeBlue "Install Istioctl."
@@ -549,7 +549,7 @@ if ! hash tflint 2>/dev/null; then
   installTFLint
 elif $UPDATE; then
   TFLINT_LATEST_VERSION=`githubLatestReleaseVersion terraform-linters/tflint`
-  if [ `tflint --version | head -n1 | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9]+)$/\1/'` != "$TFLINT_LATEST_VERSION" ]; then
+  if [ "`tflint --version | head -n1 | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9]+)$/\1/'`" != "$TFLINT_LATEST_VERSION" ]; then
     writeBlue "Update TFLint."
     installTFLint
   elif $VERBOSE; then
@@ -577,7 +577,7 @@ case `uname -m` in
 esac
 installDelta () {
   DELTA_DL_URL=`githubReleaseDownloadUrl dandavison/delta "^git-delta(?!-musl).*_$ARCH.deb$"`
-  installDeb $DELTA_DL_URL
+  installDeb "$DELTA_DL_URL"
 }
 if [ "$ARCH" != '' ]; then
   if ! hash delta 2>/dev/null; then
@@ -591,7 +591,7 @@ if [ "$ARCH" != '' ]; then
     installDelta
   elif $UPDATE; then
     DELTA_LATEST_VERSION=`githubLatestReleaseVersion dandavison/delta`
-    if [ `delta --version | awk '{print $2}'` != "$DELTA_LATEST_VERSION" ]; then
+    if [ "`delta --version | awk '{print $2}'`" != "$DELTA_LATEST_VERSION" ]; then
       writeBlue "Update Delta."
       installDelta
     elif $VERBOSE; then
@@ -684,7 +684,7 @@ if ! hash starship 2>/dev/null; then
   sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
 elif $UPDATE; then
   STARSHIP_LATEST_VERSION=`githubLatestReleaseVersion starship/starship`
-  if [ `starship --version | grep --color=never starship | awk '{print $2}'` != "$STARSHIP_LATEST_VERSION" ]; then
+  if [ "`starship --version | grep --color=never starship | awk '{print $2}'`" != "$STARSHIP_LATEST_VERSION" ]; then
     writeBlue "Update Starship."
     sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
   elif $VERBOSE; then
@@ -700,7 +700,7 @@ if ! hash act 2>/dev/null; then
   curl -fsSL https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin
 elif $UPDATE; then
   ACT_LATEST_VERSION=`githubLatestReleaseVersion nektos/act`
-  if [ `act --version | awk '{print $3}'` != "$ACT_LATEST_VERSION" ]; then
+  if [ "`act --version | awk '{print $3}'`" != "$ACT_LATEST_VERSION" ]; then
     writeBlue "Update Act."
     curl -fsSL https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin
   elif $VERBOSE; then

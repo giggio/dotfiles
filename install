@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_common-setup.sh
+. "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   die "Please do not run this script as root"
@@ -41,7 +41,7 @@ if $SHOW_HELP; then
 Dotfiles installer.
 
 Usage:
-  `readlink -f $0` [flags]
+  `readlink -f "$0"` [flags]
 
 Flags:
   -c, --clean              Will clean installed packages.
@@ -73,10 +73,10 @@ if [ -f /.dockerenv ] || grep docker /proc/1/cgroup -qa 2> /dev/null; then
 else
   export RUNNING_IN_CONTAINER=false
 fi
-sudo -E $BASEDIR/pre-install.sh "$@"
-$BASEDIR/install.sh "$@"
+sudo -E "$BASEDIR"/pre-install.sh "$@"
+"$BASEDIR"/install.sh "$@"
 if ! $SKIP_POST_INSTALL; then
-  $BASEDIR/post-install.sh "$@"
+  "$BASEDIR"/post-install.sh "$@"
 fi
 
 popd > /dev/null

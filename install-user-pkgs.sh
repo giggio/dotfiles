@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_common-setup.sh
+. "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   die "Please do not run this script as root"
@@ -42,7 +42,7 @@ if $SHOW_HELP; then
 Installs user packages.
 
 Usage:
-  `readlink -f $0` [flags]
+  `readlink -f "$0"` [flags]
 
 Flags:
       --gh <user:pw>       GitHub username and password
@@ -59,85 +59,92 @@ if $VERBOSE; then
 fi
 
 # dvm - deno
-if ! hash dvm 2>/dev/null && ! [ -e $HOME/bin/dvm ]; then
+if ! hash dvm 2>/dev/null && ! [ -e "$HOME"/bin/dvm ]; then
   writeBlue "Install DVM."
   DVM_TARGZ='dvm_linux_amd64.tar.gz'
   DVM_DL_URL=`githubReleaseDownloadUrl axetroy/dvm $DVM_TARGZ`
   DVM_TMP_DIR='/tmp/dvm'
   mkdir -p $DVM_TMP_DIR
   DVM_TARGZ_TMP="$DVM_TMP_DIR/$DVM_TARGZ"
-  curl -fsSL --output $DVM_TARGZ_TMP $DVM_DL_URL
+  curl -fsSL --output $DVM_TARGZ_TMP "$DVM_DL_URL"
   pushd $DVM_TMP_DIR > /dev/null
   tar -xvzf $DVM_TARGZ_TMP
-  mv dvm $HOME/bin/
+  mv dvm "$HOME"/bin/
   popd > /dev/null
   rm -rf $DVM_TMP_DIR
   export PATH=$PATH:$HOME/.deno/bin
-  $HOME/bin/dvm install latest
-  $HOME/bin/dvm use `$HOME/bin/dvm ls | tail -n1`
+  "$HOME"/bin/dvm install latest
 elif $UPDATE; then
   dvm upgrade
   if ! dvm ls-remote | grep -q 'Latest and currently using'; then
     dvm install latest
-    dvm use `dvm ls | tail -n1`
+    dvm use "`dvm ls | tail -n1`"
   fi
 fi
 
 # rbenv
-if ! [ -f $BASEDIR/tools/rbenv/shims/ruby ]; then
+if ! [ -f "$BASEDIR"/tools/rbenv/shims/ruby ]; then
   writeBlue "Install ruby-build and install Ruby with rbenv."
-  git clone https://github.com/rbenv/ruby-build.git $BASEDIR/tools/rbenv/plugins/ruby-build
-  $HOME/.rbenv/bin/rbenv install 2.7.6
-  $HOME/.rbenv/bin/rbenv install 3.1.2
-  $HOME/.rbenv/bin/rbenv global 3.1.2
+  git clone https://github.com/rbenv/ruby-build.git "$BASEDIR"/tools/rbenv/plugins/ruby-build
+  "$HOME"/.rbenv/bin/rbenv install 3.2.2
+  "$HOME"/.rbenv/bin/rbenv global 3.2.2
+elif $UPDATE; then
+  git -C "$BASEDIR"/tools/rbenv/plugins/ruby-build pull
+  RUBY_LATEST=$(getLatestVersion "`rbenv install --list | grep --color=never -E '^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$'`")
+  RUBY_CURRENT=`ruby --version | grep --color=never -oP '([[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)'`
+  if [ "$RUBY_LATEST" != "$RUBY_CURRENT" ]; then
+    writeBlue "Update Ruby with rbenv."
+    rbenv install --skip-existing "$RUBY_LATEST"
+    rbenv global "$RUBY_LATEST"
+  fi
 elif $VERBOSE; then
   writeBlue "Not installing Rbenv and generating Ruby, it is already installed."
 fi
 
 # rust
-if ! [ -x $HOME/.cargo/bin/rustc ]; then
+if ! [ -x "$HOME"/.cargo/bin/rustc ]; then
   writeBlue "Install Rust tools."
   curl -fsSL https://sh.rustup.rs | bash -s -- -y --no-modify-path
-  $HOME/.cargo/bin/rustup toolchain install {stable,beta,nightly}
+  "$HOME"/.cargo/bin/rustup toolchain install {stable,beta,nightly}
 elif $UPDATE; then
   writeBlue "Update Rust tools."
-  $HOME/.cargo/bin/rustup update
+  "$HOME"/.cargo/bin/rustup update
 elif $VERBOSE; then
   writeBlue "Not installing Rust tools, it is already installed."
 fi
 
 # tfenv
-if ! $HOME/bin/tfenv list &> /dev/null; then
+if ! "$HOME"/bin/tfenv list &> /dev/null; then
   writeBlue "Install Tfenv."
-  $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.12.
-  $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.13.
-  $BASEDIR/tools/tfenv/bin/tfenv install latest
-  $BASEDIR/tools/tfenv/bin/tfenv use latest
+  "$BASEDIR"/tools/tfenv/bin/tfenv install latest:^0.12.
+  "$BASEDIR"/tools/tfenv/bin/tfenv install latest:^0.13.
+  "$BASEDIR"/tools/tfenv/bin/tfenv install latest
+  "$BASEDIR"/tools/tfenv/bin/tfenv use latest
 elif $UPDATE; then
-  LATEST_TFENV=`getLatestVersion $($BASEDIR/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-')`
-  LATEST_012=`getLatestVersion $($BASEDIR/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-' | grep --color=never '^0.12')`
-  LATEST_013=`getLatestVersion $($BASEDIR/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-' | grep --color=never '^0.13')`
-  CURRENT_012=`$BASEDIR/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never '^0.12'`
-  CURRENT_013=`$BASEDIR/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never '^0.13'`
+  LATEST_TFENV=`getLatestVersion "$("$BASEDIR"/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-')"`
+  LATEST_012=`getLatestVersion "$("$BASEDIR"/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-' | grep --color=never '^0.12')"`
+  LATEST_013=`getLatestVersion "$("$BASEDIR"/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-' | grep --color=never '^0.13')"`
+  CURRENT_012=`"$BASEDIR"/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never '^0.12'`
+  CURRENT_013=`"$BASEDIR"/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never '^0.13'`
   writeBlue "Update Tfenv."
   if [ "$LATEST_012" != "$CURRENT_012" ]; then
-    $BASEDIR/tools/tfenv/bin/tfenv uninstall $CURRENT_012
-    $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.12.
+    "$BASEDIR"/tools/tfenv/bin/tfenv uninstall "$CURRENT_012"
+    "$BASEDIR"/tools/tfenv/bin/tfenv install latest:^0.12.
   fi
   if [ "$LATEST_013" != "$CURRENT_013" ]; then
-    $BASEDIR/tools/tfenv/bin/tfenv uninstall $CURRENT_013
-    $BASEDIR/tools/tfenv/bin/tfenv install latest:^0.13.
+    "$BASEDIR"/tools/tfenv/bin/tfenv uninstall "$CURRENT_013"
+    "$BASEDIR"/tools/tfenv/bin/tfenv install latest:^0.13.
   fi
-  if ! $BASEDIR/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never -q $LATEST_TFENV; then
-    $BASEDIR/tools/tfenv/bin/tfenv install latest
-    $BASEDIR/tools/tfenv/bin/tfenv use latest
+  if ! "$BASEDIR"/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never -q "$LATEST_TFENV"; then
+    "$BASEDIR"/tools/tfenv/bin/tfenv install latest
+    "$BASEDIR"/tools/tfenv/bin/tfenv use latest
   fi
 elif $VERBOSE; then
   writeBlue "Not installing Tfenv, it is already installed."
 fi
 
 # krew
-if ! hash kubectl-krew 2>/dev/null && ! [ -e $HOME/.krew/bin/kubectl-krew ]; then
+if ! hash kubectl-krew 2>/dev/null && ! [ -e "$HOME"/.krew/bin/kubectl-krew ]; then
   writeBlue "Install krew."
   curl -fsSL --output /tmp/krew.tar.gz https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_amd64.tar.gz
   rm -rf /tmp/krew/
@@ -154,10 +161,10 @@ elif $VERBOSE; then
 fi
 
 # docker-show-context
-if ! hash docker-show-context 2>/dev/null && ! [ -e $HOME/bin/docker-show-context ]; then
+if ! hash docker-show-context 2>/dev/null && ! [ -e "$HOME"/bin/docker-show-context ]; then
   writeBlue "Install docker-show-context."
-  curl -fsSL --output $HOME/bin/docker-show-context https://github.com/pwaller/docker-show-context/releases/latest/download/docker-show-context_linux_amd64
-  chmod +x $HOME/bin/docker-show-context
+  curl -fsSL --output "$HOME"/bin/docker-show-context https://github.com/pwaller/docker-show-context/releases/latest/download/docker-show-context_linux_amd64
+  chmod +x "$HOME"/bin/docker-show-context
 elif $VERBOSE; then
   writeBlue "Not installing docker-show-context, it is already installed."
 fi
@@ -200,15 +207,15 @@ case `uname -m` in
 esac
 if [ "$GO_ARCH" != '' ]; then
   installGolang () {
-    curl -fsSL --output /tmp/go.tar.gz https://go.dev/dl/go$GO_AVAILABLE_VERSION.linux-$GO_ARCH.tar.gz
-    rm -rf $HOME/.go/
+    curl -fsSL --output /tmp/go.tar.gz "https://go.dev/dl/go$GO_AVAILABLE_VERSION.linux-$GO_ARCH.tar.gz"
+    rm -rf "$HOME"/.go/
     tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src go/go.env
-    mv /tmp/go $HOME/.go
+    mv /tmp/go "$HOME"/.go
     rm /tmp/go.tar.gz
   }
   GO_TAGS=`githubTags golang/go | sed 's/^go//'`
   GO_AVAILABLE_VERSION=`getLatestVersion "$GO_TAGS"`
-  if ! hash go  2>/dev/null && ! [ -d $HOME/.go/ ] &> /dev/null; then
+  if ! hash go  2>/dev/null && ! [ -d "$HOME"/.go/ ] &> /dev/null; then
     writeBlue "Install golang."
     installGolang
   elif $UPDATE; then
@@ -225,9 +232,9 @@ if [ "$GO_ARCH" != '' ]; then
 fi
 
 #fzf
-if ! [ -e $HOME/.fzf/bin/fzf ] || $UPDATE; then
+if ! [ -e "$HOME"/.fzf/bin/fzf ] || $UPDATE; then
   writeBlue "Install/update fzf."
-  $HOME/.fzf/install --no-update-rc --no-completion --no-key-bindings --no-bash
+  "$HOME"/.fzf/install --no-update-rc --no-completion --no-key-bindings --no-bash
 fi
 
 # docker-slim
@@ -246,14 +253,14 @@ case `uname -m` in
     writeBlue "Docker-slim will not be installed: unsupported architecture: `uname -m`"
     ;;
 esac
-if ! hash docker-slim 2>/dev/null && ! [ -e $HOME/bin/docker-slim ]; then
+if ! hash docker-slim 2>/dev/null && ! [ -e "$HOME"/bin/docker-slim ]; then
   writeBlue "Install docker-slim."
   DSLIMTAR=/tmp/docker-slim.tar.gz
   DS_VERSION=`githubLatestTagByVersion docker-slim/docker-slim`
-  curl -fsSL --output $DSLIMTAR https://downloads.dockerslim.com/releases/$DS_VERSION/dist_$ARCH.tar.gz
+  curl -fsSL --output $DSLIMTAR "https://downloads.dockerslim.com/releases/$DS_VERSION/dist_$ARCH.tar.gz"
   mkdir /tmp/dslim/
   tar -xvzf $DSLIMTAR -C /tmp/dslim/
-  mv /tmp/dslim/dist_linux/* $HOME/bin/
+  mv /tmp/dslim/dist_linux/* "$HOME/bin/"
   rm -rf /tmp/dslim/
   rm $DSLIMTAR
 elif $UPDATE; then

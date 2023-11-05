@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_common-setup.sh
+. "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   die "Please do not run this script as root"
@@ -31,7 +31,7 @@ if $SHOW_HELP; then
 Configures user environment.
 
 Usage:
-  `readlink -f $0` [flags]
+  `readlink -f "$0"` [flags]
 
 Flags:
       --verbose            Show verbose output
@@ -45,15 +45,15 @@ if $VERBOSE; then
 fi
 
 keyId=275F6749AFD2379D1033548C1237AB122E6F4761
-if [[ "`gpg --list-keys $keyId 2> /dev/null | grep ^uid | grep [ultimate]`" == '' ]]; then
+if gpg --list-keys $keyId 2> /dev/null | grep ^uid | grep -qs '\[ultimate\]'; then
   gpgPublicKeyFile=`mktemp`
   gpgOwnerTrustFile=`mktemp`
-  curl -fsSL https://links.giggio.net/pgp --output $gpgPublicKeyFile
-  echo "$keyId:6:" > $gpgOwnerTrustFile
-  gpg --import $gpgPublicKeyFile
-  gpg --import-ownertrust $gpgOwnerTrustFile
-  rm $gpgPublicKeyFile
-  rm $gpgOwnerTrustFile
+  curl -fsSL https://links.giggio.net/pgp --output "$gpgPublicKeyFile"
+  echo "$keyId:6:" > "$gpgOwnerTrustFile"
+  gpg --import "$gpgPublicKeyFile"
+  gpg --import-ownertrust "$gpgOwnerTrustFile"
+  rm "$gpgPublicKeyFile"
+  rm "$gpgOwnerTrustFile"
 fi
 
 if hash carapace 2>/dev/null && ! [ -f "$HOME"/.config/carapace/schema.json ]; then

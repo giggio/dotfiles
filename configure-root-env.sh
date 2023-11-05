@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. $BASEDIR/_common-setup.sh
+. "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   die "Please run this script as root"
@@ -31,7 +31,7 @@ if $SHOW_HELP; then
 Packages installer.
 
 Usage:
-  `readlink -f $0` [flags]
+  `readlink -f "$0"` [flags]
 
 Flags:
   -u, --update             Will download and install/reinstall even if the tools are already installed
@@ -45,7 +45,7 @@ if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS"
 fi
 
-if ! [[ `locale -a` =~ 'en_US.utf8' ]]; then
+if ! [[ `locale -a` =~ en_US\.utf8 ]]; then
   writeBlue "Generate location."
   locale-gen en_US.UTF-8
 else
@@ -67,9 +67,9 @@ fi
 
 function setAlternative() {
   NAME=$1
-  EXEC_PATH=`which $2`
-  if [ `update-alternatives --display $NAME | sed -n 's/.*link currently points to \(.*\)$/\1/p'` != $EXEC_PATH ]; then
-    update-alternatives --set $NAME $EXEC_PATH
+  EXEC_PATH=`which "$2"`
+  if [ "`update-alternatives --display "$NAME" | sed -n 's/.*link currently points to \(.*\)$/\1/p'`" != "$EXEC_PATH" ]; then
+    update-alternatives --set "$NAME" "$EXEC_PATH"
   else
     if $VERBOSE; then
       writeBlue "Not updating alternative to $NAME, it is already set."

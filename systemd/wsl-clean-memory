@@ -20,6 +20,6 @@ if $FORCE || [ "$CACHED" -gt '4194304' ]; then
   sync
   echo 3 > /proc/sys/vm/drop_caches
   echo "Cached memory cleaned."
-elif [ "$((10 % `date -u +%M`))" == '0' ]; then # only log every 10 minutes
+elif [ "$((`date -u +%-M` % 10))" == '0' ]; then # only log every 10 minutes
   echo "Cached memory is low ($CACHED kBs), no need to clean."
 fi

@@ -272,16 +272,20 @@ getOptions () {
   PARSED_ARGS=`getopt -o cuh --long gh:,clean,update,help,verbose,quick,skip-post-install -n "$(readlink -f "$0")" -- "$@"`
 }
 
+writeYellow () {
+  echo -e "\e[33m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
+}
+
 writeBlue () {
-  echo  -e "\e[34m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
+  echo -e "\e[34m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
 }
 
 writeGreen () {
-  echo  -e "\e[32m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
+  echo -e "\e[32m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
 }
 
 writeStdErrRed () {
-  >&2 echo  -e "\e[31m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
+  >&2 echo -e "\e[31m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
 }
 
 die () {

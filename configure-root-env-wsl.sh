@@ -4,9 +4,6 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$BASEDIR"/_common-setup.sh
 THIS_FILE="${BASH_SOURCE[0]}"
 
-if [ "$EUID" != '0' ]; then
-  die "Please run this script as root"
-fi
 if (return 0 2>/dev/null); then
   echo "Don't source this script ($THIS_FILE)."
   exit 1
@@ -50,7 +47,10 @@ if $VERBOSE; then
 fi
 
 WSL_CONF=/etc/wsl.conf
-# WSL_CONF=/tmp/wsl.conf
+if [ "$EUID" != '0' ]; then
+  WSL_CONF=/tmp/wsl.conf
+  writeYellow "Not running as root, will use $WSL_CONF instead of /etc/wsl.conf."
+fi
 
 isSetup=$(python3 << EOF
 import configparser
@@ -87,6 +87,9 @@ if not config.has_section('automount'):
 if not config.has_option('automount', 'options') or config['automount']['options'] != '"metadata,umask=22,fmask=11"':
   config['automount']['options'] = '"metadata,umask=22,fmask=11"'
   config.write(open('$WSL_CONF', 'w'))
+if not config.has_option('automount', 'mountFsTab') or config['automount']['mountFsTab'] != 'false':
+  config['automount']['mountFsTab'] = 'false'
+  config.write(open('$WSL_CONF', 'w'))
 
 if not config.has_section('interop'):
   config.add_section('interop')
@@ -95,3 +98,12 @@ if not config.has_option('interop', 'appendWindowsPath') or config['interop']['a
   config.write(open('$WSL_CONF', 'w'))
 
 EOF
+
+if [ "$EUID" != '0' ]; then
+  batcat $WSL_CONF
+  exit 0
+fi
+
+# comment all lines in /etc/fstab, so systemd systemd-remount-fs.service works
+# see https://github.com/arkane-systems/genie/wiki/Systemd-units-known-to-be-problematic-under-WSL#systemd-remount-fsservice
+sed --in-place -E 's/^([^#])/#\1/' /etc/fstab

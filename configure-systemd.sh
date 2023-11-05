@@ -3,7 +3,7 @@
 set -euo pipefail
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "$BASEDIR"/_common-setup.sh
+source "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   die "Please run this script as root"

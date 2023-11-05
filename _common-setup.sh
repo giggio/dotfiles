@@ -6,6 +6,12 @@ fi
 set -euo pipefail
 # shellcheck disable=SC2034
 ALL_ARGS=$*
-. "$BASEDIR"/_functions.sh
+source "$BASEDIR"/_functions.sh
 getOptions "$@"
 eval set -- "$PARSED_ARGS"
+
+if [ -f /.dockerenv ] || grep docker /proc/1/cgroup -qa 2> /dev/null; then
+  export RUNNING_IN_CONTAINER=true
+else
+  export RUNNING_IN_CONTAINER=false
+fi

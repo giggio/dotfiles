@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "$BASEDIR"/_common-setup.sh
+source "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   die "Please do not run as root"
@@ -56,5 +56,7 @@ sudo -E "$BASEDIR"/install-root-pkgs.sh "$@"
 "$BASEDIR"/install-platform-tools.sh "$@"
 sudo -E "$BASEDIR"/configure-root-env.sh "$@"
 "$BASEDIR"/configure-user-env.sh "$@"
-sudo -E "$BASEDIR"/configure-systemd.sh "$@"
+if hash systemd-notify 2> /dev/null && systemd-notify systemd-notify --booted; then
+  sudo -E "$BASEDIR"/configure-systemd.sh "$@"
+fi
 

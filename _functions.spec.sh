@@ -7,7 +7,7 @@ setup() {
   rm -f "$BATS_TMPDIR"/bats-mock.*
   curl_mock="`mock_create`"
 
-  . "$BATS_TEST_DIRNAME"/_functions.sh --curl "$curl_mock"
+  source "$BATS_TEST_DIRNAME"/_functions.sh --curl "$curl_mock"
 }
 
 @test "Test simple version compare" {

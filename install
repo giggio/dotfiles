@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "$BASEDIR"/_common-setup.sh
+source "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   die "Please do not run this script as root"
@@ -67,11 +67,6 @@ if grep microsoft /proc/version -q; then
   export WSL=true
 else
   export WSL=false
-fi
-if [ -f /.dockerenv ] || grep docker /proc/1/cgroup -qa 2> /dev/null; then
-  export RUNNING_IN_CONTAINER=true
-else
-  export RUNNING_IN_CONTAINER=false
 fi
 sudo -E "$BASEDIR"/pre-install.sh "$@"
 "$BASEDIR"/install.sh "$@"

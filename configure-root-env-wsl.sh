@@ -106,4 +106,10 @@ fi
 
 # comment all lines in /etc/fstab, so systemd systemd-remount-fs.service works
 # see https://github.com/arkane-systems/genie/wiki/Systemd-units-known-to-be-problematic-under-WSL#systemd-remount-fsservice
+writeBlue "Commenting all lines in /etc/fstab..."
 sed --in-place -E 's/^([^#])/#\1/' /etc/fstab
+
+# disabling systemd-networkd.service
+# todo: maybe can reenable later, see https://github.com/microsoft/WSL/issues/10496
+writeBlue "Disabling systemd-networkd.service..."
+systemctl disable --now systemd-networkd.service

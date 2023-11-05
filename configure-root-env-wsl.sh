@@ -50,6 +50,7 @@ if $VERBOSE; then
 fi
 
 WSL_CONF=/etc/wsl.conf
+# WSL_CONF=/tmp/wsl.conf
 
 isSetup=$(python3 << EOF
 import configparser
@@ -80,9 +81,17 @@ if not config.has_section('boot'):
 if not config.has_option('boot', 'systemd') or config['boot']['systemd'] != 'true':
   config['boot']['systemd'] = 'true'
   config.write(open('$WSL_CONF', 'w'))
+
 if not config.has_section('automount'):
   config.add_section('automount')
 if not config.has_option('automount', 'options') or config['automount']['options'] != '"metadata,umask=22,fmask=11"':
   config['automount']['options'] = '"metadata,umask=22,fmask=11"'
   config.write(open('$WSL_CONF', 'w'))
+
+if not config.has_section('interop'):
+  config.add_section('interop')
+if not config.has_option('interop', 'appendWindowsPath') or config['interop']['appendWindowsPath'] != 'false':
+  config['interop']['appendWindowsPath'] = 'false'
+  config.write(open('$WSL_CONF', 'w'))
+
 EOF

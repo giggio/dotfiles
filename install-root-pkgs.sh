@@ -668,7 +668,7 @@ if ! hash k3d 2>/dev/null; then
   curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
 elif $UPDATE; then
   K3D_LATEST_VERSION=`githubLatestReleaseVersion rancher/k3d`
-  if versionsDifferent  "`k3d --version | grep --color=never k3d | awk '{print $3}'`" "$K3D_LATEST_VERSION"]; then
+  if versionsDifferent  "`k3d --version | grep --color=never k3d | awk '{print $3}'`" "$K3D_LATEST_VERSION"; then
     writeBlue "Update K3d."
     curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
   elif $VERBOSE; then
@@ -720,7 +720,7 @@ if ! hash carapace 2>/dev/null; then
   installCarapace
 elif $UPDATE; then
   CARAPACE_LATEST_VERSION=`githubLatestReleaseVersion rsteube/carapace-bin`
-  if versionsDifferent "`carapace --version`" "$CARAPACE_LATEST_VERSION"; then
+  if versionsDifferent "`carapace --version 2>&1`" "$CARAPACE_LATEST_VERSION"; then
     writeBlue "Update Carapace."
     installCarapace
   elif $VERBOSE; then

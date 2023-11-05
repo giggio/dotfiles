@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ "$EUID" != "0" ]; then
+  >&2 echo "Please run this script as root"
+  exit 2
+fi
+
+# resolve `winhost` as windows ip, see issue and comment: https://github.com/microsoft/WSL/issues/4619#issuecomment-821142078
+# and https://github.com/microsoft/WSL/issues/4619#issuecomment-966435432
+
+# update winhost:
+winhost=$(grep nameserver /etc/resolv.conf | awk '{ print $2 }')
+old_winhost=$({ grep -P "[[:space:]]winhost" /etc/hosts || test $? -eq 1; } | awk '{ print $1 }')
+if [ -z "$old_winhost" ]; then
+  echo "Host winhost not found in /etc/hosts, adding value '$winhost' to it."
+  echo -e "$winhost\twinhost" >> "/etc/hosts"
+elif [ "$old_winhost" != "$winhost" ]; then
+  echo "Host winhost found in /etc/hosts but is incorrect ('$old_winhost'), updating to value '$winhost'."
+  sed -i "s/$old_winhost\twinhost/$winhost\twinhost/g" /etc/hosts
+fi

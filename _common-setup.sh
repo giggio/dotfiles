@@ -15,3 +15,9 @@ if [ -f /.dockerenv ] || grep docker /proc/1/cgroup -qa 2> /dev/null; then
 else
   export RUNNING_IN_CONTAINER=false
 fi
+export DEBIAN_FRONTEND=noninteractive
+if grep microsoft /proc/version -q; then
+  export WSL=true
+else
+  export WSL=false
+fi

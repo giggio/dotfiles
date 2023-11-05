@@ -62,12 +62,6 @@ fi
 
 pushd "${BASEDIR}" > /dev/null
 
-export DEBIAN_FRONTEND=noninteractive
-if grep microsoft /proc/version -q; then
-  export WSL=true
-else
-  export WSL=false
-fi
 sudo -E "$BASEDIR"/pre-install.sh "$@"
 "$BASEDIR"/install.sh "$@"
 if ! $SKIP_POST_INSTALL; then

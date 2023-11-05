@@ -1,0 +1,10 @@
+[Unit]
+Description=Set winhost in /etc/hosts
+
+[Service]
+ExecStart=/usr/local/sbin/wsl-add-winhost
+RemainAfterExit=true
+Type=oneshot
+
+[Install]
+WantedBy=network-online.target

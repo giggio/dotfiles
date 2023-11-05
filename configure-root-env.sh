@@ -28,13 +28,12 @@ eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
   cat <<EOF
-Packages installer.
+Configures root environment.
 
 Usage:
   `readlink -f "$0"` [flags]
 
 Flags:
-  -u, --update             Will download and install/reinstall even if the tools are already installed
       --verbose            Show verbose output
   -h, --help               help
 EOF
@@ -51,17 +50,6 @@ if ! [[ `locale -a` =~ en_US\.utf8 ]]; then
 else
   if $VERBOSE; then
     writeBlue "Not generating location, it is already generated."
-  fi
-fi
-
-if ! [ -f /etc/sudoers.d/10-cron ]; then
-  writeBlue "Allow cron to start without su."
-  echo "#allow cron to start without su
-%sudo ALL=NOPASSWD: /etc/init.d/cron start" | tee /etc/sudoers.d/10-cron
-  chmod 440 /etc/sudoers.d/10-cron
-else
-  if $VERBOSE; then
-    writeBlue "Not generating sudoers file for Cron, it is already there."
   fi
 fi
 

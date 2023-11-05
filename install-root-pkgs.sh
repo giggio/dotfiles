@@ -65,11 +65,6 @@ if $VERBOSE; then
   Clean is $CLEAN"
 fi
 
-WSL=false
-if grep microsoft /proc/version -q; then
-  WSL=true
-fi
-
 writeBlue "Update APT metadata."
 apt-get update
 

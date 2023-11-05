@@ -69,22 +69,32 @@ function create_systemd_service_and_timer {
   local DESTINATION_SERVICE_FILE=/etc/systemd/system/$SERVICE.service
   # shellcheck disable=SC2086
   if ! [ -f $DESTINATION_SERVICE_FILE ] || ! cmp --quiet "$SOURCE_SERVICE_FILE" $DESTINATION_SERVICE_FILE; then
+    if $VERBOSE; then
+      writeBlue "Copying $SOURCE_SERVICE_FILE to $DESTINATION_SERVICE_FILE."
+    fi
     cp "$SOURCE_SERVICE_FILE" $DESTINATION_SERVICE_FILE
     NEEDS_RELOAD=true
   elif $VERBOSE; then
     writeBlue "No need to copy $SOURCE_SERVICE_FILE to $DESTINATION_SERVICE_FILE, it already exists and is the same."
   fi
 
+  HAS_TIMER=false
   local SOURCE_TIMER_FILE="$BASEDIR"/systemd/$SERVICE.timer
   if [ -f "$SOURCE_TIMER_FILE" ]; then
+    HAS_TIMER=true
     local DESTINATION_TIMER_FILE=/etc/systemd/system/$SERVICE.timer
     # shellcheck disable=SC2086
     if ! [ -f $DESTINATION_TIMER_FILE ] || ! cmp --quiet "$SOURCE_TIMER_FILE" $DESTINATION_TIMER_FILE; then
+      if $VERBOSE; then
+        writeBlue "Copying $SOURCE_TIMER_FILE to $DESTINATION_TIMER_FILE."
+      fi
       cp "$SOURCE_TIMER_FILE" $DESTINATION_TIMER_FILE
       NEEDS_RELOAD=true
     elif $VERBOSE; then
       writeBlue "No need to copy $SOURCE_TIMER_FILE to $DESTINATION_TIMER_FILE, it already exists and is the same."
     fi
+  elif $VERBOSE; then
+    writeBlue "No timer file $SOURCE_TIMER_FILE."
   fi
 
   local SOURCE_SCRIPT_FILE="$BASEDIR"/systemd/$SERVICE
@@ -92,18 +102,33 @@ function create_systemd_service_and_timer {
     local DESTINATION_SCRIPT_FILE=/usr/local/sbin/$SERVICE
     # shellcheck disable=SC2086
     if ! [ -f $DESTINATION_SCRIPT_FILE ] || ! cmp --quiet "$SOURCE_SCRIPT_FILE" $DESTINATION_SCRIPT_FILE; then
+      if $VERBOSE; then
+        writeBlue "Copying $SOURCE_SCRIPT_FILE to $DESTINATION_SCRIPT_FILE."
+      fi
       cp "$SOURCE_SCRIPT_FILE" $DESTINATION_SCRIPT_FILE
       NEEDS_RELOAD=true
     elif $VERBOSE; then
       writeBlue "No need to copy $SOURCE_SCRIPT_FILE to $DESTINATION_SCRIPT_FILE, it already exists and is the same."
     fi
+  elif $VERBOSE; then
+    writeBlue "No script file $SOURCE_SCRIPT_FILE."
   fi
 
   if $NEEDS_RELOAD; then
     systemctl daemon-reload
-    # shellcheck disable=SC2086
-    systemctl enable $SERVICE.timer
+    if $HAS_TIMER; then
+      # shellcheck disable=SC2086
+      systemctl enable $SERVICE.timer
+    else
+      # shellcheck disable=SC2086
+      systemctl enable $SERVICE.service
+    fi
   fi
 }
 
-create_systemd_service_and_timer wsl-clean-memory
+if $WSL; then
+  create_systemd_service_and_timer wsl-clean-memory
+  if ! $RUNNING_IN_CONTAINER; then
+    create_systemd_service_and_timer wsl-add-winhost
+  fi
+fi

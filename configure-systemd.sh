@@ -5,10 +5,6 @@ set -euo pipefail
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$BASEDIR"/_common-setup.sh
 
-if [ "$EUID" != "0" ]; then
-  die "Please run this script as root"
-fi
-
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
@@ -53,8 +49,26 @@ if $VERBOSE; then
   Update is $UPDATE"
 fi
 
+
 function create_systemd_service_and_timer {
   local NEEDS_RELOAD=false
+  if [ "$EUID" == '0' ]; then
+    local USER=''
+    local SOURCE_DIR="$BASEDIR"/systemd
+    local SCRIPT_DIR=/usr/local/sbin
+    local SYSTEMD_DIR=/etc/systemd/system
+  else
+    local USER='--user'
+    local SOURCE_DIR="$BASEDIR"/systemd/user
+    local SCRIPT_DIR=$HOME/.local/lib/systemd
+    local SYSTEMD_DIR=$HOME/.config/systemd/user
+    if ! [ -d "$SCRIPT_DIR" ]; then
+      mkdir -p "$SCRIPT_DIR"
+    fi
+    if ! [ -d "$SYSTEMD_DIR" ]; then
+      mkdir -p "$SYSTEMD_DIR"
+    fi
+  fi
   if ! [ -v 1 ]; then
     die "No service name provided."
   fi
@@ -62,11 +76,11 @@ function create_systemd_service_and_timer {
   if [[ $SERVICE = *" "* ]]; then
     die "Service name cannot contain spaces."
   fi
-  local SOURCE_SERVICE_FILE="$BASEDIR"/systemd/$SERVICE.service
+  local SOURCE_SERVICE_FILE="$SOURCE_DIR"/$SERVICE.service
   if ! [ -f "$SOURCE_SERVICE_FILE" ]; then
     die "Service file $SOURCE_SERVICE_FILE does not exist."
   fi
-  local DESTINATION_SERVICE_FILE=/etc/systemd/system/$SERVICE.service
+  local DESTINATION_SERVICE_FILE=$SYSTEMD_DIR/$SERVICE.service
   # shellcheck disable=SC2086
   if ! [ -f $DESTINATION_SERVICE_FILE ] || ! cmp --quiet "$SOURCE_SERVICE_FILE" $DESTINATION_SERVICE_FILE; then
     if $VERBOSE; then
@@ -79,10 +93,10 @@ function create_systemd_service_and_timer {
   fi
 
   HAS_TIMER=false
-  local SOURCE_TIMER_FILE="$BASEDIR"/systemd/$SERVICE.timer
+  local SOURCE_TIMER_FILE="$SOURCE_DIR"/$SERVICE.timer
   if [ -f "$SOURCE_TIMER_FILE" ]; then
     HAS_TIMER=true
-    local DESTINATION_TIMER_FILE=/etc/systemd/system/$SERVICE.timer
+    local DESTINATION_TIMER_FILE=$SYSTEMD_DIR/$SERVICE.timer
     # shellcheck disable=SC2086
     if ! [ -f $DESTINATION_TIMER_FILE ] || ! cmp --quiet "$SOURCE_TIMER_FILE" $DESTINATION_TIMER_FILE; then
       if $VERBOSE; then
@@ -97,9 +111,9 @@ function create_systemd_service_and_timer {
     writeBlue "No timer file $SOURCE_TIMER_FILE."
   fi
 
-  local SOURCE_SCRIPT_FILE="$BASEDIR"/systemd/$SERVICE
+  local SOURCE_SCRIPT_FILE="$SOURCE_DIR"/$SERVICE
   if [ -f "$SOURCE_SCRIPT_FILE" ]; then
-    local DESTINATION_SCRIPT_FILE=/usr/local/sbin/$SERVICE
+    local DESTINATION_SCRIPT_FILE=$SCRIPT_DIR/$SERVICE
     # shellcheck disable=SC2086
     if ! [ -f $DESTINATION_SCRIPT_FILE ] || ! cmp --quiet "$SOURCE_SCRIPT_FILE" $DESTINATION_SCRIPT_FILE; then
       if $VERBOSE; then
@@ -114,21 +128,36 @@ function create_systemd_service_and_timer {
     writeBlue "No script file $SOURCE_SCRIPT_FILE."
   fi
 
+  SUFFIX=service
+  if $HAS_TIMER; then
+    SUFFIX=timer
+  fi
   if $NEEDS_RELOAD; then
-    systemctl daemon-reload
-    if $HAS_TIMER; then
-      # shellcheck disable=SC2086
-      systemctl enable $SERVICE.timer
-    else
-      # shellcheck disable=SC2086
-      systemctl enable $SERVICE.service
+    writeBlue "Reloading systemd."
+    systemctl $USER daemon-reload
+    writeBlue "Enabling $SERVICE.$SUFFIX..."
+    systemctl $USER enable "$SERVICE.$SUFFIX"
+  else
+    if [ "`systemctl $USER is-enabled "$SERVICE.$SUFFIX"`" != 'enabled' ]; then
+      writeBlue "Unit $SERVICE.$SUFFIX is not enabled, enabling..."
+      systemctl $USER enable "$SERVICE.$SUFFIX"
     fi
   fi
 }
 
-if $WSL; then
-  create_systemd_service_and_timer wsl-clean-memory
-  if ! $RUNNING_IN_CONTAINER; then
-    create_systemd_service_and_timer wsl-add-winhost
+if [ "$EUID" == '0' ]; then
+  if $WSL; then
+    create_systemd_service_and_timer wsl-clean-memory
+    if ! $RUNNING_IN_CONTAINER; then
+      create_systemd_service_and_timer wsl-add-winhost
+    fi
+  fi
+  if [ -v SUDO_USER ]; then
+    sudo -u "$SUDO_USER" "$BASEDIR"/configure-systemd.sh "$@"
+  fi
+else
+  if $WSL; then
+    # create_systemd_service_and_timer wsl-test
+    create_systemd_service_and_timer wsl-forward-gpg
   fi
 fi

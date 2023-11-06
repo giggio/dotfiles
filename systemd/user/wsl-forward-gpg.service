@@ -1,0 +1,8 @@
+[Unit]
+Description=Forward gpg to Windows
+
+[Service]
+ExecStart=%h/.local/lib/systemd/wsl-forward-gpg
+
+[Install]
+WantedBy=default.target

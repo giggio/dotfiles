@@ -1,0 +1,8 @@
+[Unit]
+Description=Test service
+
+[Service]
+ExecStart=%h/.local/lib/systemd/wsl-test
+
+[Install]
+WantedBy=default.target

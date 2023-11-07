@@ -81,7 +81,6 @@ function create_systemd_service_and_timer {
     die "Service name cannot contain spaces."
   fi
 
-  HAS_SERVICE=false
   local SOURCE_SERVICE_FILE="$SOURCE_DIR"/$SERVICE.service
   # shellcheck disable=SC2086
   if ! [ -f $SOURCE_SERVICE_FILE ]; then
@@ -89,7 +88,6 @@ function create_systemd_service_and_timer {
   fi
   local IS_TEMPLATE_SERVICE=false
   if [ -f "$SOURCE_SERVICE_FILE" ]; then
-    HAS_SERVICE=true
     if [[ $SOURCE_SERVICE_FILE = *"@"* ]]; then
       IS_TEMPLATE_SERVICE=true
       local DESTINATION_SERVICE_FILE=$SYSTEMD_DIR/$SERVICE@.service
@@ -110,7 +108,7 @@ function create_systemd_service_and_timer {
 
   HAS_TARGET=false
   local SOURCE_TARGET_FILE="$SOURCE_DIR"/$SERVICE.target
-  if [ -f $SOURCE_TARGET_FILE ]; then
+  if [ -f "$SOURCE_TARGET_FILE" ]; then
     HAS_TARGET=true
     local DESTINATION_TARGET_FILE=$SYSTEMD_DIR/$SERVICE.target
     # shellcheck disable=SC2086

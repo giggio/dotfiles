@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-date >> /tmp/listen
-echo "$*" >> /tmp/listen
-echo $LISTEN_FDS >> /tmp/listen
-
 set -euo pipefail
 
 ALL_ARGS=$*

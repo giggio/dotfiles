@@ -1,0 +1,8 @@
+[Unit]
+Description=Forward ssh to Windows
+Requires=wsl-forward-ssh.socket
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=%h/.local/lib/systemd/wsl-forward-gpg --ssh --instance %i

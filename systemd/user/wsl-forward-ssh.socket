@@ -1,0 +1,13 @@
+[Unit]
+Description=Forward ssh socket to Windows
+PartOf=wsl-forward-gpg-all.target
+
+[Socket]
+# %t is XDG_RUNTIME_DIR
+ListenStream=%t/gnupg/ssh.sock
+SocketMode=0600
+DirectoryMode=0700
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

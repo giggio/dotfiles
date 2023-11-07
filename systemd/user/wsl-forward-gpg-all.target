@@ -1,0 +1,8 @@
+[Unit]
+Description=Forward gpg, gpg-extra and ssh to Windows
+Wants=wsl-forward-gpg.socket
+Wants=wsl-forward-gpg-extra.socket
+Wants=wsl-forward-ssh.socket
+
+[Install]
+WantedBy=default.target

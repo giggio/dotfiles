@@ -1,11 +1,21 @@
 #!/usr/bin/env bash
 
+date >> /tmp/listen
+echo "$*" >> /tmp/listen
+echo $LISTEN_FDS >> /tmp/listen
+
 set -euo pipefail
 
-function gpg_agent_running() {
-  run_in_win_path powershell.exe -noprofile -NonInteractive -c 'Get-Process gpg-agent -ErrorAction SilentlyContinue | Out-Null' \
-    || run_in_win_path gpg-connect-agent.exe /bye
-}
+ALL_ARGS=$*
+SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/gnupg/ssh.sock
+AGENT_SOCKET_FILE=`gpgconf --list-dir | grep --color=never agent-socket | cut -d: -f2`
+AGENT_EXTRA_SOCKET_FILE=`gpgconf --list-dir | grep --color=never agent-extra-socket | cut -d: -f2`
+# see https://www.freedesktop.org/software/systemd/man/latest/sd_listen_fds.html
+# SD_LISTEN_FDS_START is the first file descriptor, it starts at 3
+SD_LISTEN_FDS_START=3
+# $LISTEN_FDS will be the number of file descriptors, we only listen to 1, so we don't need it
+FD=$SD_LISTEN_FDS_START
+
 
 function forward_gpg() {
   # gpg relay to Windows
@@ -16,44 +26,68 @@ function forward_gpg() {
   # * https://justyn.io/blog/using-a-yubikey-for-gpg-in-wsl-windows-subsystem-for-linux-on-windows-10/
   # This allows for `gpg --card-status` to work
   # see https://support.yubico.com/hc/en-us/articles/360013790259-Using-Your-YubiKey-with-OpenPGP to view how to export a key to yubikey
-  LOCALAPPDATA=`windows_env_var LOCALAPPDATA`
-  local wsl_relay
   if ! pgrep --full 'wsl-relay.*--gpg,' &> /dev/null; then
-    AGENT_SOCKET_FILE=`gpgconf --list-dir | grep --color=never agent-socket | cut -d: -f2`
-    rm -f "$AGENT_SOCKET_FILE"
+    local wsl_relay
     wsl_relay=`find_in_win_path wsl-relay.exe`
     if [ "$wsl_relay" != '' ]; then
-    # if hash wsl-relay.exe 2>/dev/null && hash gpg-connect-agent.exe 2>/dev/null; then
-      if gpg_agent_running; then
+      if ensure_gpg_agent_running; then
+        LOCALAPPDATA=`windows_env_var LOCALAPPDATA`
         if [ -f "$LOCALAPPDATA/gnupg/S.gpg-agent" ]; then
-          socat UNIX-LISTEN:"$AGENT_SOCKET_FILE",fork, EXEC:"$wsl_relay --input-closes --pipe-closes --gpg",nofork &
-        fi
-      fi
-    fi
-  fi
-  if ! pgrep --full 'wsl-relay.*--gpg=S.gpg-agent.extra,' &> /dev/null; then
-    AGENT_EXTRA_SOCKET_FILE=`gpgconf --list-dir | grep --color=never agent-extra-socket | cut -d: -f2`
-    rm -f "$AGENT_EXTRA_SOCKET_FILE"
-    wsl_relay=`find_in_win_path wsl-relay.exe`
-    if [ "$wsl_relay" != '' ]; then
-    # if hash wsl-relay.exe 2>/dev/null && hash gpg-connect-agent.exe 2>/dev/null; then
-      if gpg_agent_running; then
-        if [ -f "$LOCALAPPDATA/gnupg/S.gpg-agent.extra" ]; then
-          socat UNIX-LISTEN:"$AGENT_EXTRA_SOCKET_FILE",fork, EXEC:"$wsl_relay --input-closes --pipe-closes --gpg=S.gpg-agent.extra",nofork &
+          if $VERBOSE; then
+            echo "Starting GPG socket ($FD|$AGENT_SOCKET_FILE) with intance $INSTANCE."
+          fi
+          socat "$FD",setlk-rd EXEC:"$wsl_relay --input-closes --pipe-closes --gpg",nofork
         fi
       fi
     fi
   fi
 }
 
-function ensure_gpg_ssh_agent() {
-  local cmd
-  if run_in_win_path cmd.exe /c 'dir \\.\pipe\\openssh-ssh-agent' &>/dev/null; then
+function forward_gpg_extra() {
+  # see forward_gpg comment above
+  if ! pgrep --full 'wsl-relay.*--gpg=S.gpg-agent.extra,' &> /dev/null; then
+    local wsl_relay
+    wsl_relay=`find_in_win_path wsl-relay.exe`
+    if [ "$wsl_relay" != '' ]; then
+      if ensure_gpg_agent_running; then
+        LOCALAPPDATA=`windows_env_var LOCALAPPDATA`
+        if [ -f "$LOCALAPPDATA/gnupg/S.gpg-agent.extra" ]; then
+          if $VERBOSE; then
+            echo "Starting GPG EXTRA socket ($FD|$AGENT_EXTRA_SOCKET_FILE) with intance $INSTANCE."
+          fi
+          socat "$FD",setlk-rd EXEC:"$wsl_relay --input-closes --pipe-closes --gpg=S.gpg-agent.extra",nofork
+        fi
+      fi
+    fi
+  fi
+}
+
+function forward_ssh() {
+  if pgrep --full npiperelay &>/dev/null; then
+    return
+  else
+    if check_gpg_ssh_agent_running; then
+      local npiperelay
+      npiperelay=`find_in_win_path npiperelay.exe`
+      if [ "$npiperelay" != '' ]; then
+        if ensure_gpg_agent_running; then
+          if $VERBOSE; then
+            echo "Starting SSH socket ($FD|$SSH_AUTH_SOCK) with intance $INSTANCE."
+          fi
+          socat $FD,setlk-rd EXEC:"$npiperelay -ei -s //./pipe/openssh-ssh-agent",nofork
+        fi
+      fi
+    fi
+  fi
+}
+
+function check_gpg_ssh_agent_running() {
+  if /mnt/c/Windows/System32/cmd.exe /c 'dir \\.\pipe\\openssh-ssh-agent' &>/dev/null; then
     return 0
   else
     # start gpg agent in Windows
-    if gpg_agent_running; then
-      if $cmd /c 'dir \\.\pipe\\openssh-ssh-agent' &>/dev/null; then
+    if ensure_gpg_agent_running; then
+      if /mnt/c/Windows/System32/cmd.exe /c 'dir \\.\pipe\\openssh-ssh-agent' &>/dev/null; then
         return 0
       fi
     fi
@@ -61,22 +95,9 @@ function ensure_gpg_ssh_agent() {
   return 1
 }
 
-function forward_ssh() {
-  local SSH_AUTH_SOCK=/tmp/ssh_agent_socket
-  if pgrep --full npiperelay &>/dev/null; then
-    if ensure_gpg_ssh_agent; then
-      export SSH_AUTH_SOCK
-    fi
-  else
-    local npiperelay
-    npiperelay=`find_in_win_path npiperelay.exe`
-    if [ "$npiperelay" != '' ]; then
-      if gpg_agent_running; then
-        socat UNIX-LISTEN:"$SSH_AUTH_SOCK",unlink-close,unlink-early,group=giggio,mode=775,fork EXEC:"$npiperelay -ei -s //./pipe/openssh-ssh-agent",nofork &
-        export SSH_AUTH_SOCK
-      fi
-    fi
-  fi
+function ensure_gpg_agent_running() {
+  run_in_win_path powershell.exe -noprofile -NonInteractive -c 'Get-Process gpg-agent -ErrorAction SilentlyContinue | Out-Null' \
+    || run_in_win_path gpg-connect-agent.exe /bye
 }
 
 function find_in_win_path () {
@@ -104,8 +125,90 @@ function windows_env_var() {
   popd > /dev/null
 }
 
-forward_gpg
+PARSED_ARGS=`getopt -o hai: --long gpg,gpg-extra,ssh,all,instance:,help,verbose -n "$(readlink -f "$0")" -- "$@"`
+eval set -- "$PARSED_ARGS"
+ALL=false
+GPG=false
+GPG_EXTRA=false
+SSH=false
+INSTANCE='(none)'
+SHOW_HELP=false
+VERBOSE=false
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --gpg-extra)
+    GPG_EXTRA=true
+    shift
+    ;;
+    --gpg)
+    GPG=true
+    shift
+    ;;
+    --ssh)
+    SSH=true
+    shift
+    ;;
+    --all)
+    ALL=true
+    SSH=true
+    GPG=true
+    GPG_EXTRA=true
+    shift
+    ;;
+    --instance|-i)
+    INSTANCE=$2
+    shift
+    shift
+    ;;
+    --help|-h)
+    SHOW_HELP=true
+    break
+    ;;
+    --verbose)
+    VERBOSE=true
+    shift
+    ;;
+    *)
+    shift
+    ;;
+  esac
+done
+eval set -- "$PARSED_ARGS"
 
-forward_ssh
+if $SHOW_HELP; then
+  cat <<EOF
+Setup gpg/gpg-extra/ssh sockets in WSL, forwarding to Windows.
 
-wait
+Usage:
+  `readlink -f "$0"` [flags]
+
+Flags:
+      --gpg                Forward gpg ($AGENT_SOCKET_FILE).
+      --gpg-extra          Forward gpg-extra ($AGENT_EXTRA_SOCKET_FILE).
+      --ssh                Forward ssh ($SSH_AUTH_SOCK).
+  -i, --instance           Instance.
+  -a, --all                Forward all.
+      --verbose            Show verbose output
+  -h, --help               help
+EOF
+  exit 0
+fi
+
+if $VERBOSE; then
+  echo "Running `basename "$0"` $ALL_ARGS
+  Gpg is $GPG
+  Gpg extra is $GPG_EXTRA
+  SSH is $SSH
+  All is $ALL
+  Instance is $INSTANCE"
+fi
+
+if $GPG; then
+  forward_gpg
+fi
+if $GPG_EXTRA; then
+  forward_gpg_extra
+fi
+if $SSH; then
+  forward_ssh
+fi

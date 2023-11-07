@@ -58,5 +58,6 @@ sudo -E "$BASEDIR"/configure-root-env.sh "$@"
 "$BASEDIR"/configure-user-env.sh "$@"
 if hash systemd-notify 2> /dev/null && systemd-notify systemd-notify --booted; then
   sudo -E "$BASEDIR"/configure-systemd.sh "$@"
+  "$BASEDIR"/configure-systemd.sh "$@"
 fi
 

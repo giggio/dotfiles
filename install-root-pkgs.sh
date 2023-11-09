@@ -146,6 +146,7 @@ scdaemon
 tmux
 traceroute
 tree
+tzdata
 unzip
 vim
 w3m

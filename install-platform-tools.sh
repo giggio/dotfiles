@@ -340,13 +340,21 @@ if [ -e "$HOME"/.go/bin/go ]; then
   declare -A GO_PKGS=(
     ["gox"]="mitchellh/gox"
     ["gup"]="nao1215/gup"
+    ["manifest-tool"]="estesp/manifest-tool/v2/cmd/manifest-tool"
+    ["shfmt"]="mvdan.cc/sh/v3/cmd/shfmt"
   )
   for PKG in "${!GO_PKGS[@]}"; do
+    PKG_URL="${GO_PKGS[$PKG]}"
+    if [[ "$PKG_URL" =~ ^[[:alnum:]]+(\.{1}[[:alnum:]]+)+ ]]; then
+      FINAL_PKG_URL="$PKG_URL@latest"
+    else
+      FINAL_PKG_URL="github.com/$PKG_URL@latest"
+    fi
     if ! hash "$PKG" 2>/dev/null; then
-      writeBlue "Install go package $PKG (github.com/${GO_PKGS[$PKG]}@latest)."
-      go install github.com/"${GO_PKGS[$PKG]}"@latest
+      writeBlue "Install go package $PKG ($FINAL_PKG_URL)."
+      go install "$FINAL_PKG_URL"
     elif $VERBOSE; then
-      writeBlue "Go package $PKG (github.com/${GO_PKGS[$PKG]}@latest) is already installed."
+      writeBlue "Go package $PKG ($FINAL_PKG_URL) is already installed."
     fi
   done
   if $UPDATE; then

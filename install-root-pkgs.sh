@@ -257,20 +257,27 @@ elif $VERBOSE; then
 fi
 if ! [ -f /etc/apt/preferences.d/20-microsoft-packages ]; then
   writeBlue "Adding pin priority to Microsoft packages to /etc/apt/preferences.d/20-microsoft-packages."
-  cat <<EOF >> /etc/apt/preferences.d/20-microsoft-packages
+  cat <<EOF > /etc/apt/preferences.d/20-microsoft-packages
 Package: *
 Pin: origin "packages.microsoft.com"
 Pin-Priority: 1001
+
+Package: dotnet* aspnet* netstandard*
+Pin: origin "archive.ubuntu.com"
+Pin-Priority: -10
+
+Package: dotnet* aspnet* netstandard*
+Pin: origin "security.ubuntu.com"
+Pin-Priority: -10
 EOF
 elif $VERBOSE; then
   writeBlue "Not adding pin priority to Microsoft packages, it is already present."
 fi
 
 # dotnet
-APT_PKGS_TO_INSTALL=`echo "dotnet-runtime-6.0
-dotnet-sdk-6.0
-dotnet-runtime-7.0
-dotnet-sdk-7.0" | sort`
+APT_PKGS_TO_INSTALL=`echo "dotnet-sdk-6.0
+dotnet-sdk-7.0
+dotnet-sdk-8.0" | sort`
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then

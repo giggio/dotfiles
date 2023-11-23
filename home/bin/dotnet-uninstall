@@ -127,7 +127,8 @@ if [ "$CHANNEL_TO_UNINSTALL" != '' ] && [ "$CHANNEL_TO_UNINSTALL" != 'STS' ] && 
   fi
 fi
 
-TAR_DL_URL=`dotnet-install.sh "$VERSION" "$CHANNEL" "$QUALITY" --dry-run | grep --color=never 'URL #0' | sed -E 's/.*(https:\/\/.*)/\1/g'`
+# shellcheck disable=SC2086
+TAR_DL_URL=`dotnet-install.sh $VERSION $CHANNEL $QUALITY --dry-run | grep --color=never 'URL #0' | sed -E 's/.*(https:\/\/.*)/\1/g'`
 if $VERBOSE; then
   echo "Download url is '$TAR_DL_URL'."
 fi
@@ -159,7 +160,8 @@ RM_VERBOSE=''
 if $VERBOSE; then
   RM_VERBOSE='-v'
 fi
-rm -f $RM_VERBOSE "$ALL_FILES"
+# shellcheck disable=SC2086
+rm -f $RM_VERBOSE $ALL_FILES
 find . -empty -type d -delete
 popd > /dev/null
 if $VERBOSE; then

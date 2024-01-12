@@ -45,10 +45,10 @@ if $VERBOSE; then
 fi
 
 keyId=275F6749AFD2379D1033548C1237AB122E6F4761
-if gpg --list-keys $keyId 2> /dev/null | grep ^uid | grep -qs '\[ultimate\]'; then
+if [[ `gpg --list-keys $keyId 2> /dev/null` == '' ]] || gpg --list-keys $keyId 2> /dev/null | grep ^uid | grep -qs '\[ultimate\]'; then
   gpgPublicKeyFile=`mktemp`
-  gpgOwnerTrustFile=`mktemp`
   curl -fsSL https://links.giggio.net/pgp --output "$gpgPublicKeyFile"
+  gpgOwnerTrustFile=`mktemp`
   echo "$keyId:6:" > "$gpgOwnerTrustFile"
   gpg --import "$gpgPublicKeyFile"
   gpg --import-ownertrust "$gpgOwnerTrustFile"

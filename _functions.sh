@@ -269,7 +269,7 @@ showVars() {
 
 getOptions () {
   # shellcheck disable=SC2034
-  PARSED_ARGS=`getopt -o cuh --long gh:,clean,update,help,verbose,quick,skip-post-install -n "$(readlink -f "$0")" -- "$@"`
+  PARSED_ARGS=`getopt -o scuh --long gh:,clean,update,help,verbose,quick,skip-post-install -n "$(readlink -f "$0")" -- "$@"`
 }
 
 writeYellow () {

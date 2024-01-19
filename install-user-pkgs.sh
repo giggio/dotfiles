@@ -292,3 +292,18 @@ elif $UPDATE; then
 elif $VERBOSE; then
   writeBlue "Not installing Bin, it is already installed."
 fi
+
+# zoxide
+if ! zoxide bin 2>/dev/null; then
+  writeBlue "Install Zoxide."
+  curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+elif $UPDATE; then
+  ZOXIDE_CURRENT_VERSION=`zoxide --version | cut -f2 -d' '`
+  ZOXIDE_AVAILABLE_VERSION=`githubLatestReleaseVersion ajeetdsouza/zoxide`
+  if [ "`getLatestVersion "$ZOXIDE_CURRENT_VERSION"$'\n'"$ZOXIDE_AVAILABLE_VERSION"`" != "$ZOXIDE_CURRENT_VERSION" ]; then
+    writeBlue "Update Zoxide."
+    curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+  fi
+elif $VERBOSE; then
+  writeBlue "Not installing Zoxide, it is already installed."
+fi

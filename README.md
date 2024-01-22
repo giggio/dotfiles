@@ -1,4 +1,4 @@
-# Giovani Bassi's Dotfiles
+# Giovanni Bassi's Dotfiles
 
 These are the dotfiles. I'm using
 [Dotbot](https://github.com/anishathalye/dotbot)

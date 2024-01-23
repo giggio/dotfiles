@@ -1,1 +1,3 @@
-bashscripts/.shellcheckrc
+shell=bash
+disable=SC2006,SC2164,SC1094
+external-sources=true

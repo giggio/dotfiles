@@ -27,9 +27,6 @@ on:
       - .gitignore
       - .gitattributes
 
-permissions:
-  contents: write
-
 jobs:
   build:
     name: Build
@@ -44,4 +41,12 @@ jobs:
         with:
           reporter: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'github-check' }}
           path: "."
-          pattern: "*.sh"
+          pattern: |
+            *.sh
+            *.bash
+          exclude: |
+            ./.testsupport/*
+            ./.git/*
+          check_all_files_with_shebangs: true
+          shellcheck_flags: --shell bash
+          fail_on_error: true

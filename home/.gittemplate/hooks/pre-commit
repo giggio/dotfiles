@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+# Read the runner script from the local/global or system config and expands environment variables
+GITHOOKS_RUNNER=$(git config githooks.runner | awk '{
+  finalstr = $0
+  while (1) {
+    if (match(finalstr, /\$([A-Za-z0-9_]+)/)) {
+      newstr = substr(finalstr, 1, RSTART - 1)
+      newstr = newstr ENVIRON[substr(finalstr, RSTART + 1, RLENGTH - 1)]
+      newstr = newstr substr(finalstr, RSTART + RLENGTH)
+      finalstr = newstr
+    } else {
+      break
+    }
+  }
+  print finalstr
+}')
+
+if [ ! -x "$GITHOOKS_RUNNER" ]; then
+  echo "! Githooks runner points to a non existing location" >&2
+  echo "   \`$GITHOOKS_RUNNER\`" >&2
+  echo " or it is not executable!" >&2
+  echo " Please run the Githooks install script again to fix it." >&2
+  exit 1
+fi
+
+exec "$GITHOOKS_RUNNER" "$0" "$@"

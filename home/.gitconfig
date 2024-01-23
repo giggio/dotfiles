@@ -64,6 +64,13 @@
           }; f"
   squash = "!f() { git reset --hard $1; git merge --squash HEAD@{1}; git commit; }; f"
   continue = "-c core.editor=true rebase --continue"
+  hooks = !\"$HOME/.githooks/bin/cli\"
+  # todo: hooks-install is related to https://github.com/gabyx/Githooks/issues/140 and https://github.com/gabyx/Githooks/issues/139
+  hooks-install = "!f() { \
+                    local git_hooks_dir=$(git rev-parse --git-dir)/hooks; \
+                    find $git_hooks_dir \\( -type l -or -type f \\) -delete; \
+                    cp -d $HOME/.gittemplate/hooks/* $git_hooks_dir; \
+                  }; f"
 [pull]
   ff = only
 [push]
@@ -91,6 +98,9 @@
   driver = npx npm-merge-driver merge %A %O %B %P
 [init]
   defaultBranch = main
+  # I was considering using githhoks in templating mode, but I think I prefer manual mode
+  # I was using the environment variable `GIT_TEMPLATE_DIR`, as templateDir does not support variables in this config file
+  # templateDir = $HOME/.gittemplate
 [rerere]
   enabled = true
 [core]
@@ -100,3 +110,14 @@
 [gpg]
 [pack]
   windowMemory = 0
+[githooks]
+  # installDir = $HOME/.githooks # todo: pending: https://github.com/gabyx/Githooks/issues/139 # ignoring it uses the default
+  cloneUrl = https://github.com/gabyx/githooks.git
+  cloneBranch = main
+  useCoreHooksPath = false
+  useManual = true
+  manualTemplateDir = $HOME/.gittemplate # todo: pending: https://github.com/gabyx/Githooks/issues/139 git the alias git hooks-install until it is solved
+  runner = $HOME/.githooks/bin/runner # todo: pending: https://github.com/gabyx/Githooks/issues/139
+  # dialog = $HOME/.githooks/bin/dialog # todo: not in use and pending: https://github.com/gabyx/Githooks/issues/139
+  maintainedHooks = all
+  autoUpdateEnabled = false

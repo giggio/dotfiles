@@ -47,6 +47,9 @@
     ~/.npmrc:
       path: home/.npmrc
       force: true
+    ~/.gittemplate:
+      path: home/.gittemplate
+      force: true
     ~/.fzf: tools/fzf
     ~/.gitconfig: home/.gitconfig
     ~/.profile:

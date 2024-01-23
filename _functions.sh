@@ -139,18 +139,30 @@ installDeb () {
   rm "$DEB"
 }
 
-installBinToHomeBin () {
-  if [ -v 2 ]; then
-    BIN=$HOME/bin/$2
+# use it like this:
+# installBinToDir /path/to/dir `githubReleaseDownloadUrl owner/repo linux-amd64`
+# or
+# installBinToDir /path/to/dir `githubReleaseDownloadUrl owner/repo linux-amd64` bin-name
+installBinToDir () {
+  if ! [ -d "$1" ]; then
+    mkdir -p "$1"
+  fi
+  if [ -v 3 ]; then
+    BIN=$1/$3
   else
-    BIN=$1
+    BIN=$2
     BIN="${BIN##*/}" # get file name
     BIN="${BIN%%\?*}" # remove query string
     BIN="${BIN%%\#*}" # remove fragment
-    BIN=$HOME/bin/$BIN
+    BIN=$1/$BIN
   fi
-  curl -fsSL --output "$BIN" "$1"
+  curl -fsSL --output "$BIN" "$2"
   chmod +x "$BIN"
+}
+
+# use it like this: installBinToHomeBin `githubReleaseDownloadUrl owner/repo linux-amd64`
+installBinToHomeBin () {
+  installBinToDir "$HOME/bin" "$@"
 }
 
 # use it like this: installBinToUsrLocalBin "`githubReleaseDownloadUrl knative/client kn-linux-amd64`" kn
@@ -169,30 +181,46 @@ installBinToUsrLocalBin () {
   chmod +x "$BIN"
 }
 
+# use it like this:
+# installTarToDir /path/to/dir/ "`githubReleaseDownloadUrl dotnet/cli-lab`" path/in/tar/dotnet-core-uninstall dotnet-core-uninstall
+# or
+# installTarToDir /path/to/dir/ "`githubReleaseDownloadUrl dotnet/cli-lab`"
+# first parameter is directory
+# second parameter is url,
+# third parameter is optional and is the file path inside tar file, if not supplied all files in tar will placed in the directory,
+# fourth parameter is optional and is the executable name - if not supplied it will be inferred from the second parameter
+installTarToDir () {
+  local TAR_FILE_NAME=$2
+  TAR_FILE_NAME="${TAR_FILE_NAME##*/}" # get file name
+  TAR_FILE_NAME="${TAR_FILE_NAME%%\?*}" # remove query string
+  TAR_FILE_NAME="${TAR_FILE_NAME%%\#*}" # remove fragment
+  if ! [ -d "$1" ]; then
+    mkdir -p "$1"
+  fi
+  if [ -v 4 ]; then
+    local BIN=$1/$4
+  elif [ -v 3 ]; then
+    local BIN=$3
+    BIN="${BIN##*/}"
+    BIN=$1/$BIN
+  fi
+  rm -f "/tmp/$TAR_FILE_NAME"
+  curl -fsSL --output "/tmp/$TAR_FILE_NAME" "$2"
+  if [ -v BIN ]; then
+    tar --overwrite -xzf "/tmp/$TAR_FILE_NAME" -C /tmp "$3"
+    mv "/tmp/$3" "$BIN"
+  else
+    tar --overwrite -xzf "/tmp/$TAR_FILE_NAME" -C "$1"
+  fi
+  rm "/tmp/$TAR_FILE_NAME"
+}
+
 # use it like this: installTarToUsrLocalBin "`githubReleaseDownloadUrl dotnet/cli-lab`" path/in/tar/dotnet-core-uninstall dotnet-core-uninstall
 # first parameter is url,
 # second parameter is file path inside tar file,
 # third parameter is optional and is the executable name - if not supplied it will be inferred from the second parameter
 installTarToUsrLocalBin () {
-  TAR_FILE_NAME=$1
-  TAR_FILE_NAME="${TAR_FILE_NAME##*/}" # get file name
-  TAR_FILE_NAME="${TAR_FILE_NAME%%\?*}" # remove query string
-  TAR_FILE_NAME="${TAR_FILE_NAME%%\#*}" # remove fragment
-  if [ -v 3 ]; then
-    BIN=/usr/local/bin/$3
-  else
-    BIN=$2
-    BIN="${BIN##*/}"
-    BIN=/usr/local/bin/$BIN
-  fi
-  rm -f "/tmp/$TAR_FILE_NAME"
-  curl -fsSL --output "/tmp/$TAR_FILE_NAME" "$1"
-  rm -rf "/tmp/$TAR_FILE_NAME.dir"
-  mkdir -p "/tmp/$TAR_FILE_NAME.dir"
-  tar -xzf "/tmp/$TAR_FILE_NAME" -C "/tmp/$TAR_FILE_NAME.dir/" "$2"
-  rm -f "$BIN"
-  mv "/tmp/$TAR_FILE_NAME.dir/$2" "$BIN"
-  rm "/tmp/$TAR_FILE_NAME"
+  installTarToDir /usr/local/bin "$@"
 }
 
 addSourceListAndKey () {

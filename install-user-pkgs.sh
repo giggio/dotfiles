@@ -307,3 +307,21 @@ elif $UPDATE; then
 elif $VERBOSE; then
   writeBlue "Not installing Zoxide, it is already installed."
 fi
+
+# githooks
+if ! [ -d "$HOME"/.githooks ]; then
+  writeBlue "Install Githooks."
+  # todo: switch to automated instalation from githooks when this is fixed: https://github.com/gabyx/Githooks/issues/142
+  # right now we are only creating the directory $HOME/.githooks and installing the clis at $HOME/.githooks/bin
+  # calling `cli update` also install the $HOME/.githooks/release directory
+  # but it is changing the cloneUrl and cloneBranch configs, adding tabs before the values, replacing the spaces,
+  # this is mentioned in the issue above
+  GITHOOKS_DL_URL=`githubReleaseDownloadUrl gabyx/Githooks linux.amd64`
+  installTarToDir "$HOME"/.githooks/bin/ "$GITHOOKS_DL_URL"
+  "$HOME"/.githooks/bin/cli update
+elif $UPDATE; then
+  writeBlue "Update Githooks."
+  "$HOME"/.githooks/bin/cli update
+elif $VERBOSE; then
+  writeBlue "Not installing Githooks, it is already installed."
+fi

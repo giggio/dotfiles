@@ -224,18 +224,11 @@ elif $VERBOSE; then
 fi
 
 # yq
-if ! hash yq 2>/dev/null; then
-  writeBlue "Install YQ."
-  if ! [[ "$REPOS" =~ 'rmescandon/yq' ]]; then
-    writeBlue "Add git PPA."
-    if [[ `apt-key fingerprint CC86BB64 2> /dev/null` == '' ]]; then
-      apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
-    fi
-    add-apt-repository --yes -u ppa:rmescandon/yq
-  fi
-  apt-get install yq -y
-elif $VERBOSE; then
-  writeBlue "Not installing Yq, it is already installed."
+# yq is now installed to the local user HOME/bin directory
+# todo: remove after some time:
+add-apt-repository --remove --yes ppa:rmescandon/yq
+if [[ `apt-key fingerprint CC86BB64 2> /dev/null` != '' ]]; then
+  apt-key del CC86BB64
 fi
 
 # hashicorp vault
@@ -339,7 +332,7 @@ if ! hash kubespy 2>/dev/null; then
   installKubespy
 elif $UPDATE; then
   KUBESPY_LATEST_VERSION=`githubLatestReleaseVersion pulumi/kubespy`
-  if versionsDifferent "`kubespy version`" "$KUBESPY_LATEST_VERSION"; then
+  if versionSmaller "`kubespy version`" "$KUBESPY_LATEST_VERSION"; then
     writeBlue "Update Kubespy."
     installKubespy
   elif $VERBOSE; then
@@ -359,7 +352,7 @@ if ! hash dive 2>/dev/null; then
   installDive
 elif $UPDATE; then
   DIVE_LATEST_VERSION=`githubLatestReleaseVersion wagoodman/dive`
-  if versionsDifferent  "`dive --version | cut -f2 -d' '`" "$DIVE_LATEST_VERSION"; then
+  if versionSmaller "`dive --version | cut -f2 -d' '`" "$DIVE_LATEST_VERSION"; then
     writeBlue "Update Dive."
     installDive
   elif $VERBOSE; then
@@ -437,7 +430,7 @@ if ! hash helm 2>/dev/null; then
   update-alternatives --set helm /usr/local/bin/helm3
 elif $UPDATE; then
   HELM3_LATEST_VERSION=`githubLatestReleaseVersion helm/helm`
-  if [ "`helm3 version | sed -E 's/.*\{Version:"v([0-9]+\.[0-9]+\.[0-9]+).*/\1/'`" != "$HELM3_LATEST_VERSION" ]; then
+  if versionSmaller "`helm3 version | sed -E 's/.*\{Version:"v([0-9]+\.[0-9]+\.[0-9]+).*/\1/'`" "$HELM3_LATEST_VERSION"; then
     writeBlue "Update Helm 3."
     installHelm3
   elif $VERBOSE; then
@@ -463,7 +456,7 @@ if ! hash cr 2>/dev/null; then
   installCR
 elif $UPDATE; then
   CR_LATEST_VERSION=`githubLatestReleaseVersion helm/chart-releaser`
-  if versionsDifferent  "`cr version | grep GitVersion | awk '{print $2}'`" "$CR_LATEST_VERSION"; then
+  if versionSmaller "`cr version | grep GitVersion | awk '{print $2}'`" "$CR_LATEST_VERSION"; then
     writeBlue "Update Chart releaser (CR)."
     installCR
   elif $VERBOSE; then
@@ -484,7 +477,7 @@ if ! hash istioctl 2>/dev/null; then
   installIstio
 elif $UPDATE; then
   ISTIO_LATEST_VERSION=`githubLatestReleaseVersion istio/istio`
-  if [ "`istioctl version --remote=false`" != "$ISTIO_LATEST_VERSION" ]; then
+  if versionSmaller "`istioctl version --remote=false`" "$ISTIO_LATEST_VERSION"; then
     writeBlue "Update Istioctl."
     installIstio
   elif $VERBOSE; then
@@ -527,7 +520,7 @@ if [ "$ARCH" != '' ]; then
     installEza
   elif $UPDATE; then
     EZA_LATEST_VERSION=`githubLatestReleaseVersion eza-community/eza`
-    if versionsDifferent "`eza --version | grep --color=never +git | cut -d' ' -f1`" "$EZA_LATEST_VERSION"; then
+    if versionSmaller "`eza --version | grep --color=never +git | cut -d' ' -f1`" "$EZA_LATEST_VERSION"; then
       writeBlue "Update Eza."
       installEza
     elif $VERBOSE; then
@@ -552,7 +545,7 @@ if ! hash tflint 2>/dev/null; then
   installTFLint
 elif $UPDATE; then
   TFLINT_LATEST_VERSION=`githubLatestReleaseVersion terraform-linters/tflint`
-  if [ "`tflint --version | head -n1 | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9]+)$/\1/'`" != "$TFLINT_LATEST_VERSION" ]; then
+  if versionSmaller "`tflint --version | head -n1 | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9]+)$/\1/'`" "$TFLINT_LATEST_VERSION"; then
     writeBlue "Update TFLint."
     installTFLint
   elif $VERBOSE; then
@@ -594,7 +587,7 @@ if [ "$ARCH" != '' ]; then
     installDelta
   elif $UPDATE; then
     DELTA_LATEST_VERSION=`githubLatestReleaseVersion dandavison/delta`
-    if [ "`delta --version | awk '{print $2}'`" != "$DELTA_LATEST_VERSION" ]; then
+    if versionSmaller "`delta --version | awk '{print $2}'`" "$DELTA_LATEST_VERSION"; then
       writeBlue "Update Delta."
       installDelta
     elif $VERBOSE; then
@@ -628,7 +621,7 @@ if ! hash k9s 2>/dev/null; then
   installK9s
 elif $UPDATE; then
   K9S_LATEST_VERSION=`githubLatestReleaseVersion derailed/k9s`
-  if versionsDifferent "`k9s version --short | grep Version | awk '{print $2}'`" "$K9S_LATEST_VERSION"; then
+  if versionSmaller "`k9s version --short | grep Version | awk '{print $2}'`" "$K9S_LATEST_VERSION"; then
     writeBlue "Update k9s."
     installK9s
   elif $VERBOSE; then
@@ -655,7 +648,7 @@ if ! hash aws 2>/dev/null; then
   installAWS
 elif $UPDATE; then
   AWS_LATEST_VERSION=`githubLatestTagByVersion aws/aws-cli`
-  if [ "`aws --version | sed -E 's/aws-cli\/([0-9]+\.[0-9]+\.[0-9]+).*/\1/'`" != "$AWS_LATEST_VERSION" ]; then
+  if versionSmaller "`aws --version | sed -E 's/aws-cli\/([0-9]+\.[0-9]+\.[0-9]+).*/\1/'`" "$AWS_LATEST_VERSION"; then
     writeBlue "Update AWS cli."
     installAWS
   elif $VERBOSE; then
@@ -671,7 +664,7 @@ if ! hash k3d 2>/dev/null; then
   curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
 elif $UPDATE; then
   K3D_LATEST_VERSION=`githubLatestReleaseVersion rancher/k3d`
-  if versionsDifferent  "`k3d --version | grep --color=never k3d | awk '{print $3}'`" "$K3D_LATEST_VERSION"; then
+  if versionSmaller "`k3d --version | grep --color=never k3d | awk '{print $3}'`" "$K3D_LATEST_VERSION"; then
     writeBlue "Update K3d."
     curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
   elif $VERBOSE; then
@@ -687,7 +680,7 @@ if ! hash starship 2>/dev/null; then
   sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
 elif $UPDATE; then
   STARSHIP_LATEST_VERSION=`githubLatestReleaseVersion starship/starship`
-  if [ "`starship --version | grep --color=never starship | awk '{print $2}'`" != "$STARSHIP_LATEST_VERSION" ]; then
+  if versionSmaller "`starship --version | grep --color=never starship | awk '{print $2}'`" "$STARSHIP_LATEST_VERSION"; then
     writeBlue "Update Starship."
     sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
   elif $VERBOSE; then
@@ -703,7 +696,7 @@ if ! hash act 2>/dev/null; then
   curl -fsSL https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin
 elif $UPDATE; then
   ACT_LATEST_VERSION=`githubLatestReleaseVersion nektos/act`
-  if [ "`act --version | awk '{print $3}'`" != "$ACT_LATEST_VERSION" ]; then
+  if versionSmaller "`act --version | awk '{print $3}'`" "$ACT_LATEST_VERSION"; then
     writeBlue "Update Act."
     curl -fsSL https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin
   elif $VERBOSE; then
@@ -723,7 +716,7 @@ if ! hash carapace 2>/dev/null; then
   installCarapace
 elif $UPDATE; then
   CARAPACE_LATEST_VERSION=`githubLatestReleaseVersion rsteube/carapace-bin`
-  if versionsDifferent "`carapace --version 2>&1`" "$CARAPACE_LATEST_VERSION"; then
+  if versionSmaller "`carapace --version 2>&1`" "$CARAPACE_LATEST_VERSION"; then
     writeBlue "Update Carapace."
     installCarapace
   elif $VERBOSE; then
@@ -779,7 +772,7 @@ if ! hash kubecolor 2>/dev/null; then
   writeBlue "Install Kubecolor."
   installKubecolor
 elif $UPDATE; then
-  if versionsDifferent "`kubecolor --kubecolor-version`" "`githubLatestReleaseVersion kubecolor/kubecolor`"; then
+  if versionSmaller "`kubecolor --kubecolor-version`" "`githubLatestReleaseVersion kubecolor/kubecolor`"; then
     writeBlue "Update Kubecolor."
     installKubecolor
   elif $VERBOSE; then

@@ -297,7 +297,6 @@ fd-find
 gping
 grex
 just
-navi
 nu
 procs
 sccache

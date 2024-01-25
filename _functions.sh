@@ -21,31 +21,70 @@ set -- "${FUNCTIONS_ARGS[@]}"
 unset FUNCTIONS_ARGS
 
 getLatestVersion() {
-  local MAX=0.0.0
-  while read -r VERSION; do
-    if [ "$VERSION" == '' ]; then
+  local max=0.0.0
+  while read -r version; do
+    if [ "$version" == '' ]; then
       continue
     fi
-    if [[ "$VERSION" == v* ]]; then
-      VERSION="${VERSION:1}"
-    fi
-    VERSION_TO_MATCH="$VERSION"
-    MAX_TO_MATCH="$MAX"
-    if [[ "$VERSION" =~ ^[[:digit:]]+\.[[:digit:]]+$ ]]; then
-      VERSION_TO_MATCH="$VERSION.0"
-    elif [[ "$VERSION" =~ ^[[:digit:]]+$ ]]; then
-      VERSION_TO_MATCH="$VERSION.0.0"
-    fi
-    if [[ "$MAX" =~ ^[[:digit:]]+\.[[:digit:]]+$ ]]; then
-      MAX_TO_MATCH="$MAX.0"
-    elif [[ "$MAX" =~ ^[[:digit:]]+$ ]]; then
-      MAX_TO_MATCH="$MAX.0.0"
-    fi
-    if [[ `pysemver compare "$MAX_TO_MATCH" "$VERSION_TO_MATCH" 2> /dev/null` == '-1' ]]; then
-      MAX=$VERSION
+    version_to_match=`normalizeVersion "$version"`
+    max_to_match=`normalizeVersion "$max"`
+    if [[ `pysemver compare "$max_to_match" "$version_to_match" 2> /dev/null` == '-1' ]]; then
+      max=$version
     fi
   done <<< "$1"
-  echo "$MAX"
+  echo "$max"
+}
+
+# call like this: versionGreater 1.2.4 1.2.3
+# exit code is 0 if first version is greater than second version, otherwise it is 1
+versionGreater() {
+  local v1
+  v1=`normalizeVersion "$1"`
+  local v2
+  v2=`normalizeVersion "$2"`
+  if [ "`pysemver compare "$v1" "$v2" 2> /dev/null`" == '1' ]; then
+    return 0
+  fi
+  return 1
+}
+
+# call like this: versionSmaller 1.2.4 1.2.3
+# exit code is 0 if first version is smaller than second version, otherwise it is 1
+versionSmaller() {
+  versionGreater "$2" "$1"
+  return $?
+}
+
+# call like this: versionsEqual 1.2.4 1.2.3
+# exit code is 0 if versions are equal, otherwise it is 1
+versionsEqual() {
+  [ "`normalizeVersion "$1"`" = "`normalizeVersion "$2"`" ];
+}
+
+versionsDifferent () {
+  ! versionsEqual "$1" "$2"
+}
+
+# normalizes version to 1.2.3
+# if version is 1 then it will be normalized to 1.0.0
+# if version is 1.2 then it will be normalized to 1.2.0
+# if version is v1.2.3 then the 'v' will be removed and it will be normalized to 1.2.3
+# if empty string is passed then empty string is returned
+normalizeVersion() {
+  local version=$1
+  if [ "$version" == '' ]; then
+    echo "$version"
+    return
+  fi
+  if [[ "$version" == v* ]]; then
+    version="${version:1}"
+  fi
+  if [[ "$version" =~ ^[[:digit:]]+\.[[:digit:]]+$ ]]; then
+    version="$version.0"
+  elif [[ "$version" =~ ^[[:digit:]]+$ ]]; then
+    version="$version.0.0"
+  fi
+  echo "$version"
 }
 
 githubLatestReleaseVersion () {
@@ -118,14 +157,6 @@ checkIfNeedsGitPull () {
   fi
   # Diverged, so no
   return 1
-}
-
-versionsEqual () {
-  [ "${1/#v/}" == "${2/#v/}" ]
-}
-
-versionsDifferent () {
-  ! versionsEqual "$1" "$2"
 }
 
 installDeb () {
@@ -221,6 +252,14 @@ installTarToDir () {
 # third parameter is optional and is the executable name - if not supplied it will be inferred from the second parameter
 installTarToUsrLocalBin () {
   installTarToDir /usr/local/bin "$@"
+}
+
+# use it like this: installTarToHomeBin "`githubReleaseDownloadUrl owner/repo`" path/in/tar/binary-name executable-name
+# first parameter is url,
+# second parameter is file path inside tar file,
+# third parameter is optional and is the executable name - if not supplied it will be inferred from the second parameter
+installTarToHomeBin () {
+  installTarToDir "$HOME"/bin "$@"
 }
 
 addSourceListAndKey () {

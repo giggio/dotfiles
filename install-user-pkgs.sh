@@ -58,6 +58,8 @@ if $VERBOSE; then
   Update is $UPDATE"
 fi
 
+export PATH="$HOME"/bin:"$PATH"
+
 # dvm - deno
 if ! hash dvm 2>/dev/null && ! [ -e "$HOME"/bin/dvm ]; then
   writeBlue "Install DVM."
@@ -179,7 +181,7 @@ if ! hash ctop 2>/dev/null; then
   installCtop
 elif $UPDATE; then
   CTOP_LATEST_VERSION=`githubLatestReleaseVersion bcicen/ctop`
-  if versionsDifferent  "`ctop -v | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9]+).*/\1/g'`" "$CTOP_LATEST_VERSION"; then
+  if versionSmaller "`ctop -v | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9]+).*/\1/g'`" "$CTOP_LATEST_VERSION"; then
     writeBlue "Update Ctop."
     installCtop
   elif $VERBOSE; then
@@ -266,7 +268,7 @@ if ! hash docker-slim 2>/dev/null && ! [ -e "$HOME"/bin/docker-slim ]; then
 elif $UPDATE; then
   DS_CURRENT_VERSION=`docker-slim --version | cut -d'|' -f3`
   DS_AVAILABLE_VERSION=`githubLatestTagByVersion docker-slim/docker-slim`
-  if [ "$DS_AVAILABLE_VERSION" != "$DS_CURRENT_VERSION" ]; then
+  if versionGreater "$DS_AVAILABLE_VERSION" "$DS_CURRENT_VERSION"; then
     writeBlue "Update docker-slim."
     docker-slim update
   elif $VERBOSE; then
@@ -300,7 +302,7 @@ if ! zoxide bin 2>/dev/null; then
 elif $UPDATE; then
   ZOXIDE_CURRENT_VERSION=`zoxide --version | cut -f2 -d' '`
   ZOXIDE_AVAILABLE_VERSION=`githubLatestReleaseVersion ajeetdsouza/zoxide`
-  if [ "`getLatestVersion "$ZOXIDE_CURRENT_VERSION"$'\n'"$ZOXIDE_AVAILABLE_VERSION"`" != "$ZOXIDE_CURRENT_VERSION" ]; then
+  if versionGreater "$ZOXIDE_AVAILABLE_VERSION" "$ZOXIDE_CURRENT_VERSION"; then
     writeBlue "Update Zoxide."
     curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
   fi
@@ -324,4 +326,48 @@ elif $UPDATE; then
   "$HOME"/.githooks/bin/cli update
 elif $VERBOSE; then
   writeBlue "Not installing Githooks, it is already installed."
+fi
+
+# navi
+installNavi() {
+  NAVI_DL_URL=`githubReleaseDownloadUrl denisidoro/navi x86_64-unknown-linux-musl`
+  installTarToHomeBin "$NAVI_DL_URL" ./navi
+}
+if ! hash navi 2>/dev/null; then
+  writeBlue "Install Navi."
+  installNavi
+elif $UPDATE; then
+  NAVI_CURRENT_VERSION=`navi --version | cut -f2 -d' '`
+  NAVI_AVAILABLE_VERSION=`githubLatestReleaseVersion denisidoro/navi`
+  if versionGreater "$NAVI_AVAILABLE_VERSION" "$NAVI_CURRENT_VERSION"; then
+    writeBlue "Update Navi."
+    installNavi
+  fi
+elif $VERBOSE; then
+  writeBlue "Not installing Navi, it is already installed."
+fi
+
+# yq
+installYq() {
+  YQ_DL_URL=`githubReleaseDownloadUrl mikefarah/yq yq_linux_amd64.tar`
+  installTarToHomeBin "$YQ_DL_URL" ./yq_linux_amd64
+  mv "$HOME"/bin/yq_linux_amd64 "$HOME"/bin/yq
+  pushd "$HOME"/bin/ > /dev/null
+  ./install-man-page.sh
+  rm ./install-man-page.sh
+  rm yq.1
+  popd > /dev/null
+}
+if ! hash yq 2>/dev/null; then
+  writeBlue "Install Yq."
+  installYq
+elif $UPDATE; then
+  YQ_CURRENT_VERSION=`yq --version | awk '{ print $4 }'`
+  YQ_AVAILABLE_VERSION=`githubLatestReleaseVersion mikefarah/yq`
+  if versionGreater "$YQ_AVAILABLE_VERSION" "$YQ_CURRENT_VERSION"; then
+    writeBlue "Update Yq."
+    installYq
+  fi
+elif $VERBOSE; then
+  writeBlue "Not installing Yq, it is already installed."
 fi

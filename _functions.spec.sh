@@ -65,7 +65,7 @@ setup() {
 ]'
   }
   run githubLatestReleaseVersion x/y
-  assert_output "0.4.3"
+  assert_output "v0.4.3"
 }
 
 @test "Test releases with a two versions" {
@@ -123,7 +123,7 @@ setup() {
 ]'
   }
   run githubLatestTagByVersion x/y
-  assert_output "0.4.3"
+  assert_output "v0.4.3"
 }
 
 @test "Test tags with two versions" {
@@ -162,8 +162,53 @@ setup() {
 }
 
 @test "Compare different versions with versionsDifferent" {
-  run versionsDifferent "1.2.3" "5.2.3"
+  run versionsDifferent 1.2.3 5.2.3
   assert_success
+}
+
+@test "Is version greater" {
+  run versionGreater 1.2.3 1.2.2
+  assert_success
+}
+
+@test "Is not version greater" {
+  run versionGreater 1.2.3 1.2.4
+  assert_failure
+}
+
+@test "Is version smaller" {
+  run versionSmaller 1.2.3 1.2.4
+  assert_success
+}
+
+@test "Is not version smaller" {
+  run versionSmaller 1.2.3 1.2.2
+  assert_failure
+}
+
+@test "Normalize version with v" {
+  run normalizeVersion v1.2.3
+  assert_output 1.2.3
+}
+
+@test "Normalize version with only major and minor" {
+  run normalizeVersion 1.2
+  assert_output 1.2.0
+}
+
+@test "Normalize version with only major" {
+  run normalizeVersion 1
+  assert_output 1.0.0
+}
+
+@test "Normalize version with only major and v" {
+  run normalizeVersion v1
+  assert_output 1.0.0
+}
+
+@test "Normalize empty version returns empty string" {
+  run normalizeVersion ''
+  assert_output ''
 }
 
 @test "Gets release download url without test" {

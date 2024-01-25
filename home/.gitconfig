@@ -64,12 +64,34 @@
           }; f"
   squash = "!f() { git reset --hard $1; git merge --squash HEAD@{1}; git commit; }; f"
   continue = "-c core.editor=true rebase --continue"
+  a = add :/
   hooks = !\"$HOME/.githooks/bin/cli\"
   # todo: hooks-install is related to https://github.com/gabyx/Githooks/issues/140 and https://github.com/gabyx/Githooks/issues/139
   hooks-install = "!f() { \
+                    git config core.hooksPath $(git config githooks.manualTemplateDir | git parse-env-vars)/hooks; \
+                  }; f"
+  # do not use, prefer hooks-install
+  # todo: hooks-copy-hooks-files is related to https://github.com/gabyx/Githooks/issues/140 and https://github.com/gabyx/Githooks/issues/139
+  hooks-copy-hooks-files = "!f() { \
                     local git_hooks_dir=$(git rev-parse --git-dir)/hooks; \
                     find $git_hooks_dir \\( -type l -or -type f \\) -delete; \
-                    cp -d $HOME/.gittemplate/hooks/* $git_hooks_dir; \
+                    cp -d $(git config githooks.manualTemplateDir | git parse-env-vars)/hooks/* $git_hooks_dir; \
+                  }; f"
+  parse-env-vars = "!f() { \
+                     awk '{ \
+                       finalstr = $0; \
+                       while (1) { \
+                         if (match(finalstr, /\\$([A-Za-z0-9_]+)/)) { \
+                           newstr = substr(finalstr, 1, RSTART - 1); \
+                           newstr = newstr ENVIRON[substr(finalstr, RSTART + 1, RLENGTH - 1)]; \
+                           newstr = newstr substr(finalstr, RSTART + RLENGTH); \
+                           finalstr = newstr; \
+                         } else { \
+                           break; \
+                         } \
+                       } \
+                       print finalstr; \
+                     }'; \
                   }; f"
 [pull]
   ff = only

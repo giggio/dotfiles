@@ -99,14 +99,14 @@ githubLatestReleaseVersion () {
 githubAllReleasesVersions () {
   # parameter expected to be owner/repo
   # shellcheck disable=SC2086
-  curl -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$1/releases?per_page=100 \
+  curl -fsSL "${CURL_GH_HEADERS[@]}" https://api.github.com/repos/$1/releases?per_page=50 \
   | jq --raw-output '.[] | select(.prerelease == false).tag_name'
 }
 
 githubTags () {
   # parameter expected to be owner/repo
   # shellcheck disable=SC2086
-  curl -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$1/git/matching-refs/tags/?per_page=100 \
+  curl -fsSL "${CURL_GH_HEADERS[@]}" https://api.github.com/repos/$1/git/matching-refs/tags/?per_page=50 \
   | jq --raw-output '.[].ref' \
   | sed 's/^refs\/tags\///'
 }
@@ -126,9 +126,19 @@ githubReleaseDownloadUrl () {
       NAME_FILTER='|test("'"$2"'")'
     fi
   fi
+  local url
   # shellcheck disable=SC2086
-  $CURL -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$REPO/releases | \
-  jq --raw-output "[.[] | select(.prerelease == false)][0].assets[] | select(.name$NAME_FILTER).browser_download_url"
+  url=$($CURL -fsSL "${CURL_GH_HEADERS[@]}" https://api.github.com/repos/$REPO/releases | \
+    jq --raw-output "[.[] | select(.prerelease == false)][0].assets[] | select(.name$NAME_FILTER).browser_download_url")
+  if [ -z "$url" ]; then
+    local name_filter_message=''
+    if [ -v 2 ]; then
+      name_filter_message="and name filter $2"
+    fi
+    error "Could not find download url for $REPO $name_filter_message (calling 'githubReleaseDownloadUrl $*')"
+    return 1
+  fi
+  echo "$url"
 }
 
 githubLatestTagByDate () {
@@ -138,7 +148,7 @@ githubLatestTagByDate () {
     TAG_FILTER="$2"
   fi
   # shellcheck disable=SC2086
-  $CURL -fsSL $CURL_OPTION_GH_USERNAME_PASSWORD https://api.github.com/repos/$REPO/git/matching-refs/tags/$TAG_FILTER | jq --raw-output '.[-1].ref'
+  $CURL -fsSL "${CURL_GH_HEADERS[@]}" https://api.github.com/repos/$REPO/git/matching-refs/tags/$TAG_FILTER | jq --raw-output '.[-1].ref'
 }
 
 checkIfNeedsGitPull () {
@@ -353,6 +363,11 @@ writeGreen () {
 
 writeStdErrRed () {
   >&2 echo -e "\e[31m`date +'%Y-%m-%dT%H:%M:%S'`: $*\e[0m"
+}
+
+error () {
+  writeStdErrRed "$@"
+  return 1
 }
 
 die () {

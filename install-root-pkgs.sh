@@ -7,7 +7,7 @@ if [ "$EUID" != "0" ]; then
   die "Please do not run this script as root"
 fi
 
-CURL_OPTION_GH_USERNAME_PASSWORD=''
+CURL_GH_HEADERS=()
 UPDATE=false
 CLEAN=false
 SHOW_HELP=false
@@ -15,9 +15,8 @@ VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --gh)
-    CURL_OPTION_GH_USERNAME_PASSWORD=" -H 'Authorization: token $2' "
-    shift
-    shift
+    CURL_GH_HEADERS=(-H "Authorization: token $2")
+    shift 2
     ;;
     --clean|-c)
     CLEAN=true
@@ -239,6 +238,8 @@ if ! hash vault 2>/dev/null; then
   fi
   addSourceListAndKey https://apt.releases.hashicorp.com/gpg "https://apt.releases.hashicorp.com `lsb_release -cs` main" hashicorp
   apt-get install -y vault
+elif $VERBOSE; then
+  writeBlue "Not installing Hashicorp Vault, it is already installed."
 fi
 
 # microsoft repos
@@ -759,7 +760,7 @@ fi
 
 # kubecolor
 installKubecolor () {
-  KUBECOLOR_DL_URL=`githubReleaseDownloadUrl kubecolor/kubecolor Linux_x86_64`
+  KUBECOLOR_DL_URL=`githubReleaseDownloadUrl kubecolor/kubecolor linux_amd64`
   curl -fsSL --output /tmp/kubecolor.tar.gz "$KUBECOLOR_DL_URL"
   rm /tmp/kubecolor -rf
   mkdir -p /tmp/kubecolor

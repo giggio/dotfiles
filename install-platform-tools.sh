@@ -206,10 +206,13 @@ mocha
 nodemon
 npmrc
 pm2
+prettier
+prettier-plugin-awk
 trash-cli
 typescript
 vtop
 yaml-cli" | sort`
+# todo: prettier-plugin-awk is causing installation problems, see: https://github.com/Beaglefoot/prettier-plugin-awk/issues/18
 NPM_PKGS_NOT_INSTALLED=`comm -23 <(echo "$NPM_PKGS_TO_INSTALL") <(echo "$NPM_PKGS_INSTALLED")`
 if [ "$NPM_PKGS_NOT_INSTALLED" != "" ]; then
   # shellcheck disable=SC2086

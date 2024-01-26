@@ -7,16 +7,17 @@ if [ "$EUID" == "0" ]; then
   die "Please do not run this script as root"
 fi
 
-CURL_OPTION_GH_USERNAME_PASSWORD=''
+CURL_GH_HEADERS=()
+GH_TOKEN=''
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --gh)
-    CURL_OPTION_GH_USERNAME_PASSWORD=" -H 'Authorization: token $2' "
-    shift
-    shift
+    CURL_GH_HEADERS=(-H "Authorization: token $2")
+    GH_TOKEN=$2
+    shift 2
     ;;
     --update|-u)
     UPDATE=true
@@ -77,6 +78,7 @@ if ! hash dvm 2>/dev/null && ! [ -e "$HOME"/bin/dvm ]; then
   export PATH=$PATH:$HOME/.deno/bin
   "$HOME"/bin/dvm install latest
 elif $UPDATE; then
+  writeBlue "Update DVM."
   dvm upgrade
   if ! dvm ls-remote | grep -q 'Latest and currently using'; then
     dvm install latest
@@ -290,15 +292,16 @@ if ! hash bin 2>/dev/null; then
   rm /tmp/bin
 elif $UPDATE; then
   writeBlue "Update Bin."
+  export GITHUB_AUTH_TOKEN=$GH_TOKEN
   bin update bin --yes
 elif $VERBOSE; then
   writeBlue "Not installing Bin, it is already installed."
 fi
 
 # zoxide
-if ! zoxide bin 2>/dev/null; then
+if ! hash zoxide 2>/dev/null; then
   writeBlue "Install Zoxide."
-  curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
 elif $UPDATE; then
   ZOXIDE_CURRENT_VERSION=`zoxide --version | cut -f2 -d' '`
   ZOXIDE_AVAILABLE_VERSION=`githubLatestReleaseVersion ajeetdsouza/zoxide`
@@ -322,8 +325,10 @@ if ! [ -d "$HOME"/.githooks ]; then
   installTarToDir "$HOME"/.githooks/bin/ "$GITHOOKS_DL_URL"
   "$HOME"/.githooks/bin/cli update
 elif $UPDATE; then
-  writeBlue "Update Githooks."
-  "$HOME"/.githooks/bin/cli update
+  writeBlue "Githooks update needs attention."
+  # writeBlue "Update Githooks."
+  # todo: review githooks update, it is failing with 'Githooks is not configured to use that folder'
+  # "$HOME"/.githooks/bin/cli update
 elif $VERBOSE; then
   writeBlue "Not installing Githooks, it is already installed."
 fi
@@ -342,6 +347,8 @@ elif $UPDATE; then
   if versionGreater "$NAVI_AVAILABLE_VERSION" "$NAVI_CURRENT_VERSION"; then
     writeBlue "Update Navi."
     installNavi
+  else
+    writeBlue "Not updating Navi, it is already up to date."
   fi
 elif $VERBOSE; then
   writeBlue "Not installing Navi, it is already installed."
@@ -367,6 +374,8 @@ elif $UPDATE; then
   if versionGreater "$YQ_AVAILABLE_VERSION" "$YQ_CURRENT_VERSION"; then
     writeBlue "Update Yq."
     installYq
+  else
+    writeBlue "Not updating Yq, it is already up to date."
   fi
 elif $VERBOSE; then
   writeBlue "Not installing Yq, it is already installed."

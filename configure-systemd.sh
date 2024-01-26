@@ -192,12 +192,16 @@ function create_systemd_service_and_timer {
   if ! $IS_TEMPLATE_SERVICE; then
     if [ "`systemctl $USER is-enabled "$SERVICE.$SUFFIX"`" != 'enabled' ]; then
       writeBlue "Unit $SERVICE.$SUFFIX is not enabled, enabling..."
+      # disable first so if it had different dependents they will be removed
+      systemctl $USER disable "$SERVICE.$SUFFIX"
       systemctl $USER enable "$SERVICE.$SUFFIX"
     fi
   fi
   if $HAS_SOCKET; then
     if [ "`systemctl $USER is-enabled "$SERVICE.socket"`" != 'enabled' ]; then
       writeBlue "Enabling $SERVICE.socket..."
+      # disable first so if it had different dependents they will be removed
+      systemctl $USER disable "$SERVICE.socket"
       systemctl $USER enable "$SERVICE.socket"
     fi
   fi

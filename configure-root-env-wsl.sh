@@ -46,6 +46,10 @@ if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS"
 fi
 
+if ! $WSL; then
+  die "This is not running in WSL."
+fi
+
 WSL_CONF=/etc/wsl.conf
 if [ "$EUID" != '0' ]; then
   WSL_CONF=/tmp/wsl.conf

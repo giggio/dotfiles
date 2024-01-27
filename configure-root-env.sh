@@ -64,3 +64,10 @@ if $WSL && ! $RUNNING_IN_CONTAINER; then
 fi
 
 setAlternative editor /usr/bin/vim.basic
+
+if $WSL; then
+  "$BASEDIR"/configure-root-env-wsl.sh "$@"
+fi
+if $ANDROID; then
+  "$BASEDIR"/configure-root-env-android.sh "$@"
+fi

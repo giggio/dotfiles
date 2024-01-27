@@ -123,6 +123,7 @@ file
 git
 htop
 iperf3
+iputils-ping
 jq
 locales
 lsb-release

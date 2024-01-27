@@ -74,11 +74,13 @@ if ! hash pysemver 2>/dev/null; then
   fi
 fi
 
-if { [ -L /etc/localtime ] && [ "`realpath /etc/localtime`" == "/usr/share/zoneinfo/America/Sao_Paulo" ] ; } || $RUNNING_IN_CONTAINER; then
-  if $VERBOSE; then
-    writeBlue "Not updating time zones."
+if ! $ANDROID; then
+  if { [ -L /etc/localtime ] && [ "`realpath /etc/localtime`" == "/usr/share/zoneinfo/America/Sao_Paulo" ] ; } || $RUNNING_IN_CONTAINER; then
+    if $VERBOSE; then
+      writeBlue "Not updating time zones."
+    fi
+  else
+    writeBlue "Setting default time zone to São Paulo."
+    ln -fs /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
   fi
-else
-  writeBlue "Setting default time zone to São Paulo."
-  ln -fs /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 fi

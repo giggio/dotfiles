@@ -161,6 +161,7 @@ nmap
 pandoc
 pkg-config
 ripgrep
+screenfetch
 shellcheck
 silversearcher-ag
 scdaemon

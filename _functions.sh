@@ -328,6 +328,46 @@ addSourcesList () {
   fi
 }
 
+function installAlternative() {
+  local name=$1
+  local bin_path=$2
+  local exec_path=$3
+  if ! update-alternatives --query "$name" &>/dev/null; then
+    writeBlue "Creating alternative for $name ($bin_path) and setting the default value to $exec_path."
+    update-alternatives --install "$bin_path" "$name" "$exec_path" 1
+    update-alternatives --set "$name" "$exec_path"
+  else
+    if ! update-alternatives --query "$name" | grep -q "Alternative:\s$exec_path" &> /dev/null; then
+      writeBlue "Creating alternative for $name ($bin_path) as $exec_path."
+      local last_priority
+      last_priority=`update-alternatives --query "$name" | awk '/Priority:\s([[:digit:]]+)/ { print $2 }' | sort | tail -n 1`
+      ((++last_priority))
+      writeBlue "Priority of $exec_path will be $last_priority."
+      update-alternatives --install "$bin_path" "$name" "$exec_path" "$last_priority"
+    elif $VERBOSE; then
+      writeBlue "Not Adding alternative $exec_path to $name ($bin_path), it is already present."
+    fi
+    if ! update-alternatives --query "$name" | grep -q "Value:\s$exec_path"; then
+      writeBlue "Setting value of alternative of $name ($bin_path) to $exec_path."
+      update-alternatives --set "$name" "$exec_path"
+    elif $VERBOSE; then
+      writeBlue "Not setting value of alternative of $name ($bin_path) to $exec_path, it is already set."
+    fi
+  fi
+}
+
+function setAlternative() {
+  NAME=$1
+  EXEC_PATH=`which "$2"`
+  if [ "`update-alternatives --display "$NAME" | sed -n 's/.*link currently points to \(.*\)$/\1/p'`" != "$EXEC_PATH" ]; then
+    update-alternatives --set "$NAME" "$EXEC_PATH"
+  else
+    if $VERBOSE; then
+      writeBlue "Not updating alternative to $NAME, it is already set."
+    fi
+  fi
+}
+
 dump_stack () {
   local i=0
   local line_no
@@ -346,7 +386,7 @@ showVars() {
 
 getOptions () {
   # shellcheck disable=SC2034
-  PARSED_ARGS=`getopt -o scuh --long gh:,clean,update,help,verbose,quick,skip-post-install -n "$(readlink -f "$0")" -- "$@"`
+  PARSED_ARGS=`getopt -o bscuh --long basic,gh:,clean,update,help,verbose,quick,skip-post-install -n "$(readlink -f "$0")" -- "$@"`
 }
 
 writeYellow () {

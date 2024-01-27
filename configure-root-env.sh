@@ -53,18 +53,6 @@ else
   fi
 fi
 
-function setAlternative() {
-  NAME=$1
-  EXEC_PATH=`which "$2"`
-  if [ "`update-alternatives --display "$NAME" | sed -n 's/.*link currently points to \(.*\)$/\1/p'`" != "$EXEC_PATH" ]; then
-    update-alternatives --set "$NAME" "$EXEC_PATH"
-  else
-    if $VERBOSE; then
-      writeBlue "Not updating alternative to $NAME, it is already set."
-    fi
-  fi
-}
-
 if $WSL && ! $RUNNING_IN_CONTAINER; then
   if hash wslview 2>/dev/null; then
     setAlternative x-www-browser wslview

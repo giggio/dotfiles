@@ -3,15 +3,20 @@
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$BASEDIR"/_common-setup.sh
 
-if [ "$EUID" == "0" ]; then
+if [ "$EUID" == "0" ] && ! $ANDROID; then
   die "Please do not run this script as root"
 fi
 
+BASIC_SETUP=false
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --basic|-b)
+    BASIC_SETUP=true
+    shift
+    ;;
     --update|-u)
     UPDATE=true
     shift
@@ -39,6 +44,7 @@ Usage:
   `readlink -f "$0"` [flags]
 
 Flags:
+  -b, --basic              Will only install basic packages to get Bash working
   -u, --update             Will download and install/reinstall even if the tools are already installed
       --verbose            Show verbose output
   -h, --help               help
@@ -48,12 +54,18 @@ fi
 
 if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS
-  Update is $UPDATE"
+  Update is $UPDATE
+  Basic setup is $BASIC_SETUP"
 fi
 
 PIP_PKGS_INSTALLED=`pip3 list --user --format columns | tail -n +3 | awk '{print $1}'`
-PIP_PKGS_TO_INSTALL="powerline-status
-xlsx2csv"
+PIP_BASIC_PKGS_TO_INSTALL="powerline-status"
+PIP_PKGS_TO_INSTALL="xlsx2csv"
+if $BASIC_SETUP; then
+  PIP_PKGS_TO_INSTALL=$PIP_BASIC_PKGS_TO_INSTALL
+else
+  PIP_PKGS_TO_INSTALL=`echo "$PIP_BASIC_PKGS_TO_INSTALL"$'\n'"$PIP_PKGS_TO_INSTALL" | sort`
+fi
 PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKGS_INSTALLED")`
 if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
   # shellcheck disable=SC2086
@@ -75,6 +87,10 @@ if $UPDATE; then
   else
     writeBlue "Not updating Pip packages, they are already up to date."
   fi
+fi
+
+if $BASIC_SETUP; then
+  exit
 fi
 
 # .NET Tools
@@ -189,7 +205,6 @@ bats-assert
 bats-support
 bower
 cross-env
-diff-so-fancy
 eslint
 express-generator
 gist-cli

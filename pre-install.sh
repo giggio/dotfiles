@@ -56,14 +56,8 @@ if ! hash python2.7 2>/dev/null || ! hash python3 2>/dev/null; then
   apt-get update
   apt-get install -y python2.7 python3 python3-pip
 fi
-if ! update-alternatives --display python &>/dev/null; then
-  writeBlue "Setting the default Python to version 3."
-  update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-  update-alternatives --install /usr/bin/python python /usr/bin/python3 2
-  update-alternatives  --set python /usr/bin/python3
-elif $VERBOSE; then
-  writeBlue "Not Adding Python alternatives, they are already present."
-fi
+installAlternative python /usr/bin/python /usr/bin/python2.7
+installAlternative python /usr/bin/python /usr/bin/python3
 
 # setup pysemver
 if ! hash pysemver 2>/dev/null; then

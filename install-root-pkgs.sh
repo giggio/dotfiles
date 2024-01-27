@@ -7,6 +7,7 @@ if [ "$EUID" != "0" ]; then
   die "Please do not run this script as root"
 fi
 
+BASIC_SETUP=false
 CURL_GH_HEADERS=()
 UPDATE=false
 CLEAN=false
@@ -14,6 +15,10 @@ SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --basic|-b)
+    BASIC_SETUP=true
+    shift
+    ;;
     --gh)
     CURL_GH_HEADERS=(-H "Authorization: token $2")
     shift 2
@@ -49,6 +54,7 @@ Usage:
   `readlink -f "$0"` [flags]
 
 Flags:
+  -b, --basic              Will only install basic packages to get Bash working
       --gh <user:pw>       GitHub username and password
   -c, --clean              Will clean installed packages.
   -u, --update             Will download and install/reinstall even if the tools are already installed
@@ -61,8 +67,18 @@ fi
 if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS
   Update is $UPDATE
+  Basic setup is $BASIC_SETUP
   Clean is $CLEAN"
 fi
+
+clean() {
+  if $CLEAN; then
+    writeBlue "Cleanning up packages."
+    apt-get autoremove -y
+  elif $VERBOSE; then
+    writeBlue "Not auto removing with APT."
+  fi
+}
 
 writeBlue "Update APT metadata."
 apt-get update
@@ -75,7 +91,6 @@ wget
 gnupg
 gnupg-agent
 gnupg2
-silversearcher-ag
 software-properties-common" | sort`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
@@ -101,24 +116,34 @@ elif $VERBOSE; then
 fi
 
 # apt packages
-APT_PKGS_TO_INSTALL=`echo "asciinema
-apt-file
-autoconf
+APT_BASIC_PKGS_TO_INSTALL=`echo "apt-file
 bat
-bison
 build-essential
+file
+git
+htop
+iperf3
+jq
+locales
+lsb-release
+mosh
+python3-pip
+socat
+tmux
+traceroute
+tree
+vim
+whois" | sort`
+APT_PKGS_TO_INSTALL=`echo "asciinema
+autoconf
+bison
 cowsay
 figlet
-file
 fontforge
-git
 gzip
-htop
 httpie
 hub
 inotify-tools
-iperf3
-jq
 libdb-dev
 libffi-dev
 libgdbm-dev
@@ -130,28 +155,24 @@ libreadline-dev
 libssl-dev
 libtext-lorem-perl
 libyaml-dev
-locales
-lsb-release
-mosh
 neovim
 nmap
 pandoc
 pkg-config
-python3-pip
 ripgrep
 shellcheck
-socat
+silversearcher-ag
 scdaemon
-tmux
-traceroute
-tree
 tzdata
 unzip
-vim
 w3m
-whois
 zip
 zlib1g-dev" | sort`
+if $BASIC_SETUP; then
+  APT_PKGS_TO_INSTALL=$APT_BASIC_PKGS_TO_INSTALL
+else
+  APT_PKGS_TO_INSTALL=`echo "$APT_BASIC_PKGS_TO_INSTALL"$'\n'"$APT_PKGS_TO_INSTALL" | sort`
+fi
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
@@ -161,6 +182,146 @@ if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
   apt-get install -y $APT_PKGS_NOT_INSTALLED
 elif $VERBOSE; then
   writeBlue "Not installing packages with APT, they are all already installed."
+fi
+
+# upgrade
+if $UPDATE; then
+  writeBlue "Upgrade with APT."
+  apt-get upgrade -y
+else
+  if $VERBOSE; then
+    writeBlue "Not updating with APT."
+  fi
+fi
+
+# eza (exa fork)
+# amd64, arm64, armhf
+ARCH=''
+case `uname -m` in
+  x86_64)
+    ARCH=x86_64
+    ;;
+  aarch64)
+    ARCH=aarch64
+    ;;
+  armv7l)
+    ARCH=arm
+    ;;
+  *)
+    writeBlue "Eza will not be installed: unsupported architecture: `uname -m`"
+    ;;
+esac
+installEza () {
+  EZA_DL_URL=`githubReleaseDownloadUrl eza-community/eza "^eza_$ARCH-unknown-linux-gnu.tar.gz"`
+  curl -fsSL --output /tmp/eza.tar.gz "$EZA_DL_URL"
+  rm -rf /tmp/eza
+  mkdir /tmp/eza
+  tar -xvzf /tmp/eza.tar.gz -C /tmp/eza/
+  mv /tmp/eza/eza /usr/local/bin/
+  rm /tmp/eza.tar.gz
+  rm -rf /tmp/eza
+}
+if [ "$ARCH" != '' ]; then
+  if ! hash eza 2>/dev/null; then
+    writeBlue "Install Eza."
+    installEza
+  elif $UPDATE; then
+    EZA_LATEST_VERSION=`githubLatestReleaseVersion eza-community/eza`
+    if versionSmaller "`eza --version | grep --color=never +git | cut -d' ' -f1`" "$EZA_LATEST_VERSION"; then
+      writeBlue "Update Eza."
+      installEza
+    elif $VERBOSE; then
+      writeBlue "Not updating eza, it is already up to date."
+    fi
+  elif $VERBOSE; then
+    writeBlue "Not installing Eza, it is already installed."
+  fi
+fi
+
+# delta
+ARCH=''
+case `uname -m` in
+  x86_64)
+    ARCH=amd64
+    ;;
+  aarch64)
+    ARCH=arm64
+    ;;
+  armv7l)
+    ARCH=armhf
+    ;;
+  *)
+    writeBlue "Delta will not be installed: unsupported architecture: `uname -m`"
+    ;;
+esac
+installDelta () {
+  DELTA_DL_URL=`githubReleaseDownloadUrl dandavison/delta "^git-delta(?!-musl).*_$ARCH.deb$"`
+  installDeb "$DELTA_DL_URL"
+}
+if [ "$ARCH" != '' ]; then
+  if ! hash delta 2>/dev/null; then
+    writeBlue "Install Delta."
+    if dpkg -l git-delta &> /dev/null; then
+      apt-get purge -y git-delta
+    fi
+    if dpkg -l delta-diff &> /dev/null; then
+      apt-get purge -y delta-diff
+    fi
+    installDelta
+  elif $UPDATE; then
+    DELTA_LATEST_VERSION=`githubLatestReleaseVersion dandavison/delta`
+    if versionSmaller "`delta --version | awk '{print $2}'`" "$DELTA_LATEST_VERSION"; then
+      writeBlue "Update Delta."
+      installDelta
+    elif $VERBOSE; then
+      writeBlue "Not updating Delta, it is already up to date."
+    fi
+  elif $VERBOSE; then
+    writeBlue "Not installing Delta, it is already installed."
+  fi
+fi
+
+# starship
+if ! hash starship 2>/dev/null; then
+  writeBlue "Install Starship."
+  sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
+elif $UPDATE; then
+  STARSHIP_LATEST_VERSION=`githubLatestReleaseVersion starship/starship`
+  if versionSmaller "`starship --version | grep --color=never starship | awk '{print $2}'`" "$STARSHIP_LATEST_VERSION"; then
+    writeBlue "Update Starship."
+    sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
+  elif $VERBOSE; then
+    writeBlue "Not updating starship, it is already up to date."
+  fi
+elif $VERBOSE; then
+  writeBlue "Not installing Starship, it is already installed."
+fi
+
+# carapace
+installCarapace () {
+  CARAPACE_DL_URL=`githubReleaseDownloadUrl rsteube/carapace-bin linux_amd64.deb`
+  installDeb "$CARAPACE_DL_URL"
+}
+if ! hash carapace 2>/dev/null; then
+  writeBlue "Install Carapace."
+  installCarapace
+elif $UPDATE; then
+  CARAPACE_LATEST_VERSION=`githubLatestReleaseVersion rsteube/carapace-bin`
+  if versionSmaller "`carapace --version 2>&1`" "$CARAPACE_LATEST_VERSION"; then
+    writeBlue "Update Carapace."
+    installCarapace
+  elif $VERBOSE; then
+    writeBlue "Not updating Carapace, it is already up to date."
+  fi
+elif $VERBOSE; then
+  writeBlue "Not installing Carapace, it is already installed."
+fi
+
+# exit if basic setup is requested
+# up until this point we had the necessary packages
+if $BASIC_SETUP; then
+  clean
+  exit
 fi
 
 # build Vim 9 if needed
@@ -426,9 +587,8 @@ if ! hash helm 2>/dev/null; then
   elif $VERBOSE; then
     writeBlue "Not installing Helm 2, it is already installed."
   fi
-  update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm2 1
-  update-alternatives --install /usr/local/bin/helm helm /usr/local/bin/helm3 2
-  update-alternatives --set helm /usr/local/bin/helm3
+  installAlternative helm /usr/local/bin/helm /usr/local/bin/helm2
+  installAlternative helm /usr/local/bin/helm /usr/local/bin/helm3
 elif $UPDATE; then
   HELM3_LATEST_VERSION=`githubLatestReleaseVersion helm/helm`
   if versionSmaller "`helm3 version | sed -E 's/.*\{Version:"v([0-9]+\.[0-9]+\.[0-9]+).*/\1/'`" "$HELM3_LATEST_VERSION"; then
@@ -488,50 +648,6 @@ elif $VERBOSE; then
   writeBlue "Not installing Istioctl, it is already installed."
 fi
 
-# eza (exa fork)
-# amd64, arm64, armhf
-ARCH=''
-case `uname -m` in
-  x86_64)
-    ARCH=x86_64
-    ;;
-  aarch64)
-    ARCH=aarch64
-    ;;
-  armv7l)
-    ARCH=arm
-    ;;
-  *)
-    writeBlue "Eza will not be installed: unsupported architecture: `uname -m`"
-    ;;
-esac
-installEza () {
-  EZA_DL_URL=`githubReleaseDownloadUrl eza-community/eza "^eza_$ARCH-unknown-linux-gnu.tar.gz"`
-  curl -fsSL --output /tmp/eza.tar.gz "$EZA_DL_URL"
-  rm -rf /tmp/eza
-  mkdir /tmp/eza
-  tar -xvzf /tmp/eza.tar.gz -C /tmp/eza/
-  mv /tmp/eza/eza /usr/local/bin/
-  rm /tmp/eza.tar.gz
-  rm -rf /tmp/eza
-}
-if [ "$ARCH" != '' ]; then
-  if ! hash eza 2>/dev/null; then
-    writeBlue "Install Eza."
-    installEza
-  elif $UPDATE; then
-    EZA_LATEST_VERSION=`githubLatestReleaseVersion eza-community/eza`
-    if versionSmaller "`eza --version | grep --color=never +git | cut -d' ' -f1`" "$EZA_LATEST_VERSION"; then
-      writeBlue "Update Eza."
-      installEza
-    elif $VERBOSE; then
-      writeBlue "Not updating eza, it is already up to date."
-    fi
-  elif $VERBOSE; then
-    writeBlue "Not installing Eza, it is already installed."
-  fi
-fi
-
 # terraform lint - tflint
 installTFLint () {
   curl -fsSL --output /tmp/tflint.zip https://github.com/terraform-linters/tflint/releases/latest/download/tflint_linux_amd64.zip
@@ -554,49 +670,6 @@ elif $UPDATE; then
   fi
 elif $VERBOSE; then
   writeBlue "Not installing TFLint, it is already installed."
-fi
-
-# delta
-ARCH=''
-case `uname -m` in
-  x86_64)
-    ARCH=amd64
-    ;;
-  aarch64)
-    ARCH=arm64
-    ;;
-  armv7l)
-    ARCH=armhf
-    ;;
-  *)
-    writeBlue "Delta will not be installed: unsupported architecture: `uname -m`"
-    ;;
-esac
-installDelta () {
-  DELTA_DL_URL=`githubReleaseDownloadUrl dandavison/delta "^git-delta(?!-musl).*_$ARCH.deb$"`
-  installDeb "$DELTA_DL_URL"
-}
-if [ "$ARCH" != '' ]; then
-  if ! hash delta 2>/dev/null; then
-    writeBlue "Install Delta."
-    if dpkg -l git-delta &> /dev/null; then
-      apt-get purge -y git-delta
-    fi
-    if dpkg -l delta-diff &> /dev/null; then
-      apt-get purge -y delta-diff
-    fi
-    installDelta
-  elif $UPDATE; then
-    DELTA_LATEST_VERSION=`githubLatestReleaseVersion dandavison/delta`
-    if versionSmaller "`delta --version | awk '{print $2}'`" "$DELTA_LATEST_VERSION"; then
-      writeBlue "Update Delta."
-      installDelta
-    elif $VERBOSE; then
-      writeBlue "Not updating Delta, it is already up to date."
-    fi
-  elif $VERBOSE; then
-    writeBlue "Not installing Delta, it is already installed."
-  fi
 fi
 
 # Github cli
@@ -675,22 +748,6 @@ elif $VERBOSE; then
   writeBlue "Not installing k3d, it is already installed."
 fi
 
-# starship
-if ! hash starship 2>/dev/null; then
-  writeBlue "Install Starship."
-  sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
-elif $UPDATE; then
-  STARSHIP_LATEST_VERSION=`githubLatestReleaseVersion starship/starship`
-  if versionSmaller "`starship --version | grep --color=never starship | awk '{print $2}'`" "$STARSHIP_LATEST_VERSION"; then
-    writeBlue "Update Starship."
-    sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
-  elif $VERBOSE; then
-    writeBlue "Not updating starship, it is already up to date."
-  fi
-elif $VERBOSE; then
-  writeBlue "Not installing Starship, it is already installed."
-fi
-
 # act
 if ! hash act 2>/dev/null; then
   writeBlue "Install Act."
@@ -705,26 +762,6 @@ elif $UPDATE; then
   fi
 elif $VERBOSE; then
   writeBlue "Not installing Act, it is already installed."
-fi
-
-# carapace
-installCarapace () {
-  CARAPACE_DL_URL=`githubReleaseDownloadUrl rsteube/carapace-bin linux_amd64.deb`
-  installDeb "$CARAPACE_DL_URL"
-}
-if ! hash carapace 2>/dev/null; then
-  writeBlue "Install Carapace."
-  installCarapace
-elif $UPDATE; then
-  CARAPACE_LATEST_VERSION=`githubLatestReleaseVersion rsteube/carapace-bin`
-  if versionSmaller "`carapace --version 2>&1`" "$CARAPACE_LATEST_VERSION"; then
-    writeBlue "Update Carapace."
-    installCarapace
-  elif $VERBOSE; then
-    writeBlue "Not updating Carapace, it is already up to date."
-  fi
-elif $VERBOSE; then
-  writeBlue "Not installing Carapace, it is already installed."
 fi
 
 # kn / knative
@@ -793,19 +830,4 @@ if ! hash k6 2>/dev/null; then
   apt-get install -y k6
 fi
 
-# upgrade
-if $UPDATE; then
-  writeBlue "Upgrade with APT."
-  apt-get upgrade -y
-else
-  if $VERBOSE; then
-    writeBlue "Not updating with APT."
-  fi
-fi
-
-if $CLEAN; then
-  writeBlue "Cleanning up packages."
-  apt-get autoremove -y
-elif $VERBOSE; then
-  writeBlue "Not auto removing with APT."
-fi
+clean

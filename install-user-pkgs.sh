@@ -3,10 +3,11 @@
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$BASEDIR"/_common-setup.sh
 
-if [ "$EUID" == "0" ]; then
+if [ "$EUID" == "0" ] && ! $ANDROID; then
   die "Please do not run this script as root"
 fi
 
+BASIC_SETUP=false
 CURL_GH_HEADERS=()
 GH_TOKEN=''
 UPDATE=false
@@ -14,6 +15,10 @@ SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --basic|-b)
+    BASIC_SETUP=true
+    shift
+    ;;
     --gh)
     CURL_GH_HEADERS=(-H "Authorization: token $2")
     GH_TOKEN=$2
@@ -46,6 +51,7 @@ Usage:
   `readlink -f "$0"` [flags]
 
 Flags:
+  -b, --basic              Will only install basic packages to get Bash working
       --gh <user:pw>       GitHub username and password
   -u, --update             Will download and install/reinstall even if the tools are already installed
       --verbose            Show verbose output
@@ -56,10 +62,75 @@ fi
 
 if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS
-  Update is $UPDATE"
+  Update is $UPDATE
+  Basic setup is $BASIC_SETUP"
 fi
 
 export PATH="$HOME"/bin:"$PATH"
+
+#fzf
+if ! [ -e "$HOME"/.fzf/bin/fzf ] || $UPDATE; then
+  writeBlue "Install/update fzf."
+  "$HOME"/.fzf/install --no-update-rc --no-completion --no-key-bindings --no-bash
+fi
+
+# zoxide
+if ! hash zoxide 2>/dev/null; then
+  writeBlue "Install Zoxide."
+  curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+elif $UPDATE; then
+  ZOXIDE_CURRENT_VERSION=`zoxide --version | cut -f2 -d' '`
+  ZOXIDE_AVAILABLE_VERSION=`githubLatestReleaseVersion ajeetdsouza/zoxide`
+  if versionGreater "$ZOXIDE_AVAILABLE_VERSION" "$ZOXIDE_CURRENT_VERSION"; then
+    writeBlue "Update Zoxide."
+    curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+  fi
+elif $VERBOSE; then
+  writeBlue "Not installing Zoxide, it is already installed."
+fi
+
+# bin
+if ! hash bin 2>/dev/null; then
+  writeBlue "Install Bin."
+  BIN_DL_URL=`githubReleaseDownloadUrl marcosnils/bin linux_amd64`
+  curl -fsSL --output /tmp/bin "$BIN_DL_URL"
+  chmod +x /tmp/bin
+  mkdir -p "$HOME"/.config/bin/
+  echo '{ "default_path": "'"$HOME"'/bin", "bins": { } }' > "$HOME"/.config/bin/config.json
+  /tmp/bin install github.com/marcosnils/bin
+  rm /tmp/bin
+elif $UPDATE; then
+  writeBlue "Update Bin."
+  export GITHUB_AUTH_TOKEN=$GH_TOKEN
+  bin update bin --yes
+elif $VERBOSE; then
+  writeBlue "Not installing Bin, it is already installed."
+fi
+
+# navi
+installNavi() {
+  NAVI_DL_URL=`githubReleaseDownloadUrl denisidoro/navi x86_64-unknown-linux-musl`
+  installTarToHomeBin "$NAVI_DL_URL" ./navi
+}
+if ! hash navi 2>/dev/null; then
+  writeBlue "Install Navi."
+  installNavi
+elif $UPDATE; then
+  NAVI_CURRENT_VERSION=`navi --version | cut -f2 -d' '`
+  NAVI_AVAILABLE_VERSION=`githubLatestReleaseVersion denisidoro/navi`
+  if versionGreater "$NAVI_AVAILABLE_VERSION" "$NAVI_CURRENT_VERSION"; then
+    writeBlue "Update Navi."
+    installNavi
+  else
+    writeBlue "Not updating Navi, it is already up to date."
+  fi
+elif $VERBOSE; then
+  writeBlue "Not installing Navi, it is already installed."
+fi
+
+if $BASIC_SETUP; then
+  exit
+fi
 
 # dvm - deno
 if ! hash dvm 2>/dev/null && ! [ -e "$HOME"/bin/dvm ]; then
@@ -235,12 +306,6 @@ if [ "$GO_ARCH" != '' ]; then
   fi
 fi
 
-#fzf
-if ! [ -e "$HOME"/.fzf/bin/fzf ] || $UPDATE; then
-  writeBlue "Install/update fzf."
-  "$HOME"/.fzf/install --no-update-rc --no-completion --no-key-bindings --no-bash
-fi
-
 # docker-slim
 ARCH=''
 case `uname -m` in
@@ -280,39 +345,6 @@ elif $VERBOSE; then
   writeBlue "Not installing docker-slim, it is already installed."
 fi
 
-# bin
-if ! hash bin 2>/dev/null; then
-  writeBlue "Install Bin."
-  BIN_DL_URL=`githubReleaseDownloadUrl marcosnils/bin linux_amd64`
-  curl -fsSL --output /tmp/bin "$BIN_DL_URL"
-  chmod +x /tmp/bin
-  mkdir -p "$HOME"/.config/bin/
-  echo '{ "default_path": "'"$HOME"'/bin", "bins": { } }' > "$HOME"/.config/bin/config.json
-  /tmp/bin install github.com/marcosnils/bin
-  rm /tmp/bin
-elif $UPDATE; then
-  writeBlue "Update Bin."
-  export GITHUB_AUTH_TOKEN=$GH_TOKEN
-  bin update bin --yes
-elif $VERBOSE; then
-  writeBlue "Not installing Bin, it is already installed."
-fi
-
-# zoxide
-if ! hash zoxide 2>/dev/null; then
-  writeBlue "Install Zoxide."
-  curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-elif $UPDATE; then
-  ZOXIDE_CURRENT_VERSION=`zoxide --version | cut -f2 -d' '`
-  ZOXIDE_AVAILABLE_VERSION=`githubLatestReleaseVersion ajeetdsouza/zoxide`
-  if versionGreater "$ZOXIDE_AVAILABLE_VERSION" "$ZOXIDE_CURRENT_VERSION"; then
-    writeBlue "Update Zoxide."
-    curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-  fi
-elif $VERBOSE; then
-  writeBlue "Not installing Zoxide, it is already installed."
-fi
-
 # githooks
 if ! [ -d "$HOME"/.githooks ]; then
   writeBlue "Install Githooks."
@@ -331,27 +363,6 @@ elif $UPDATE; then
   # "$HOME"/.githooks/bin/cli update
 elif $VERBOSE; then
   writeBlue "Not installing Githooks, it is already installed."
-fi
-
-# navi
-installNavi() {
-  NAVI_DL_URL=`githubReleaseDownloadUrl denisidoro/navi x86_64-unknown-linux-musl`
-  installTarToHomeBin "$NAVI_DL_URL" ./navi
-}
-if ! hash navi 2>/dev/null; then
-  writeBlue "Install Navi."
-  installNavi
-elif $UPDATE; then
-  NAVI_CURRENT_VERSION=`navi --version | cut -f2 -d' '`
-  NAVI_AVAILABLE_VERSION=`githubLatestReleaseVersion denisidoro/navi`
-  if versionGreater "$NAVI_AVAILABLE_VERSION" "$NAVI_CURRENT_VERSION"; then
-    writeBlue "Update Navi."
-    installNavi
-  else
-    writeBlue "Not updating Navi, it is already up to date."
-  fi
-elif $VERBOSE; then
-  writeBlue "Not installing Navi, it is already installed."
 fi
 
 # yq

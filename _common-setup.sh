@@ -21,3 +21,8 @@ if grep microsoft /proc/version -q; then
 else
   export WSL=false
 fi
+if uname -a | grep android &> /dev/null; then
+  export ANDROID=true
+else
+  export ANDROID=false
+fi

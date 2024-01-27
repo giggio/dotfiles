@@ -5,6 +5,11 @@ set -euo pipefail
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$BASEDIR"/_common-setup.sh
 
+if $ANDROID; then
+  writeGreen "Not running configure-systemd.sh because this is Android."
+  exit
+fi
+
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do

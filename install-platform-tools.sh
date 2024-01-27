@@ -173,27 +173,6 @@ if $UPDATE; then
   wait
 fi
 
-# node
-export N_PREFIX=$HOME/.n
-if ! hash node 2>/dev/null && ! [ -f "$HOME"/.n/bin/node ]; then
-  writeBlue "Install Install latest Node version through n."
-  "$BASEDIR"/tools/n/bin/n install latest
-elif $UPDATE; then
-  LATEST_NODE=`"$BASEDIR"/tools/n/bin/n ls-remote | head -n 2 | tail -n 1`
-  if ! "$BASEDIR"/tools/n/bin/n ls | grep --color=never "$LATEST_NODE" -q; then
-    writeBlue "Install Install latest Node version through n."
-    "$BASEDIR"/tools/n/bin/n install latest
-  fi
-else
-  if $VERBOSE; then
-    writeBlue "Not installing Node.js version."
-  fi
-fi
-export PATH="$N_PREFIX/bin:$PATH"
-if ! hash yarn 2>/dev/null; then
-  corepack enable # makes yarn available
-fi
-
 # npm tools
 export NG_CLI_ANALYTICS=ci
 NPM_PKGS_INSTALLED=$(npm ls -g --parseable --depth 0 | tail -n +2 | sed -E "s/$(npm prefix -g | sed 's/\//\\\//g')\/lib\/node_modules\///g" | sort)

@@ -74,6 +74,27 @@ if ! [ -e "$HOME"/.fzf/bin/fzf ] || $UPDATE; then
   "$HOME"/.fzf/install --no-update-rc --no-completion --no-key-bindings --no-bash
 fi
 
+# node
+export N_PREFIX=$HOME/.n
+if ! hash node 2>/dev/null && ! [ -f "$HOME"/.n/bin/node ]; then
+  writeBlue "Install Install latest Node version through n."
+  "$BASEDIR"/tools/n/bin/n install latest
+elif $UPDATE; then
+  LATEST_NODE=`"$BASEDIR"/tools/n/bin/n ls-remote | head -n 2 | tail -n 1`
+  if ! "$BASEDIR"/tools/n/bin/n ls | grep --color=never "$LATEST_NODE" -q; then
+    writeBlue "Install Install latest Node version through n."
+    "$BASEDIR"/tools/n/bin/n install latest
+  fi
+else
+  if $VERBOSE; then
+    writeBlue "Not installing Node.js version."
+  fi
+fi
+export PATH="$N_PREFIX/bin:$PATH"
+if ! hash yarn 2>/dev/null; then
+  corepack enable # makes yarn available
+fi
+
 # zoxide
 if ! hash zoxide 2>/dev/null; then
   writeBlue "Install Zoxide."

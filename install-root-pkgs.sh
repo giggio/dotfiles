@@ -299,8 +299,22 @@ fi
 
 # carapace
 installCarapace () {
-  CARAPACE_DL_URL=`githubReleaseDownloadUrl rsteube/carapace-bin linux_amd64.deb`
-  installDeb "$CARAPACE_DL_URL"
+  CARAPACE_ARCH=''
+  case `uname -m` in
+    x86_64)
+      CARAPACE_ARCH=amd64
+      ;;
+    aarch64)
+      CARAPACE_ARCH=arm64
+      ;;
+    *)
+      writeBlue "Carapace will not be installed: unsupported architecture: `uname -m`"
+      ;;
+  esac
+  if [ "$CARAPACE_ARCH" != '' ]; then
+    CARAPACE_DL_URL=`githubReleaseDownloadUrl rsteube/carapace-bin linux_$CARAPACE_ARCH.deb`
+    installDeb "$CARAPACE_DL_URL"
+  fi
 }
 if ! hash carapace 2>/dev/null; then
   writeBlue "Install Carapace."

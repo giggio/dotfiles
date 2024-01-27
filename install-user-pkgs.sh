@@ -92,13 +92,27 @@ fi
 # bin
 if ! hash bin 2>/dev/null; then
   writeBlue "Install Bin."
-  BIN_DL_URL=`githubReleaseDownloadUrl marcosnils/bin linux_amd64`
-  curl -fsSL --output /tmp/bin "$BIN_DL_URL"
-  chmod +x /tmp/bin
-  mkdir -p "$HOME"/.config/bin/
-  echo '{ "default_path": "'"$HOME"'/bin", "bins": { } }' > "$HOME"/.config/bin/config.json
-  /tmp/bin install github.com/marcosnils/bin
-  rm /tmp/bin
+  BIN_ARCH=''
+  case `uname -m` in
+    x86_64)
+      BIN_ARCH=amd64
+      ;;
+    aarch64)
+      BIN_ARCH=arm64
+      ;;
+    *)
+      writeBlue "Bin will not be installed: unsupported architecture: `uname -m`"
+      ;;
+  esac
+  if [ "$BIN_ARCH" != '' ]; then
+    BIN_DL_URL=`githubReleaseDownloadUrl marcosnils/bin linux_$BIN_ARCH`
+    curl -fsSL --output /tmp/bin "$BIN_DL_URL"
+    chmod +x /tmp/bin
+    mkdir -p "$HOME"/.config/bin/
+    echo '{ "default_path": "'"$HOME"'/bin", "bins": { } }' > "$HOME"/.config/bin/config.json
+    /tmp/bin install github.com/marcosnils/bin
+    rm /tmp/bin
+  fi
 elif $UPDATE; then
   writeBlue "Update Bin."
   export GITHUB_AUTH_TOKEN=$GH_TOKEN
@@ -109,7 +123,7 @@ fi
 
 # navi
 installNavi() {
-  NAVI_DL_URL=`githubReleaseDownloadUrl denisidoro/navi x86_64-unknown-linux-musl`
+  NAVI_DL_URL=`githubReleaseDownloadUrl denisidoro/navi "$(uname -m)-unknown-linux-musl"`
   installTarToHomeBin "$NAVI_DL_URL" ./navi
 }
 if ! hash navi 2>/dev/null; then

@@ -16,7 +16,7 @@ else
   export RUNNING_IN_CONTAINER=false
 fi
 export DEBIAN_FRONTEND=noninteractive
-if grep microsoft /proc/version -q; then
+if grep '[Mm]icrosoft' /proc/version -q &> /dev/null; then
   export WSL=true
 else
   export WSL=false

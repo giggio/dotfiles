@@ -123,8 +123,22 @@ fi
 
 # navi
 installNavi() {
-  NAVI_DL_URL=`githubReleaseDownloadUrl denisidoro/navi "$(uname -m)-unknown-linux-musl"`
-  installTarToHomeBin "$NAVI_DL_URL" ./navi
+  NAVI_FILE=''
+  case `uname -m` in
+    x86_64)
+      NAVI_FILE=x86_64-unknown-linux-musl
+      ;;
+    aarch64)
+      NAVI_FILE=aarch64-linux-android
+      ;;
+    *)
+      writeBlue "Bin will not be installed: unsupported architecture: `uname -m`"
+      ;;
+  esac
+  if [ "$NAVI_FILE" != '' ]; then
+    NAVI_DL_URL=`githubReleaseDownloadUrl denisidoro/navi $NAVI_FILE`
+    installTarToHomeBin "$NAVI_DL_URL" ./navi
+  fi
 }
 if ! hash navi 2>/dev/null; then
   writeBlue "Install Navi."

@@ -129,7 +129,7 @@ installNavi() {
       NAVI_FILE=x86_64-unknown-linux-musl
       ;;
     aarch64)
-      NAVI_FILE=aarch64-linux-android
+      NAVI_FILE=aarch64-unknown-linux-gnu
       ;;
     *)
       writeBlue "Bin will not be installed: unsupported architecture: `uname -m`"

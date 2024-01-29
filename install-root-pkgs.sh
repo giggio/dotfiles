@@ -91,6 +91,10 @@ wget
 gnupg
 gnupg-agent
 gnupg2
+python-is-python3
+python3
+python3-semver
+pipx
 software-properties-common" | sort`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then

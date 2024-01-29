@@ -51,27 +51,6 @@ if $VERBOSE; then
   Update is $UPDATE"
 fi
 
-if ! hash python3 2>/dev/null; then
-  writeBlue "Installing Python 3."
-  apt-get update
-  apt-get install -y python3 python3-pip python-is-python3
-fi
-
-# setup pysemver
-if ! hash pysemver 2>/dev/null; then
-  PIP_PKGS_INSTALLED=`pip3 list --format columns | tail -n +3 | awk '{print $1}' | sort -u`
-  PIP_PKGS_TO_INSTALL="semver"
-  PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKGS_INSTALLED")`
-  if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
-    # shellcheck disable=SC2086
-    writeBlue Install packages $PIP_PKGS_NOT_INSTALLED with Pip for root.
-    # shellcheck disable=SC2086
-    pip3 install $PIP_PKGS_NOT_INSTALLED
-  elif $VERBOSE; then
-    writeBlue "Not installing Pip packages for root, they are already installed."
-  fi
-fi
-
 if ! $ANDROID; then
   if { [ -L /etc/localtime ] && [ "`realpath /etc/localtime`" == "/usr/share/zoneinfo/America/Sao_Paulo" ] ; } || $RUNNING_IN_CONTAINER; then
     if $VERBOSE; then

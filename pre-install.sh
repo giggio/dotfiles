@@ -51,13 +51,11 @@ if $VERBOSE; then
   Update is $UPDATE"
 fi
 
-if ! hash python2.7 2>/dev/null || ! hash python3 2>/dev/null; then
-  writeBlue "Installing Python 2 and 3."
+if ! hash python3 2>/dev/null; then
+  writeBlue "Installing Python 3."
   apt-get update
-  apt-get install -y python2.7 python3 python3-pip
+  apt-get install -y python3 python3-pip python-is-python3
 fi
-installAlternative python /usr/bin/python /usr/bin/python2.7
-installAlternative python /usr/bin/python /usr/bin/python3
 
 # setup pysemver
 if ! hash pysemver 2>/dev/null; then

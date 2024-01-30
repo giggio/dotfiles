@@ -58,7 +58,15 @@ versionSmaller() {
 # call like this: versionsEqual 1.2.4 1.2.3
 # exit code is 0 if versions are equal, otherwise it is 1
 versionsEqual() {
-  [ "`normalizeVersion "$1"`" = "`normalizeVersion "$2"`" ];
+  # not comparing with == directly because 8.0.1+123 is equal to 8.0.1, but not string equals
+  local v1
+  v1=`normalizeVersion "$1"`
+  local v2
+  v2=`normalizeVersion "$2"`
+  if [ "`pysemver compare "$v1" "$v2" 2> /dev/null`" == '0' ]; then
+    return 0
+  fi
+  return 1
 }
 
 versionsDifferent () {

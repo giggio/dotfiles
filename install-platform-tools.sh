@@ -114,10 +114,6 @@ for DOTNET_TOOL in "${!DOTNET_TOOLS[@]}"; do
     writeBlue ".NET tool $DOTNET_TOOL (${DOTNET_TOOLS[$DOTNET_TOOL]}) is already installed."
   fi
 done
-if ! [ -f "$DOTNET_TOOLS_DIR"/tye ]; then
-  writeBlue "Install Tye."
-  dotnet tool update --global Microsoft.Tye --prerelease
-fi
 if ! [ -f "$DOTNET_TOOLS_DIR"/dotnet-symbol ] || ! [ -d "$HOME"/.dotnet/sos ]; then
   writeBlue "Install .NET Symbol."
   dotnet tool update --global dotnet-symbol
@@ -139,10 +135,12 @@ if $UPDATE; then
       local PRERELEASE=''
     fi
     local AVAILABLE_TOOL_VERSION
-    AVAILABLE_TOOL_VERSION=`dotnet tool search "$TOOL_NAME" "$PRERELEASE" | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
+    # shellcheck disable=SC2086
+    AVAILABLE_TOOL_VERSION=`dotnet tool search "$TOOL_NAME" $PRERELEASE | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
     if [ "$AVAILABLE_TOOL_VERSION" == '' ]; then
       # search again if it fails, just to make sure
-      AVAILABLE_TOOL_VERSION=`dotnet tool search "$TOOL_NAME" "$PRERELEASE" | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
+      # shellcheck disable=SC2086
+      AVAILABLE_TOOL_VERSION=`dotnet tool search "$TOOL_NAME" $PRERELEASE | tail -n+3 | awk '{printf $1 ":"; print $2}' | (grep --color=never "^$TOOL_NAME:" || echo "$TOOL_NAME:") | cut -f2 -d':'`
     fi
     if [ "$AVAILABLE_TOOL_VERSION" == '' ]; then
       writeBlue "Tool $TOOL_NAME seems to have changed names, installing the new one and uninstalling the old one."
@@ -150,9 +148,10 @@ if $UPDATE; then
       dotnet tool update --global "`dotnet tool search "$TOOL_NAME" | tail -n+3 | awk '{print $1}'`"
     elif [ "$TOOL_VERSION" != "$AVAILABLE_TOOL_VERSION" ]; then
       writeBlue "Updating NET Tool $TOOL_NAME to $AVAILABLE_TOOL_VERSION."
-      dotnet tool update --global "$TOOL_NAME" "$PRERELEASE"
+      # shellcheck disable=SC2086
+      dotnet tool update --global "$TOOL_NAME" $PRERELEASE
     elif $VERBOSE; then
-      writeBlue ".NET Tool $TOOL_NAME is version $AVAILABLE_TOOL_VERSION and does not need an update."
+      writeBlue ".NET Tool $TOOL_NAME is version $TOOL_VERSION and does not need an update."
     fi
   }
   for TOOL_NAME_AND_VERSION in `dotnet tool list --global | tail -n +3 | awk '{printf $1 ":"; print $2}'`; do
@@ -162,9 +161,8 @@ if $UPDATE; then
     if echo "$TOOL_VERSION" | grep --color=never '-' > /dev/null; then
       PRERELEASE='--prerelease'
     fi
-    updateDotnet "$TOOL_NAME" "$TOOL_VERSION" $PRERELEASE &
+    updateDotnet "$TOOL_NAME" "$TOOL_VERSION" $PRERELEASE
   done
-  wait
 fi
 
 # npm tools

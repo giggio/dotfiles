@@ -3,7 +3,7 @@
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$BASEDIR"/_common-setup.sh
 
-if [ "$EUID" == "0" ] && ! $ANDROID; then
+if [ "$EUID" == "0" ]; then
   die "Please do not run as root"
 fi
 

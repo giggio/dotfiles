@@ -58,8 +58,8 @@ if $VERBOSE; then
   Basic setup is $BASIC_SETUP"
 fi
 
-PIP_PKGS_INSTALLED=`pip3 list --user --format columns | tail -n +3 | awk '{print $1}'`
-PIP_BASIC_PKGS_TO_INSTALL="powerline-status"
+PIP_PKGS_INSTALLED=`pipx list --json 2> /dev/null | jq --raw-output '.venvs | keys | .[]' | sort`
+PIP_BASIC_PKGS_TO_INSTALL=""
 PIP_PKGS_TO_INSTALL="xlsx2csv"
 if $BASIC_SETUP; then
   PIP_PKGS_TO_INSTALL=$PIP_BASIC_PKGS_TO_INSTALL
@@ -70,23 +70,17 @@ PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKG
 if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
   # shellcheck disable=SC2086
   writeBlue Install packages $PIP_PKGS_NOT_INSTALLED with Pip.
-  # shellcheck disable=SC2086
-  pip3 install --user $PIP_PKGS_NOT_INSTALLED
+  for pkg in $PIP_PKGS_NOT_INSTALLED; do
+    pipx install "$pkg"
+  done
 else
   if $VERBOSE; then
     writeBlue "Not installing Pip packages, they are already installed."
   fi
 fi
 if $UPDATE; then
-  PIP_OUTDATED=`pip3 list --user --format columns --outdated | tail -n +3 | awk '{print $1}'`
-  if [ "$PIP_OUTDATED" != '' ]; then
-    # shellcheck disable=SC2086
-    writeBlue Update packages $PIP_OUTDATED with Pip.
-    # shellcheck disable=SC2086
-    pip3 install --user --upgrade $PIP_OUTDATED
-  else
-    writeBlue "Not updating Pip packages, they are already up to date."
-  fi
+  writeBlue Upgrading packages with Pipx.
+  pipx upgrade-all
 fi
 
 if $BASIC_SETUP; then

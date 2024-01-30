@@ -132,6 +132,7 @@ jq
 locales
 lsb-release
 mosh
+powerline
 python3-pip
 socat
 tmux

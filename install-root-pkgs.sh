@@ -146,6 +146,7 @@ bison
 cowsay
 figlet
 fontforge
+ghostscript
 gzip
 httpie
 hub

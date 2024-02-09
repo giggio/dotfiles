@@ -458,7 +458,7 @@ dotnet-sdk-8.0" | sort`
 APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
 APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
 if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
-  writeBlue "Install .NET cli."
+  writeBlue "Install .NET SDK."
   # shellcheck disable=SC2086
   apt-get install -y $APT_PKGS_NOT_INSTALLED
 elif $VERBOSE; then
@@ -472,6 +472,18 @@ if ! hash dotnet-install 2>/dev/null; then
   ln -s /usr/local/bin/dotnet-install.sh /usr/local/bin/dotnet-install
 elif $VERBOSE; then
   writeBlue "Not installing dotnet-install, it is already installed."
+fi
+
+# msopenjdk-21, java
+APT_PKGS_TO_INSTALL=`echo "msopenjdk-21" | sort`
+APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
+APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
+if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
+  writeBlue "Install MS OpenJDK."
+  # shellcheck disable=SC2086
+  apt-get install -y $APT_PKGS_NOT_INSTALLED
+elif $VERBOSE; then
+  writeBlue "Not installing MS OpenJSDK, it is already installed."
 fi
 
 # dotnet-uninstall # todo: not yet available, see: https://github.com/dotnet/cli-lab/issues/217

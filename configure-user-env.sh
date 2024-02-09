@@ -59,3 +59,9 @@ fi
 if hash carapace 2>/dev/null && ! [ -f "$HOME"/.config/carapace/schema.json ]; then
   carapace _carapace > /dev/null
 fi
+
+if $WSL; then
+  xdg-mime default wslview.desktop text/html
+  xdg-mime default wslview.desktop x-scheme-handler/http
+  xdg-mime default wslview.desktop x-scheme-handler/https
+fi

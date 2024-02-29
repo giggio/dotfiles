@@ -18,14 +18,12 @@
     - if [ -e $HOME/.vim ]; then rm -rf $HOME/.vim; fi
     - if [ -e $HOME/.config/nvim ]; then rm -rf $HOME/.config/nvim; fi
     - if [ -e $HOME/.config/starship.toml ]; then rm -rf $HOME/.config/starship.toml; fi
-    - if [ -e $HOME/.rbenv ]; then rm -rf $HOME/.rbenv; fi
     - if [ -e $HOME/.config/powershell ]; then rm -rf $HOME/.config/powershell; fi
     - if [ -e $HOME/.bashrc ]; then rm -rf $HOME/.bashrc; fi
     - if [ -e $HOME/.gitconfig ]; then rm -rf $HOME/.gitconfig; fi
     - if [ -e $HOME/.profile ]; then rm -rf $HOME/.profile; fi
     - if [ -e $HOME/.tmux.conf ]; then rm -rf $HOME/.tmux.conf; fi
     - if [ -e $HOME/.vimrc ]; then rm -rf $HOME/.vimrc; fi
-    - if [ -e $HOME/.fzf ]; then rm -rf $HOME/.fzf; fi
 - link:
     ~/.dotfiles:
       path: ""
@@ -33,9 +31,9 @@
     ~/.inputrc: home/.inputrc
     ~/.vim: vimfiles
     ~/.config/nvim: nvim
-    ~/.rbenv: tools/rbenv
     ~/.config/powershell: poshfiles
     ~/.config/git: config/git
+    ~/.config/home-manager: config/home-manager
     ~/.config/starship.toml: config/starship.toml
     ~/.config/navi/config.yaml: config/navi-config.yaml
     ~/.config/nushell: nuscripts
@@ -50,7 +48,6 @@
     ~/.gittemplate:
       path: home/.gittemplate
       force: true
-    ~/.fzf: tools/fzf
     ~/.gitconfig: home/.gitconfig
     ~/.profile:
       path: home/.profile
@@ -61,6 +58,6 @@
     ~/bin/kubectx: tools/kubectx/kubectx
     ~/bin/kubens: tools/kubectx/kubens
     ~/bin/n: tools/n/bin/n
-    ~/bin/terraform: tools/tfenv/bin/terraform
-    ~/bin/tfenv: tools/tfenv/bin/tfenv
     ~/bin/dotnet-uninstall: home/bin/dotnet-uninstall
+- shell:
+    - ./cheats/build.sh

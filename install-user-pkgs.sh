@@ -68,375 +68,220 @@ fi
 
 export PATH="$HOME"/bin:"$PATH"
 
-#fzf
-if ! [ -e "$HOME"/.fzf/bin/fzf ] || $UPDATE; then
-  writeBlue "Install/update fzf."
-  "$HOME"/.fzf/install --no-update-rc --no-completion --no-key-bindings --no-bash
-fi
-
-# node
-export N_PREFIX=$HOME/.n
-if ! hash node 2>/dev/null && ! [ -f "$HOME"/.n/bin/node ]; then
-  writeBlue "Install Install latest Node version through n."
-  "$BASEDIR"/tools/n/bin/n install latest
-elif $UPDATE; then
-  LATEST_NODE=`"$BASEDIR"/tools/n/bin/n ls-remote | head -n 2 | tail -n 1`
-  if ! "$BASEDIR"/tools/n/bin/n ls | grep --color=never "$LATEST_NODE" -q; then
-    writeBlue "Install Install latest Node version through n."
-    "$BASEDIR"/tools/n/bin/n install latest
-  fi
-else
-  if $VERBOSE; then
-    writeBlue "Not installing Node.js version."
-  fi
-fi
-export PATH="$N_PREFIX/bin:$PATH"
-if ! hash yarn 2>/dev/null; then
-  corepack enable # makes yarn available
-fi
-
-# zoxide
-if ! hash zoxide 2>/dev/null; then
-  writeBlue "Install Zoxide."
-  curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-elif $UPDATE; then
-  ZOXIDE_CURRENT_VERSION=`zoxide --version | cut -f2 -d' '`
-  ZOXIDE_AVAILABLE_VERSION=`githubLatestReleaseVersion ajeetdsouza/zoxide`
-  if versionGreater "$ZOXIDE_AVAILABLE_VERSION" "$ZOXIDE_CURRENT_VERSION"; then
-    writeBlue "Update Zoxide."
-    curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-  fi
-elif $VERBOSE; then
-  writeBlue "Not installing Zoxide, it is already installed."
-fi
-
-# bin
-if ! hash bin 2>/dev/null; then
-  writeBlue "Install Bin."
-  BIN_ARCH=''
-  case `uname -m` in
-    x86_64)
-      BIN_ARCH=amd64
-      ;;
-    aarch64)
-      BIN_ARCH=arm64
-      ;;
-    *)
-      writeBlue "Bin will not be installed: unsupported architecture: `uname -m`"
-      ;;
-  esac
-  if [ "$BIN_ARCH" != '' ]; then
-    BIN_DL_URL=`githubReleaseDownloadUrl marcosnils/bin linux_$BIN_ARCH`
-    curl -fsSL --output /tmp/bin "$BIN_DL_URL"
-    chmod +x /tmp/bin
-    mkdir -p "$HOME"/.config/bin/
-    echo '{ "default_path": "'"$HOME"'/bin", "bins": { } }' > "$HOME"/.config/bin/config.json
-    /tmp/bin install github.com/marcosnils/bin
-    rm /tmp/bin
-  fi
-elif $UPDATE; then
-  writeBlue "Update Bin."
-  export GITHUB_AUTH_TOKEN=$GH_TOKEN
-  bin update bin --yes
-elif $VERBOSE; then
-  writeBlue "Not installing Bin, it is already installed."
-fi
-
-# navi
-installNavi() {
-  NAVI_FILE=''
-  case `uname -m` in
-    x86_64)
-      NAVI_FILE=x86_64-unknown-linux-musl
-      ;;
-    aarch64)
-      NAVI_FILE=aarch64-unknown-linux-gnu
-      ;;
-    *)
-      writeBlue "Bin will not be installed: unsupported architecture: `uname -m`"
-      ;;
-  esac
-  if [ "$NAVI_FILE" != '' ]; then
-    NAVI_DL_URL=`githubReleaseDownloadUrl denisidoro/navi $NAVI_FILE`
-    installTarToHomeBin "$NAVI_DL_URL" ./navi
+# nix home-manager
+installHomeManager () {
+  download_nixpkgs_cache_index () {
+    local filename
+    filename="index-$(uname -m | sed 's/^arm64$/aarch64/')-$(uname | tr '[:upper:]' '[:lower:]')"
+    mkdir -p ~/.cache/nix-index && cd ~/.cache/nix-index
+    wget -q -N "https://github.com/Mic92/nix-index-database/releases/latest/download/$filename"
+    ln -f "$filename" files
+  }
+  if ! hash home-manager 2>/dev/null; then
+    writeBlue "Install Nix home-manager."
+    nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+    nix-channel --update
+    nix-shell '<home-manager>' -A install
+    BASIC_SETUP=$BASIC_SETUP WSL=$WSL home-manager switch --show-trace
+    download_nixpkgs_cache_index
+  elif $UPDATE; then
+    writeBlue "Update Nix home-manager."
+    nix-channel --update
+    BASIC_SETUP=$BASIC_SETUP WSL=$WSL home-manager switch --show-trace
+    download_nixpkgs_cache_index
+  elif $VERBOSE; then
+    writeBlue "Not installing Nix home-manager, it is already installed."
   fi
 }
-if ! hash navi 2>/dev/null; then
-  writeBlue "Install Navi."
-  installNavi
-elif $UPDATE; then
-  NAVI_CURRENT_VERSION=`navi --version | cut -f2 -d' '`
-  NAVI_AVAILABLE_VERSION=`githubLatestReleaseVersion denisidoro/navi`
-  if versionGreater "$NAVI_AVAILABLE_VERSION" "$NAVI_CURRENT_VERSION"; then
-    writeBlue "Update Navi."
-    installNavi
+installHomeManager
+
+# node
+installNode () {
+  export N_PREFIX=$HOME/.n
+  if ! hash node 2>/dev/null && ! [ -f "$HOME"/.n/bin/node ] || $UPDATE; then
+    writeBlue "Install latest Node version through n."
+    "$BASEDIR"/tools/n/bin/n install latest
+    "$BASEDIR"/tools/n/bin/n install lts
   else
-    writeBlue "Not updating Navi, it is already up to date."
+    if $VERBOSE; then
+      writeBlue "Not installing Node.js version."
+    fi
   fi
-elif $VERBOSE; then
-  writeBlue "Not installing Navi, it is already installed."
-fi
+  export PATH="$N_PREFIX/bin:$PATH"
+  if ! hash yarn 2>/dev/null; then
+    corepack enable # makes yarn available
+  fi
+}
+installNode
+
+# bin
+installBin () {
+  if ! hash bin 2>/dev/null; then
+    writeBlue "Install Bin."
+    BIN_ARCH=''
+    case `uname -m` in
+      x86_64)
+        BIN_ARCH=amd64
+        ;;
+      aarch64)
+        BIN_ARCH=arm64
+        ;;
+      *)
+        writeBlue "Bin will not be installed: unsupported architecture: `uname -m`"
+        ;;
+    esac
+    if [ "$BIN_ARCH" != '' ]; then
+      BIN_DL_URL=`githubReleaseDownloadUrl marcosnils/bin linux_$BIN_ARCH`
+      curl -fsSL --output /tmp/bin "$BIN_DL_URL"
+      chmod +x /tmp/bin
+      mkdir -p "$HOME"/.config/bin/
+      echo '{ "default_path": "'"$HOME"'/bin", "bins": { } }' > "$HOME"/.config/bin/config.json
+      /tmp/bin install github.com/marcosnils/bin
+      rm /tmp/bin
+    fi
+  elif $UPDATE; then
+    writeBlue "Update Bin."
+    export GITHUB_AUTH_TOKEN=$GH_TOKEN
+    bin update bin --yes
+  elif $VERBOSE; then
+    writeBlue "Not installing Bin, it is already installed."
+  fi
+}
+installBin
 
 if $BASIC_SETUP; then
   exit
 fi
 
-# dvm - deno
-if ! hash dvm 2>/dev/null && ! [ -e "$HOME"/bin/dvm ]; then
-  writeBlue "Install DVM."
-  DVM_TARGZ='dvm_linux_amd64.tar.gz'
-  DVM_DL_URL=`githubReleaseDownloadUrl axetroy/dvm $DVM_TARGZ`
-  DVM_TMP_DIR='/tmp/dvm'
-  mkdir -p $DVM_TMP_DIR
-  DVM_TARGZ_TMP="$DVM_TMP_DIR/$DVM_TARGZ"
-  curl -fsSL --output $DVM_TARGZ_TMP "$DVM_DL_URL"
-  pushd $DVM_TMP_DIR > /dev/null
-  tar -xvzf $DVM_TARGZ_TMP
-  mv dvm "$HOME"/bin/
-  popd > /dev/null
-  rm -rf $DVM_TMP_DIR
-  export PATH=$PATH:$HOME/.deno/bin
-  "$HOME"/bin/dvm install latest
-elif $UPDATE; then
-  writeBlue "Update DVM."
-  dvm upgrade
-  if ! dvm ls-remote | grep -q 'Latest and currently using'; then
-    dvm install latest
-    dvm use "`dvm ls | tail -n1`"
-  fi
-fi
-
-# rbenv
-if ! [ -f "$BASEDIR"/tools/rbenv/shims/ruby ]; then
-  writeBlue "Install ruby-build and install Ruby with rbenv."
-  git clone https://github.com/rbenv/ruby-build.git "$BASEDIR"/tools/rbenv/plugins/ruby-build
-  "$HOME"/.rbenv/bin/rbenv install 3.2.2
-  "$HOME"/.rbenv/bin/rbenv global 3.2.2
-elif $UPDATE; then
-  git -C "$BASEDIR"/tools/rbenv/plugins/ruby-build pull
-  RUBY_LATEST=$(getLatestVersion "`rbenv install --list | grep --color=never -E '^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$'`")
-  RUBY_CURRENT=`ruby --version | grep --color=never -oP '([[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)'`
-  if [ "$RUBY_LATEST" != "$RUBY_CURRENT" ]; then
-    writeBlue "Update Ruby with rbenv."
-    rbenv install --skip-existing "$RUBY_LATEST"
-    rbenv global "$RUBY_LATEST"
-  fi
-elif $VERBOSE; then
-  writeBlue "Not installing Rbenv and generating Ruby, it is already installed."
-fi
-
-# rust
-if ! [ -x "$HOME"/.cargo/bin/rustc ]; then
-  writeBlue "Install Rust tools."
-  curl -fsSL https://sh.rustup.rs | bash -s -- -y --no-modify-path
-  "$HOME"/.cargo/bin/rustup toolchain install {stable,beta,nightly}
-elif $UPDATE; then
-  writeBlue "Update Rust tools."
-  "$HOME"/.cargo/bin/rustup update
-elif $VERBOSE; then
-  writeBlue "Not installing Rust tools, it is already installed."
-fi
-
-# tfenv
-if ! "$HOME"/bin/tfenv list &> /dev/null; then
-  writeBlue "Install Tfenv."
-  "$BASEDIR"/tools/tfenv/bin/tfenv install latest:^0.12.
-  "$BASEDIR"/tools/tfenv/bin/tfenv install latest:^0.13.
-  "$BASEDIR"/tools/tfenv/bin/tfenv install latest
-  "$BASEDIR"/tools/tfenv/bin/tfenv use latest
-elif $UPDATE; then
-  LATEST_TFENV=`getLatestVersion "$("$BASEDIR"/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-')"`
-  LATEST_012=`getLatestVersion "$("$BASEDIR"/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-' | grep --color=never '^0.12')"`
-  LATEST_013=`getLatestVersion "$("$BASEDIR"/tools/tfenv/bin/tfenv list-remote | grep --color=never -v '-' | grep --color=never '^0.13')"`
-  CURRENT_012=`"$BASEDIR"/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never '^0.12'`
-  CURRENT_013=`"$BASEDIR"/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never '^0.13'`
-  writeBlue "Update Tfenv."
-  if [ "$LATEST_012" != "$CURRENT_012" ]; then
-    "$BASEDIR"/tools/tfenv/bin/tfenv uninstall "$CURRENT_012"
-    "$BASEDIR"/tools/tfenv/bin/tfenv install latest:^0.12.
-  fi
-  if [ "$LATEST_013" != "$CURRENT_013" ]; then
-    "$BASEDIR"/tools/tfenv/bin/tfenv uninstall "$CURRENT_013"
-    "$BASEDIR"/tools/tfenv/bin/tfenv install latest:^0.13.
-  fi
-  if ! "$BASEDIR"/tools/tfenv/bin/tfenv list | sed -E 's/\*//' | awk '{print $1}' | grep --color=never -q "$LATEST_TFENV"; then
-    "$BASEDIR"/tools/tfenv/bin/tfenv install latest
-    "$BASEDIR"/tools/tfenv/bin/tfenv use latest
-  fi
-elif $VERBOSE; then
-  writeBlue "Not installing Tfenv, it is already installed."
-fi
-
-# krew
-if ! hash kubectl-krew 2>/dev/null && ! [ -e "$HOME"/.krew/bin/kubectl-krew ]; then
-  writeBlue "Install krew."
-  curl -fsSL --output /tmp/krew.tar.gz https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_amd64.tar.gz
-  rm -rf /tmp/krew/
-  mkdir /tmp/krew/
-  tar -xvzf /tmp/krew.tar.gz -C /tmp/krew/
-  /tmp/krew/krew-"$(uname | tr '[:upper:]' '[:lower:]')_$(uname -m | sed -e 's/x86_64/amd64/' -e 's/arm.*$/arm/')" install krew
-  rm -rf /tmp/krew/
-  rm /tmp/krew.tar.gz
-elif $UPDATE; then
-  writeBlue "Update krew."
-  kubectl krew upgrade
-elif $VERBOSE; then
-  writeBlue "Not installing Krew, it is already installed."
-fi
-
 # docker-show-context
-if ! hash docker-show-context 2>/dev/null && ! [ -e "$HOME"/bin/docker-show-context ]; then
-  writeBlue "Install docker-show-context."
-  curl -fsSL --output "$HOME"/bin/docker-show-context https://github.com/pwaller/docker-show-context/releases/latest/download/docker-show-context_linux_amd64
-  chmod +x "$HOME"/bin/docker-show-context
-elif $VERBOSE; then
-  writeBlue "Not installing docker-show-context, it is already installed."
-fi
-
-# ctop
-installCtop () {
-  CTOP_DL_URL=`githubReleaseDownloadUrl bcicen/ctop linux-amd64`
-  installBinToHomeBin "$CTOP_DL_URL" ctop
+installDockerShowContext () {
+  if ! hash docker-show-context 2>/dev/null && ! [ -e "$HOME"/bin/docker-show-context ]; then
+    writeBlue "Install docker-show-context."
+    curl -fsSL --output "$HOME"/bin/docker-show-context https://github.com/pwaller/docker-show-context/releases/latest/download/docker-show-context_linux_amd64
+    chmod +x "$HOME"/bin/docker-show-context
+  elif $VERBOSE; then
+    writeBlue "Not installing docker-show-context, it is already installed."
+  fi
 }
-if ! hash ctop 2>/dev/null; then
-  writeBlue "Install Ctop."
-  installCtop
-elif $UPDATE; then
-  CTOP_LATEST_VERSION=`githubLatestReleaseVersion bcicen/ctop`
-  if versionSmaller "`ctop -v | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9]+).*/\1/g'`" "$CTOP_LATEST_VERSION"; then
-    writeBlue "Update Ctop."
-    installCtop
-  elif $VERBOSE; then
-    writeBlue "Not updating Ctop, it is already up to date."
-  fi
-elif $VERBOSE; then
-  writeBlue "Not intalling Ctop, it is already installed."
-fi
-
-# golang
-GO_ARCH=''
-case `uname -m` in
-  x86_64)
-    GO_ARCH=amd64
-    ;;
-  aarch64)
-    GO_ARCH=arm64
-    ;;
-  armv7l)
-    GO_ARCH=armv6l
-    ;;
-  *)
-    writeBlue "Golang will not be installed: unsupported architecture: `uname -m`"
-    ;;
-esac
-if [ "$GO_ARCH" != '' ]; then
-  installGolang () {
-    curl -fsSL --output /tmp/go.tar.gz "https://go.dev/dl/go$GO_AVAILABLE_VERSION.linux-$GO_ARCH.tar.gz"
-    rm -rf "$HOME"/.go/
-    tar -C /tmp/ -xzvf /tmp/go.tar.gz go/bin go/pkg go/lib go/src go/go.env
-    mv /tmp/go "$HOME"/.go
-    rm /tmp/go.tar.gz
-  }
-  GO_TAGS=`githubTags golang/go | sed 's/^go//'`
-  GO_AVAILABLE_VERSION=`getLatestVersion "$GO_TAGS"`
-  if ! hash go  2>/dev/null && ! [ -d "$HOME"/.go/ ] &> /dev/null; then
-    writeBlue "Install golang."
-    installGolang
-  elif $UPDATE; then
-    GO_CURRENT_VERSION=`go version 2>/dev/null | sed -E 's/^.*go([[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+).*$/\1/'`
-    if [ "$GO_AVAILABLE_VERSION" != "$GO_CURRENT_VERSION" ]; then
-      writeBlue "Update golang."
-      installGolang
-    elif $VERBOSE; then
-      writeBlue "Not updating golang, it is already up to date."
-    fi
-  elif $VERBOSE; then
-    writeBlue "Not installing golang, it is already installed."
-  fi
-fi
-
-# docker-slim
-ARCH=''
-case `uname -m` in
-  x86_64)
-    ARCH=linux
-    ;;
-  aarch64)
-    ARCH=linux_arm64
-    ;;
-  armv7l)
-    ARCH=linux_arm
-    ;;
-  *)
-    writeBlue "Docker-slim will not be installed: unsupported architecture: `uname -m`"
-    ;;
-esac
-if ! hash docker-slim 2>/dev/null && ! [ -e "$HOME"/bin/docker-slim ]; then
-  writeBlue "Install docker-slim."
-  DSLIMTAR=/tmp/docker-slim.tar.gz
-  DS_VERSION=`githubLatestTagByVersion docker-slim/docker-slim`
-  curl -fsSL --output $DSLIMTAR "https://downloads.dockerslim.com/releases/$DS_VERSION/dist_$ARCH.tar.gz"
-  mkdir /tmp/dslim/
-  tar -xvzf $DSLIMTAR -C /tmp/dslim/
-  mv /tmp/dslim/dist_linux/* "$HOME/bin/"
-  rm -rf /tmp/dslim/
-  rm $DSLIMTAR
-elif $UPDATE; then
-  DS_CURRENT_VERSION=`docker-slim --version | cut -d'|' -f3`
-  DS_AVAILABLE_VERSION=`githubLatestTagByVersion docker-slim/docker-slim`
-  if versionGreater "$DS_AVAILABLE_VERSION" "$DS_CURRENT_VERSION"; then
-    writeBlue "Update docker-slim."
-    docker-slim update
-  elif $VERBOSE; then
-    writeBlue "Not updating docker-slim, already up to date."
-  fi
-elif $VERBOSE; then
-  writeBlue "Not installing docker-slim, it is already installed."
-fi
+installDockerShowContext
 
 # githooks
-if ! [ -d "$HOME"/.githooks ]; then
-  writeBlue "Install Githooks."
-  # todo: switch to automated instalation from githooks when this is fixed: https://github.com/gabyx/Githooks/issues/142
-  # right now we are only creating the directory $HOME/.githooks and installing the clis at $HOME/.githooks/bin
-  # calling `cli update` also install the $HOME/.githooks/release directory
-  # but it is changing the cloneUrl and cloneBranch configs, adding tabs before the values, replacing the spaces,
-  # this is mentioned in the issue above
-  GITHOOKS_DL_URL=`githubReleaseDownloadUrl gabyx/Githooks linux.amd64`
-  installTarToDir "$HOME"/.githooks/bin/ "$GITHOOKS_DL_URL"
-  "$HOME"/.githooks/bin/cli update
-elif $UPDATE; then
-  writeBlue "Githooks update needs attention."
-  # writeBlue "Update Githooks."
-  # todo: review githooks update, it is failing with 'Githooks is not configured to use that folder'
-  # "$HOME"/.githooks/bin/cli update
-elif $VERBOSE; then
-  writeBlue "Not installing Githooks, it is already installed."
-fi
-
-# yq
-installYq() {
-  YQ_DL_URL=`githubReleaseDownloadUrl mikefarah/yq yq_linux_amd64.tar`
-  installTarToHomeBin "$YQ_DL_URL" ./yq_linux_amd64
-  mv "$HOME"/bin/yq_linux_amd64 "$HOME"/bin/yq
-  pushd "$HOME"/bin/ > /dev/null
-  ./install-man-page.sh
-  rm ./install-man-page.sh
-  rm yq.1
-  popd > /dev/null
-}
-if ! hash yq 2>/dev/null; then
-  writeBlue "Install Yq."
-  installYq
-elif $UPDATE; then
-  YQ_CURRENT_VERSION=`yq --version | awk '{ print $4 }'`
-  YQ_AVAILABLE_VERSION=`githubLatestReleaseVersion mikefarah/yq`
-  if versionGreater "$YQ_AVAILABLE_VERSION" "$YQ_CURRENT_VERSION"; then
-    writeBlue "Update Yq."
-    installYq
-  else
-    writeBlue "Not updating Yq, it is already up to date."
+installGitHooks () {
+  if ! [ -d "$HOME"/.githooks ]; then
+    writeBlue "Install Githooks."
+    # todo: switch to automated instalation from githooks when this is fixed: https://github.com/gabyx/Githooks/issues/142
+    # right now we are only creating the directory $HOME/.githooks and installing the clis at $HOME/.githooks/bin
+    # calling `cli update` also install the $HOME/.githooks/release directory
+    # but it is changing the cloneUrl and cloneBranch configs, adding tabs before the values, replacing the spaces,
+    # this is mentioned in the issue above
+    GITHOOKS_DL_URL=`githubReleaseDownloadUrl gabyx/Githooks linux.amd64`
+    installTarToDir "$HOME"/.githooks/bin/ "$GITHOOKS_DL_URL"
+    "$HOME"/.githooks/bin/cli update
+  elif $UPDATE; then
+    writeBlue "Githooks update needs attention."
+    # writeBlue "Update Githooks."
+    # todo: review githooks update, it is failing with 'Githooks is not configured to use that folder'
+    # "$HOME"/.githooks/bin/cli update
+  elif $VERBOSE; then
+    writeBlue "Not installing Githooks, it is already installed."
   fi
-elif $VERBOSE; then
-  writeBlue "Not installing Yq, it is already installed."
-fi
+}
+installGitHooks
+
+# chart releaser - cr
+installCR() {
+  doInstallCR () {
+    CR_DL_URL=`githubReleaseDownloadUrl helm/chart-releaser linux_amd64.tar.gz$`
+    installTarToHomeBin "$CR_DL_URL" cr
+  }
+  if ! hash cr 2>/dev/null; then
+    writeBlue "Install Chart releaser (CR)."
+    doInstallCR
+  elif $UPDATE; then
+    CR_LATEST_VERSION=`githubLatestReleaseVersion helm/chart-releaser`
+    if versionSmaller "`cr version | grep GitVersion | awk '{print $2}'`" "$CR_LATEST_VERSION"; then
+      writeBlue "Update Chart releaser (CR)."
+      doInstallCR
+    elif $VERBOSE; then
+      writeBlue "Not updating cr, it is already up to date."
+    fi
+  elif $VERBOSE; then
+    writeBlue "Not installing Chart Releaser, it is already installed."
+  fi
+  }
+installCR
+
+# dotnet-install
+installDotnetInstall () {
+  if ! [ -e "$HOME"/bin/dotnet-install ]; then
+    writeBlue "Install dotnet-install."
+    # installBinToUsrLocalBin https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
+    installBinToHomeBin https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
+    ln -s "$HOME"/bin/dotnet-install.sh "$HOME"/bin/dotnet-install
+  elif $VERBOSE; then
+    writeBlue "Not installing dotnet-install, it is already installed."
+  fi
+}
+installDotnetInstall
+
+# vault
+installVault () {
+  # see urls and details at: https://developer.hashicorp.com/vault/install
+  # see release info at: https://github.com/hashicorp/vault/releases/tag/v1.15.6
+  local vault_current_version
+  if hash vault 2>/dev/null; then
+    if ! $UPDATE; then
+      if $VERBOSE; then
+        writeBlue "Not installing Hashicorp Vault, it is already installed."
+      fi
+      return
+    fi
+    writeBlue "Update Hashicorp Vault."
+    vault_current_version=`vault version | awk '{print $2}'`
+  else
+    writeBlue "Install Hashicorp Vault."
+    vault_current_version=0.0.1
+  fi
+  local vault_latest_version
+  vault_latest_version=`githubLatestReleaseVersion hashicorp/vault` # this will be like: v1.15.6
+  if [[ "$vault_latest_version" == v* ]]; then
+    vault_latest_version="${vault_latest_version:1}"
+  fi
+  if versionSmaller "$vault_current_version" "$vault_latest_version"; then
+    installZipToHomeBin "https://releases.hashicorp.com/vault/$vault_latest_version/vault_${vault_latest_version}_linux_amd64.zip" vault
+  else
+    writeBlue "Not updating Vault, it is already up to date."
+  fi
+}
+installVault
+
+# terraform
+installTerraform () {
+  # see urls and details at: https://developer.hashicorp.com/terraform/install
+  # see release info at: https://github.com/hashicorp/terraform/releases/tag/v1.7.4
+  local terraform_current_version
+  if hash terraform 2>/dev/null; then
+    if ! $UPDATE; then
+      if $VERBOSE; then
+        writeBlue "Not installing Hashicorp Terraform, it is already installed."
+      fi
+      return
+    fi
+    writeBlue "Update Terraform."
+    terraform_current_version=`terraform --version | head -n1 | awk '{ print $2 }'`
+  else
+    writeBlue "Install Terraform."
+    terraform_current_version=0.0.1
+  fi
+  local terraform_latest_version
+  terraform_latest_version=`githubLatestReleaseVersion hashicorp/terraform` # this will be like: v1.15.6
+  if [[ "$terraform_latest_version" == v* ]]; then
+    terraform_latest_version="${terraform_latest_version:1}"
+  fi
+  if versionSmaller "$terraform_current_version" "$terraform_latest_version"; then
+    installZipToHomeBin "https://releases.hashicorp.com/terraform/$terraform_latest_version/terraform_${terraform_latest_version}_linux_amd64.zip" terraform
+  else
+    writeBlue "Not updating Terraform, it is already up to date."
+  fi
+}
+installTerraform

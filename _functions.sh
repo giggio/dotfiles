@@ -280,6 +280,48 @@ installTarToHomeBin () {
   installTarToDir "$HOME"/bin "$@"
 }
 
+# use it like this:
+# installZipToDir /path/to/dir/ "`githubReleaseDownloadUrl dotnet/cli-lab`" path/in/zip/dotnet-core-uninstall dotnet-core-uninstall
+# or
+# installZipToDir /path/to/dir/ "`githubReleaseDownloadUrl dotnet/cli-lab`"
+# first parameter is directory
+# second parameter is url,
+# third parameter is optional and is the file path inside zip file, if not supplied all files in zip will placed in the directory,
+# fourth parameter is optional and is the executable name - if not supplied it will be inferred from the second parameter
+installZipToDir () {
+  local ZIP_FILE_NAME=$2
+  ZIP_FILE_NAME="${ZIP_FILE_NAME##*/}" # get file name
+  ZIP_FILE_NAME="${ZIP_FILE_NAME%%\?*}" # remove query string
+  ZIP_FILE_NAME="${ZIP_FILE_NAME%%\#*}" # remove fragment
+  if ! [ -d "$1" ]; then
+    mkdir -p "$1"
+  fi
+  if [ -v 4 ]; then
+    local BIN=$1/$4
+  elif [ -v 3 ]; then
+    local BIN=$3
+    BIN="${BIN##*/}"
+    BIN=$1/$BIN
+  fi
+  rm -f "/tmp/$ZIP_FILE_NAME"
+  curl -fsSL --output "/tmp/$ZIP_FILE_NAME" "$2"
+  if [ -v BIN ]; then
+    unzip -o "/tmp/$ZIP_FILE_NAME" "$3" -d /tmp
+    mv "/tmp/$3" "$BIN"
+  else
+    unzip -o "/tmp/$ZIP_FILE_NAME" -d "$1"
+  fi
+  rm "/tmp/$ZIP_FILE_NAME"
+}
+
+# use it like this: installZipToHomeBin "`githubReleaseDownloadUrl owner/repo`" path/in/tar/binary-name executable-name
+# first parameter is url,
+# second parameter is file path inside tar file,
+# third parameter is optional and is the executable name - if not supplied it will be inferred from the second parameter
+installZipToHomeBin () {
+  installZipToDir "$HOME"/bin "$@"
+}
+
 addSourceListAndKey () {
   local KEYRING_URL=$1
   local LIST_INFO=$2

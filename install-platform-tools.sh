@@ -58,31 +58,6 @@ if $VERBOSE; then
   Basic setup is $BASIC_SETUP"
 fi
 
-PIP_PKGS_INSTALLED=`pipx list --json 2> /dev/null | jq --raw-output '.venvs | keys | .[]' | sort`
-PIP_BASIC_PKGS_TO_INSTALL=""
-PIP_PKGS_TO_INSTALL="xlsx2csv"
-if $BASIC_SETUP; then
-  PIP_PKGS_TO_INSTALL=$PIP_BASIC_PKGS_TO_INSTALL
-else
-  PIP_PKGS_TO_INSTALL=`echo "$PIP_BASIC_PKGS_TO_INSTALL"$'\n'"$PIP_PKGS_TO_INSTALL" | sort`
-fi
-PIP_PKGS_NOT_INSTALLED=`comm -23 <(echo "$PIP_PKGS_TO_INSTALL") <(echo "$PIP_PKGS_INSTALLED")`
-if [ "$PIP_PKGS_NOT_INSTALLED" != "" ]; then
-  # shellcheck disable=SC2086
-  writeBlue Install packages $PIP_PKGS_NOT_INSTALLED with Pip.
-  for pkg in $PIP_PKGS_NOT_INSTALLED; do
-    pipx install "$pkg"
-  done
-else
-  if $VERBOSE; then
-    writeBlue "Not installing Pip packages, they are already installed."
-  fi
-fi
-if $UPDATE; then
-  writeBlue Upgrading packages with Pipx.
-  pipx upgrade-all
-fi
-
 if $BASIC_SETUP; then
   exit
 fi
@@ -167,6 +142,11 @@ fi
 
 # npm tools
 export NG_CLI_ANALYTICS=ci
+N_PREFIX=$HOME/.n
+if [ -d "$N_PREFIX" ]; then
+  export PATH=$N_PREFIX/bin:$PATH
+  export N_PREFIX
+fi
 NPM_PKGS_INSTALLED=$(npm ls -g --parseable --depth 0 | tail -n +2 | sed -E "s/$(npm prefix -g | sed 's/\//\\\//g')\/lib\/node_modules\///g" | sort)
 NPM_PKGS_TO_INSTALL=`echo "@angular/cli
 @githubnext/github-copilot-cli
@@ -205,6 +185,8 @@ if [ "$NPM_PKGS_NOT_INSTALLED" != "" ]; then
   writeBlue Install packages $NPM_PKGS_NOT_INSTALLED with npm.
   # shellcheck disable=SC2086
   npm install -g $NPM_PKGS_NOT_INSTALLED
+elif $VERBOSE; then
+  writeBlue "Not installing Npm packages, they are already installed."
 fi
 if $UPDATE; then
   if [ "`npm outdated -g`" != '' ]; then
@@ -215,16 +197,12 @@ if $UPDATE; then
       writeBlue "Not installing Npm packages, they are already up to date."
     fi
   fi
-elif $VERBOSE; then
-  writeBlue "Not installing Npm packages, they are already installed."
 fi
 
 # krew tools
-if [ -e "$HOME"/.krew/bin/kubectl-krew ]; then
-  if ! [[ $PATH =~ $HOME/.krew/bin ]]; then
-    export PATH=$PATH:$HOME/.krew/bin
-  fi
-  KREW_PLUGINS_INSTALLED=`kubectl krew list | tail -n+1 | awk '{print $1}' | sort -u`
+if hash krew 2>/dev/null; then
+  krew update
+  KREW_PLUGINS_INSTALLED=`krew list | tail -n+1 | awk '{print $1}' | sort -u`
   KREW_PLUGINS_TO_INSTALL=`echo "get-all
 resource-capacity
 sniff
@@ -233,38 +211,16 @@ tail" | sort`
   if [ "$KREW_PLUGINS_NOT_INSTALLED" != "" ]; then
     writeBlue "Installing Krew plugins: $KREW_PLUGINS_NOT_INSTALLED"
     # shellcheck disable=SC2086
-    kubectl krew install $KREW_PLUGINS_NOT_INSTALLED
+    krew install $KREW_PLUGINS_NOT_INSTALLED
   elif $VERBOSE; then
     writeBlue "Not installing krew plugins, they are already installed."
   fi
   if $UPDATE; then
     writeBlue "Updating Krew plugins."
-    kubectl krew upgrade
+    krew upgrade
   fi
 else
   writeBlue "Krew not available, skipping..."
-fi
-
-# gem/ruby
-if [ -e "$HOME"/.rbenv/bin/rbenv ]; then
-  if ! [[ $PATH =~ $HOME/.rbenv/bin ]]; then
-    export PATH="$HOME/.rbenv/shims:$HOME/.rbenv/bin:$PATH"
-  fi
-  GEMS_INSTALLED=`gem list -q --no-versions | sort`
-  GEMS_TO_INSTALL="lolcat"
-  GEMS_NOT_INSTALLED=`comm -23 <(echo "$GEMS_TO_INSTALL") <(echo "$GEMS_INSTALLED")`
-  if [ "$GEMS_NOT_INSTALLED" != "" ]; then
-    # shellcheck disable=SC2086
-    writeBlue Install gems $GEMS_NOT_INSTALLED.
-    # shellcheck disable=SC2086
-    gem install $GEMS_NOT_INSTALLED
-  else
-    if $VERBOSE; then
-      writeBlue "Not installing gems, they are already installed."
-    fi
-  fi
-else
-  writeBlue "Rbenv not available, skipping..."
 fi
 
 if [ -f "$HOME"/.cargo/env ]; then
@@ -274,23 +230,7 @@ if [ -f "$HOME"/.cargo/env ]; then
   CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
   # todo: how to work with as-tree, which is not on crates.io?
   # See issue: https://github.com/jez/as-tree/issues/14
-  CRATES_TO_INSTALL="bandwhich
-cargo-update
-cargo-edit
-cargo-expand
-cargo-outdated
-cargo-watch
-cross
-du-dust
-fd-find
-gping
-grex
-just
-nu
-procs
-sccache
-tealdeer
-tokei"
+  CRATES_TO_INSTALL="cargo-update" # todo: cargo-update is not building: https://github.com/NixOS/nixpkgs/issues/288064
   CRATES_TO_INSTALL_NO_LOCK=""
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED" != "" ]; then
@@ -326,10 +266,7 @@ if [ -e "$HOME"/.go/bin/go ]; then
   fi
   writeBlue "Installing go packages."
   declare -A GO_PKGS=(
-    ["gox"]="mitchellh/gox"
     ["gup"]="nao1215/gup"
-    ["manifest-tool"]="estesp/manifest-tool/v2/cmd/manifest-tool"
-    ["shfmt"]="mvdan.cc/sh/v3/cmd/shfmt"
   )
   for PKG in "${!GO_PKGS[@]}"; do
     PKG_URL="${GO_PKGS[$PKG]}"

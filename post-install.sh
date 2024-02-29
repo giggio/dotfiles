@@ -51,13 +51,13 @@ if $VERBOSE; then
   Update is $UPDATE"
 fi
 
-sudo -E "$BASEDIR"/install-root-pkgs.sh "$@"
-"$BASEDIR"/install-user-pkgs.sh "$@"
-"$BASEDIR"/install-platform-tools.sh "$@"
-sudo -E "$BASEDIR"/configure-root-env.sh "$@"
-"$BASEDIR"/configure-user-env.sh "$@"
+sudo su --login root -c "'$BASEDIR/install-root-pkgs.sh' $*"
+sudo su --login "$USER" -c "'$BASEDIR/install-user-pkgs.sh' $*"
+sudo su --login "$USER" -c "'$BASEDIR/install-platform-tools.sh' $*"
+sudo su --login root -c "'$BASEDIR/configure-root-env.sh' $*"
+sudo su --login "$USER" -c "'$BASEDIR/configure-user-env.sh' $*"
 if hash systemd-notify 2> /dev/null && systemd-notify systemd-notify --booted; then
-  sudo -E "$BASEDIR"/configure-systemd.sh "$@"
-  "$BASEDIR"/configure-systemd.sh "$@"
+  sudo su --login root -c "'$BASEDIR/configure-systemd.sh' $*"
+  sudo su --login "$USER" -c "'$BASEDIR/configure-systemd.sh' $*"
 fi
 

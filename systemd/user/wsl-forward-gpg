@@ -4,8 +4,8 @@ set -euo pipefail
 
 ALL_ARGS=$*
 SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/gnupg/ssh.sock
-AGENT_SOCKET_FILE=`gpgconf --list-dir | grep --color=never agent-socket | cut -d: -f2`
-AGENT_EXTRA_SOCKET_FILE=`gpgconf --list-dir | grep --color=never agent-extra-socket | cut -d: -f2`
+AGENT_SOCKET_FILE=`gpgconf --list-dir agent-socket`
+AGENT_EXTRA_SOCKET_FILE=`gpgconf --list-dir agent-extra-socket`
 # see https://www.freedesktop.org/software/systemd/man/latest/sd_listen_fds.html
 # SD_LISTEN_FDS_START is the first file descriptor, it starts at 3
 SD_LISTEN_FDS_START=3

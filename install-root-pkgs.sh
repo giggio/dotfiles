@@ -83,7 +83,11 @@ clean() {
 writeBlue "Update APT metadata."
 apt-get update
 
-APT_BASIC_PKGS_TO_INSTALL=`echo "socat" | sort`
+APT_BASIC_PKGS_TO_INSTALL=`echo "apt-file
+gpgconf
+socat
+tmux
+vim" | sort`
 APT_PKGS_TO_INSTALL=
 if $BASIC_SETUP; then
   APT_PKGS_TO_INSTALL=$APT_BASIC_PKGS_TO_INSTALL

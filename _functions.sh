@@ -407,6 +407,9 @@ function installAlternative() {
 }
 
 function setAlternative() {
+  if $VERBOSE; then
+    writeBlue "Updating alternative to $1, setting it to $2."
+  fi
   NAME=$1
   EXEC_PATH=`which "$2"`
   if [ "`update-alternatives --display "$NAME" | sed -n 's/.*link currently points to \(.*\)$/\1/p'`" != "$EXEC_PATH" ]; then

@@ -175,6 +175,22 @@ rec {
 
   };
 
+  # todo: remove when fixed: https://github.com/NixOS/nixpkgs/issues/293671
+  xdg = {
+    desktopEntries = {
+      wslview = {
+        name = "WSLView";
+        comment = "Open files and addresses in Windows";
+        icon = "windows";
+        exec = "wslview %U";
+        terminal = false;
+        type = "Application";
+        categories = [ "Utility" ];
+        mimeType = [ "x-scheme-handler/http" "x-scheme-handler/https" "x-scheme-handler/file" ];
+      };
+    };
+  };
+
   programs = {
     home-manager = {
       # Let Home Manager install and manage itself.

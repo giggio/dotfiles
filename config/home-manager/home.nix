@@ -167,28 +167,18 @@ rec {
 
     file =
       let
-        sessionVariablesText = lib.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "$env.${k} = ${v}") home.sessionVariables);
+        sessionVariablesText = lib.concatStringsSep "\n" (lib.concatLists [
+          [
+            "std path add $\"($env.HOME)/.nix-profile/bin\" /nix/var/nix/profiles/default/bin"
+          ]
+          (lib.mapAttrsToList (k: v: "$env.${k} = ${v}") home.sessionVariables)
+        ]
+        );
       in
       {
         ".config/nushell/login.nu".text = sessionVariablesText;
       };
 
-  };
-
-  # todo: remove when fixed: https://github.com/NixOS/nixpkgs/issues/293671
-  xdg = {
-    desktopEntries = {
-      wslview = {
-        name = "WSLView";
-        comment = "Open files and addresses in Windows";
-        icon = "windows";
-        exec = "wslview %U";
-        terminal = false;
-        type = "Application";
-        categories = [ "Utility" ];
-        mimeType = [ "x-scheme-handler/http" "x-scheme-handler/https" "x-scheme-handler/file" ];
-      };
-    };
   };
 
   programs = {

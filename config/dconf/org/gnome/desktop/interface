@@ -1,0 +1,8 @@
+[/]
+clock-format='12h'
+clock-show-seconds=true
+clock-show-weekday=true
+color-scheme='prefer-dark'
+enable-hot-corners=false
+gtk-theme='Yaru-dark'
+icon-theme='Yaru-dark'

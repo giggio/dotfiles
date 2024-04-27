@@ -1,0 +1,8 @@
+[/]
+maximize=@as []
+move-to-workspace-left=['<Shift><Super>k']
+move-to-workspace-right=['<Shift><Super>j']
+panel-run-dialog=['<Super>r']
+switch-to-workspace-left=['<Super>k']
+switch-to-workspace-right=['<Super>j']
+unmaximize=@as []

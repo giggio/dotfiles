@@ -26,6 +26,7 @@
     - if [ -e $HOME/.vimrc ]; then rm -rf $HOME/.vimrc; fi
 - link:
     ~/.bashrc: { path: home/.bashrc, force: true }
+    ~/.XCompose: { path: home/.XCompose, force: true }
     ~/.config/carapace/overlays: config/carapace/overlays
     ~/.config/carapace/specs: config/carapace/specs
     ~/.config/git: config/git

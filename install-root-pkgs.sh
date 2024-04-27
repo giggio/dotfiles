@@ -107,6 +107,16 @@ elif $VERBOSE; then
   writeBlue "Not installing packages with APT, they are all already installed."
 fi
 
+if ! $WSL; then
+  if ! hash onedriver 2>/dev/null; then
+    writeBlue "Install OneDriver."
+    echo 'deb http://download.opensuse.org/repositories/home:/jstaf/xUbuntu_23.10/ /' > /etc/apt/sources.list.d/home:jstaf.list
+    curl -fsSL https://download.opensuse.org/repositories/home:jstaf/xUbuntu_23.10/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/home_jstaf.gpg
+    apt-get update
+    apt-get install -y onedriver
+  fi
+fi
+
 # upgrade
 if $UPDATE; then
   writeBlue "Upgrade with APT."

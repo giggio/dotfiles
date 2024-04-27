@@ -86,6 +86,7 @@ apt-get update
 APT_BASIC_PKGS_TO_INSTALL=`echo "apt-file
 gpgconf
 libnss3
+scdaemon
 socat
 tmux
 vim" | sort`

@@ -234,5 +234,12 @@ else
     create_systemd_service_and_timer wsl-forward-gpg
     create_systemd_service_and_timer wsl-forward-gpg-extra
     create_systemd_service_and_timer wsl-forward-ssh
+  else
+    if systemctl --user cat gcr-ssh-agent.socket &> /dev/null; then
+      systemctl --user mask gcr-ssh-agent.socket
+    fi
+    if systemctl --user cat gcr-ssh-agent.service &> /dev/null; then
+      systemctl --user mask gcr-ssh-agent.service
+    fi
   fi
 fi

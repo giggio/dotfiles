@@ -37,6 +37,7 @@
     ~/.config/starship.toml: config/starship.toml
     ~/.config/navi/config.yaml: config/navi-config.yaml
     ~/.config/nushell: nuscripts
+    ~/.config/tabby/config.yaml: config/tabby/config.yaml
     ~/.config/carapace/specs: config/carapace/specs
     ~/.config/carapace/overlays: config/carapace/overlays
     ~/.bashrc:

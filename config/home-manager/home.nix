@@ -80,6 +80,10 @@ rec {
           tealdeer
         ]);
         wsl_pkgs = if wsl then (with pkgs; [ wslu ]) else [ ];
+        not_wsl_pkgs = if wsl then [] else
+        (with pkgs; [
+          nerdfonts
+        ]);
         extra_pkgs = if basic_setup then [ ] else
         (with pkgs; [
           deno
@@ -149,7 +153,7 @@ rec {
           shfmt
         ]);
       in
-      basic_pkgs ++ wsl_pkgs ++ extra_pkgs;
+      basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;
 
     # Home Manager can also manage your environment variables through
     # 'sessionVariables'. If you don't want to manage your shell through Home
@@ -187,4 +191,21 @@ rec {
       enable = true;
     };
   };
+
+  fonts.fontconfig.enable = true;
+
+  # systemd = {
+  #   user = {
+  #     services = {
+  #       teste = {
+  #         Unit = { Description = "Teste"; };
+  #         Service = {
+  #           ExecStart = "sleep infinity";
+  #           Restart = "always";
+  #         };
+  #         Install = { WantedBy = [ "default.target" ]; };
+  #       };
+  #     };
+  #   };
+  # };
 }

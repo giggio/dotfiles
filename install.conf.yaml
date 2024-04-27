@@ -36,13 +36,14 @@
     ~/.config/nvim: nvim
     ~/.config/powershell: poshfiles
     ~/.config/starship.toml: { path: config/starship.toml, force: true }
+    ~/.config/terminator/config: { path: config/terminator/config, force: true }
     ~/.config/tabby/config.yaml: { path: config/tabby/config.yaml, force: true }
     ~/.dotfiles:
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'
     ~/.gittemplate: { path: home/.gittemplate, force: true }
     ~/.gitconfig: { path: home/.gitconfig, force: true }
-    ~/.inputrc: { home/.inputrc, force: true }
+    ~/.inputrc: { path: home/.inputrc, force: true }
     ~/.npmrc: { path: home/.npmrc, force: true }
     ~/.profile: { path: home/.profile, force: true }
     ~/.tmux.conf: { path: home/.tmux.conf, force: true }

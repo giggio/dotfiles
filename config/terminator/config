@@ -1,0 +1,32 @@
+[global_config]
+  window_state = maximise
+  scroll_tabbar = True
+  enabled_plugins = CustomCommandsMenu, CurrDirOpen, LaunchpadBugURLHandler, LaunchpadCodeURLHandler, APTURLHandler
+[keybindings]
+  cycle_next = <Primary>Page_Down
+  cycle_prev = <Primary>Page_Up
+  next_tab = <Primary>Tab
+  prev_tab = <Primary><Shift>Tab
+[profiles]
+  [[default]]
+    background_color = "#300a24"
+    foreground_color = "#ffffff"
+    show_titlebar = False
+  [[nushell]]
+    use_custom_command = True
+    custom_command = /home/giggio/.nix-profile/bin/nu
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type = Window
+      parent = ""
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+[plugins]
+  [[CustomCommandsMenu]]
+    [[[nushell]]]
+      enabled = True
+      name = nushell
+      command = /home/giggio/.nix-profile/bin/nu
+      position = 0

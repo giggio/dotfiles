@@ -25,40 +25,32 @@
     - if [ -e $HOME/.tmux.conf ]; then rm -rf $HOME/.tmux.conf; fi
     - if [ -e $HOME/.vimrc ]; then rm -rf $HOME/.vimrc; fi
 - link:
+    ~/.bashrc: { path: home/.bashrc, force: true }
+    ~/.config/carapace/overlays: config/carapace/overlays
+    ~/.config/carapace/specs: config/carapace/specs
+    ~/.config/git: config/git
+    ~/.config/home-manager: config/home-manager
+    ~/.config/navi/config.yaml: { path: config/navi-config.yaml, force: true }
+    ~/.config/nushell: nuscripts
+    ~/.config/nvim: nvim
+    ~/.config/powershell: poshfiles
+    ~/.config/starship.toml: { path: config/starship.toml, force: true }
+    ~/.config/tabby/config.yaml: { path: config/tabby/config.yaml, force: true }
     ~/.dotfiles:
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'
-    ~/.inputrc: home/.inputrc
+    ~/.gittemplate: { path: home/.gittemplate, force: true }
+    ~/.gitconfig: { path: home/.gitconfig, force: true }
+    ~/.inputrc: { home/.inputrc, force: true }
+    ~/.npmrc: { path: home/.npmrc, force: true }
+    ~/.profile: { path: home/.profile, force: true }
+    ~/.tmux.conf: { path: home/.tmux.conf, force: true }
     ~/.vim: vimfiles
-    ~/.config/nvim: nvim
-    ~/.config/powershell: poshfiles
-    ~/.config/git: config/git
-    ~/.config/home-manager: config/home-manager
-    ~/.config/starship.toml: config/starship.toml
-    ~/.config/navi/config.yaml: config/navi-config.yaml
-    ~/.config/nushell: nuscripts
-    ~/.config/tabby/config.yaml: config/tabby/config.yaml
-    ~/.config/carapace/specs: config/carapace/specs
-    ~/.config/carapace/overlays: config/carapace/overlays
-    ~/.bashrc:
-      path: home/.bashrc
-      force: true
-    ~/.npmrc:
-      path: home/.npmrc
-      force: true
-    ~/.gittemplate:
-      path: home/.gittemplate
-      force: true
-    ~/.gitconfig: home/.gitconfig
-    ~/.profile:
-      path: home/.profile
-      force: true
-    ~/.tmux.conf: home/.tmux.conf
-    ~/.vimrc: home/.vimrc
+    ~/.vimrc: { path: home/.vimrc, force: true }
     ~/bin/dotnet-sdk: tools/dotnet-sdk-helpers/dotnet-sdk
+    ~/bin/dotnet-uninstall: home/bin/dotnet-uninstall
     ~/bin/kubectx: tools/kubectx/kubectx
     ~/bin/kubens: tools/kubectx/kubens
     ~/bin/n: tools/n/bin/n
-    ~/bin/dotnet-uninstall: home/bin/dotnet-uninstall
 - shell:
     - ./cheats/build.sh

@@ -209,8 +209,8 @@ ssh: {}
 clickableLinks: {}
 accessibility: {}
 appearance:
-  tabsInFullscreen: true
   lastTabClosesWindow: true
+  tabsInFullscreen: true
 hacks: {}
 providerBlacklist: []
 commandBlacklist: []

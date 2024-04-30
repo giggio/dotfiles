@@ -73,7 +73,9 @@ hotkeys:
     - Ctrl-Shift-T
   new-window:
     - Ctrl-Shift-N
-  profile: {}
+  profile:
+    local:usrbinbash:
+      - Ctrl-Shift-Y
   profile-selectors: {}
   toggle-fullscreen:
     - F11
@@ -202,7 +204,7 @@ terminal:
   font: CaskaydiaCove Nerd Font Mono
   ligatures: true
   fontSize: 16
-  profile: local:usrbinbash
+  profile: local:custom:nushell:a408301a-1276-43a4-bdd6-a90d055b64d5
   showTabProfileIcon: true
   frontend: xterm
 ssh: {}
@@ -220,6 +222,10 @@ pluginBlacklist: []
 profileDefaults:
   ssh:
     disableDynamicTitle: true
+  local:
+    type: local
+    options:
+      env: {}
 profileBlacklist:
   - serial:port-devttyS0
   - serial:port-devttyS1
@@ -259,6 +265,6 @@ profileBlacklist:
   - local:usrbinscreen
   - serial:template
   - local:binsh
-  - local:default
   - local:usrbindash
+  - local:default
 recoverTabs: false

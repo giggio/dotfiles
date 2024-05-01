@@ -8,7 +8,7 @@ rec {
   nixpkgs = {
     config = {
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
-        "terraform" # just as an example, we are not using this because it builds from source and takes forever
+        "obsidian"
       ];
       # allowUnfree = true;
     };
@@ -84,6 +84,7 @@ rec {
         (with pkgs; [
           hwloc
           nerdfonts
+          obsidian
         ]);
         extra_pkgs = if basic_setup then [ ] else
         (with pkgs; [

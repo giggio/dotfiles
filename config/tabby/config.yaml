@@ -1,13 +1,33 @@
 version: 7
 profiles:
-  - type: local
-    name: nushell
+  - name: nushell
     icon: fas fa-terminal
     options:
       command: /home/giggio/.nix-profile/bin/nu
       env: {}
       args: []
     id: local:custom:nushell:a408301a-1276-43a4-bdd6-a90d055b64d5
+    type: local
+  - icon: fas fa-terminal
+    options:
+      command: /home/giggio/.dotnet/tools/pwsh
+      env:
+        DOTNET_ROOT: /nix/store/6lz1grv5cqmmi1d52m0vy26lj35zilh5-dotnet-core-combined
+      args: []
+    name: pwsh
+    id: local:custom:pwsh:a998b1be-6e97-4d62-afe5-1c2bfc15f295
+    behaviorOnSessionEnd: keep
+    type: local
+  - name: bash (noprofile)
+    icon: fas fa-terminal
+    options:
+      command: /usr/bin/bash
+      args:
+        - '--noprofile'
+        - '--norc'
+      env: {}
+    type: local
+    id: local:custom:bash-(noprofile):89841a3e-6192-4b89-8be1-67c6313fc5fe
 groups: []
 configSync:
   parts: {}
@@ -83,12 +103,8 @@ hotkeys:
     - Ctrl-Shift-W
   reopen-tab:
     - Ctrl-Shift-Z
-  toggle-last-tab: []
   rename-tab:
     - Ctrl-Shift-R
-  next-tab:
-    - Ctrl-Shift-Right
-    - Ctrl-Tab
   previous-tab:
     - Ctrl-Shift-Left
     - Ctrl-Shift-Tab
@@ -176,6 +192,11 @@ hotkeys:
     - Ctrl-Shift-E
   command-selector:
     - Ctrl-Shift-P
+  next-tab:
+    - Ctrl-Shift-Right
+    - Ctrl-Tab
+  toggle-last-tab:
+    - Ctrl-Escape
 terminal:
   searchOptions: {}
   colorScheme:

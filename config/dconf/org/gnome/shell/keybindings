@@ -1,0 +1,4 @@
+[/]
+screenshot=['Print']
+show-screenshot-ui=['<Shift><Super>s']
+toggle-message-tray=@as []

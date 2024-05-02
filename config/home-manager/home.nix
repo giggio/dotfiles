@@ -1,8 +1,9 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 let
   basic_setup = (builtins.getEnv "BASIC_SETUP") == "true";
   wsl = (builtins.getEnv "WSL") == "true";
+  githooks = inputs.githooks.packages."${pkgs.system}".default;
 in
 rec {
   nixpkgs = {
@@ -15,8 +16,8 @@ rec {
   };
 
   home = {
-    username = builtins.getEnv "USER";
-    homeDirectory = builtins.getEnv "HOME";
+    username = "giggio";
+    homeDirectory = "/home/" + home.username;
 
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -78,6 +79,7 @@ rec {
           nushell
           procs
           tealdeer
+          githooks
         ]);
         wsl_pkgs = if wsl then (with pkgs; [ wslu ]) else [ ];
         not_wsl_pkgs = if wsl then [] else

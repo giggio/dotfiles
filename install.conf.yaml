@@ -2,55 +2,51 @@
     shell:
       stdin: true
       stdout: true
+    link:
+      force: true
+      relink: true
+      create: true
 - clean:
     - "~"
     - ~/bin
 - create:
     - ~/.cache
     - ~/.config
-    - ~/.config/carapace
     - ~/p
     - ~/bin
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - touch $HOME/.hushlogin
-    - if ! [ -d $HOME/.config/navi/ ]; then mkdir -p $HOME/.config/navi/; fi
-    - if ! [ -d $HOME/.config/terminator/ ]; then mkdir -p $HOME/.config/terminator/; fi
-    - if ! [ -d $HOME/.config/tabby/ ]; then mkdir -p $HOME/.config/tabby/; fi
-    - if [ -e $HOME/.vim ]; then rm -rf $HOME/.vim; fi
-    - if [ -e $HOME/.config/nvim ]; then rm -rf $HOME/.config/nvim; fi
-    - if [ -e $HOME/.config/starship.toml ]; then rm -rf $HOME/.config/starship.toml; fi
-    - if [ -e $HOME/.config/powershell ]; then rm -rf $HOME/.config/powershell; fi
-    - if [ -e $HOME/.bashrc ]; then rm -rf $HOME/.bashrc; fi
-    - if [ -e $HOME/.gitconfig ]; then rm -rf $HOME/.gitconfig; fi
-    - if [ -e $HOME/.profile ]; then rm -rf $HOME/.profile; fi
-    - if [ -e $HOME/.tmux.conf ]; then rm -rf $HOME/.tmux.conf; fi
-    - if [ -e $HOME/.vimrc ]; then rm -rf $HOME/.vimrc; fi
+    # creating hard links so home-manager works
+    # todo: remove when https://github.com/nix-community/home-manager/issues/4307 is fixed
+    - ln -f config/home-manager/home.nix "$HOME"/.config/home-manager/home.nix
+    - ln -f config/home-manager/flake.nix "$HOME"/.config/home-manager/flake.nix
+    - ln -f config/home-manager/flake.lock "$HOME"/.config/home-manager/flake.lock
 - link:
-    ~/.bashrc: { path: home/.bashrc, force: true }
-    ~/.XCompose: { path: home/.XCompose, force: true }
+    ~/.bashrc: home/.bashrc
+    ~/.XCompose: home/.XCompose
     ~/.config/carapace/overlays: config/carapace/overlays
     ~/.config/carapace/specs: config/carapace/specs
     ~/.config/git: config/git
-    ~/.config/home-manager: config/home-manager
-    ~/.config/navi/config.yaml: { path: config/navi-config.yaml, force: true }
+    ~/.config/navi/config.yaml: config/navi-config.yaml
+    ~/.config/nix/nix.conf: config/nix/nix.conf
     ~/.config/nushell: nuscripts
     ~/.config/nvim: nvim
     ~/.config/powershell: poshfiles
-    ~/.config/starship.toml: { path: config/starship.toml, force: true }
-    ~/.config/terminator/config: { path: config/terminator/config, force: true }
-    ~/.config/tabby/config.yaml: { path: config/tabby/config.yaml, force: true }
+    ~/.config/starship.toml: config/starship.toml
+    ~/.config/terminator/config: config/terminator/config
+    ~/.config/tabby/config.yaml: config/tabby/config.yaml
     ~/.dotfiles:
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'
-    ~/.gittemplate: { path: home/.gittemplate, force: true }
-    ~/.gitconfig: { path: home/.gitconfig, force: true }
-    ~/.inputrc: { path: home/.inputrc, force: true }
-    ~/.npmrc: { path: home/.npmrc, force: true }
-    ~/.profile: { path: home/.profile, force: true }
-    ~/.tmux.conf: { path: home/.tmux.conf, force: true }
+    ~/.gittemplate: home/.gittemplate
+    ~/.gitconfig: home/.gitconfig
+    ~/.inputrc: home/.inputrc
+    ~/.npmrc: home/.npmrc
+    ~/.profile: home/.profile
+    ~/.tmux.conf: home/.tmux.conf
     ~/.vim: vimfiles
-    ~/.vimrc: { path: home/.vimrc, force: true }
+    ~/.vimrc: home/.vimrc
     ~/bin/dotnet-sdk: tools/dotnet-sdk-helpers/dotnet-sdk
     ~/bin/dotnet-uninstall: home/bin/dotnet-uninstall
     ~/bin/kubectx: tools/kubectx/kubectx

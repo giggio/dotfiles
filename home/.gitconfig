@@ -65,18 +65,7 @@
   squash = "!f() { git reset --hard $1; git merge --squash HEAD@{1}; git commit; }; f"
   continue = "-c core.editor=true rebase --continue"
   a = add :/
-  hooks = !\"$HOME/.githooks/bin/cli\"
-  # todo: hooks-install is related to https://github.com/gabyx/Githooks/issues/140 and https://github.com/gabyx/Githooks/issues/139
-  hooks-install = "!f() { \
-                    git config core.hooksPath $(git config githooks.manualTemplateDir | git parse-env-vars)/hooks; \
-                  }; f"
-  # do not use, prefer hooks-install
-  # todo: hooks-copy-hooks-files is related to https://github.com/gabyx/Githooks/issues/140 and https://github.com/gabyx/Githooks/issues/139
-  hooks-copy-hooks-files = "!f() { \
-                    local git_hooks_dir=$(git rev-parse --git-dir)/hooks; \
-                    find $git_hooks_dir \\( -type l -or -type f \\) -delete; \
-                    cp -d $(git config githooks.manualTemplateDir | git parse-env-vars)/hooks/* $git_hooks_dir; \
-                  }; f"
+  hooks = !\"githooks-cli\"
   parse-env-vars = "!f() { \
                      awk '{ \
                        finalstr = $0; \
@@ -120,9 +109,6 @@
   driver = npx npm-merge-driver merge %A %O %B %P
 [init]
   defaultBranch = main
-  # I was considering using githhoks in templating mode, but I think I prefer manual mode
-  # I was using the environment variable `GIT_TEMPLATE_DIR`, as templateDir does not support variables in this config file
-  # templateDir = $HOME/.gittemplate
 [rerere]
   enabled = true
 [core]
@@ -133,13 +119,10 @@
 [pack]
   windowMemory = 0
 [githooks]
-  # installDir = $HOME/.githooks # todo: pending: https://github.com/gabyx/Githooks/issues/139 # ignoring it uses the default
   cloneUrl = https://github.com/gabyx/githooks.git
   cloneBranch = main
-  useCoreHooksPath = false
-  useManual = true
-  manualTemplateDir = $HOME/.gittemplate # todo: pending: https://github.com/gabyx/Githooks/issues/139 git the alias git hooks-install until it is solved
-  runner = $HOME/.githooks/bin/runner # todo: pending: https://github.com/gabyx/Githooks/issues/139
-  # dialog = $HOME/.githooks/bin/dialog # todo: not in use and pending: https://github.com/gabyx/Githooks/issues/139
+  installMode = manual
+  pathForUseCoreHooksPath = /home/giggio/.githooks/templates/hooks
+  runner = githooks-runner
+  dialog = githooks-dialog
   maintainedHooks = all
-  autoUpdateEnabled = false

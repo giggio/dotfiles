@@ -69,7 +69,7 @@ fi
 export PATH="$HOME"/bin:"$PATH"
 
 # nix home-manager
-installHomeManager () {
+installHomeManagerUsingFlakes () {
   download_nixpkgs_cache_index () {
     local filename
     filename="index-$(uname -m | sed 's/^arm64$/aarch64/')-$(uname | tr '[:upper:]' '[:lower:]')"
@@ -82,8 +82,7 @@ installHomeManager () {
     nix-channel --add https://nixos.org/channels/nixos-unstable nixpkgs
     nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
     nix-channel --update
-    nix-shell '<home-manager>' -A install
-    BASIC_SETUP=$BASIC_SETUP WSL=$WSL home-manager switch --show-trace
+    BASIC_SETUP=$BASIC_SETUP WSL=$WSL nix run home-manager/master -- init --switch --show-trace
     download_nixpkgs_cache_index
   elif $UPDATE; then
     writeBlue "Update Nix home-manager."
@@ -94,7 +93,7 @@ installHomeManager () {
     writeBlue "Not installing Nix home-manager, it is already installed."
   fi
 }
-installHomeManager
+installHomeManagerUsingFlakes
 
 # node
 installNode () {
@@ -170,19 +169,7 @@ installDockerShowContext
 installGitHooks () {
   if ! [ -d "$HOME"/.githooks ]; then
     writeBlue "Install Githooks."
-    # todo: switch to automated instalation from githooks when this is fixed: https://github.com/gabyx/Githooks/issues/142
-    # right now we are only creating the directory $HOME/.githooks and installing the clis at $HOME/.githooks/bin
-    # calling `cli update` also install the $HOME/.githooks/release directory
-    # but it is changing the cloneUrl and cloneBranch configs, adding tabs before the values, replacing the spaces,
-    # this is mentioned in the issue above
-    GITHOOKS_DL_URL=`githubReleaseDownloadUrl gabyx/Githooks linux.amd64`
-    installTarToDir "$HOME"/.githooks/bin/ "$GITHOOKS_DL_URL"
-    "$HOME"/.githooks/bin/cli update
-  elif $UPDATE; then
-    writeBlue "Githooks update needs attention."
-    # writeBlue "Update Githooks."
-    # todo: review githooks update, it is failing with 'Githooks is not configured to use that folder'
-    # "$HOME"/.githooks/bin/cli update
+    githooks-cli installer --non-interactive
   elif $VERBOSE; then
     writeBlue "Not installing Githooks, it is already installed."
   fi

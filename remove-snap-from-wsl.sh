@@ -41,7 +41,7 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS
+  writeGreen "Running `basename "$0"` $ALL_ARGS"
 fi
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -63,7 +63,7 @@ rm -rf /var/cache/snapd/
 apt autoremove --purge snapd
 
 rm -rf ~/snap
-rm -rf /home/$SUDO_USER/snap
+rm -rf /home/"$SUDO_USER"/snap
 
 cat <<EOF > /etc/apt/preferences.d/nosnap.pref
 Package: snapd
@@ -71,4 +71,3 @@ Pin: release a=*
 Pin-Priority: -10
 EOF
 apt-get update
-

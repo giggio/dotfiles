@@ -8,7 +8,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     githooks = {
-      url = "github:gabyx/githooks?dir=nix&ref=main";
+      url = "github:gabyx/githooks?dir=nix&ref=v3.0.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

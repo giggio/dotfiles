@@ -5,7 +5,8 @@ profiles:
     options:
       command: /home/giggio/.nix-profile/bin/nu
       env: {}
-      args: []
+      args:
+        - '--login'
     id: local:custom:nushell:a408301a-1276-43a4-bdd6-a90d055b64d5
     type: local
   - icon: fas fa-terminal

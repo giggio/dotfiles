@@ -67,7 +67,11 @@ setAlternative editor /usr/bin/vim.basic
 
 if $WSL; then
   "$BASEDIR"/configure-root-env-wsl.sh "$@"
-fi
-if $ANDROID; then
+elif $ANDROID; then
   "$BASEDIR"/configure-root-env-android.sh "$@"
+else
+  # non-WSL, non-Android
+  if [ -v SUDO_USER ]; then
+    usermod -aG docker "$SUDO_USER"
+  fi
 fi

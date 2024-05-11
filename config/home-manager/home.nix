@@ -84,6 +84,7 @@ rec {
         wsl_pkgs = if wsl then (with pkgs; [ wslu ]) else [ ];
         not_wsl_pkgs = if wsl then [] else
         (with pkgs; [
+          android-tools
           hwloc
           nerdfonts
           obsidian

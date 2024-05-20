@@ -85,9 +85,15 @@ rec {
         not_wsl_pkgs = if wsl then [] else
         (with pkgs; [
           android-tools
+          bitwarden-desktop
+          firefox
           hwloc
           nerdfonts
           obsidian
+          pinta
+          telegram-desktop
+          vlc
+          youtube-music
         ]);
         extra_pkgs = if basic_setup then [ ] else
         (with pkgs; [

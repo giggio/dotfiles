@@ -64,6 +64,7 @@ DCONF_CONFIGS=(
   "org/gnome/desktop/wm/keybindings"
   "org/gnome/shell/extensions/clipboard-history"
   "org/gnome/shell/keybindings"
+  "org/gnome/settings-daemon/plugins"
 )
 BASE_DATA_DIR="$BASEDIR/config/dconf"
 if $EXPORT; then

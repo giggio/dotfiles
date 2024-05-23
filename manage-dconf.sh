@@ -63,6 +63,7 @@ DCONF_CONFIGS=(
   "org/gnome/desktop/peripherals/mouse"
   "org/gnome/desktop/wm/keybindings"
   "org/gnome/shell/extensions/clipboard-history"
+  "org/gnome/shell/extensions/dash-to-dock"
   "org/gnome/shell/keybindings"
   "org/gnome/settings-daemon/plugins"
 )

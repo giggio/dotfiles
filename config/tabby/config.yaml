@@ -1,5 +1,15 @@
 version: 7
 profiles:
+  - name: bash (noprofile)
+    icon: fas fa-terminal
+    options:
+      command: /usr/bin/bash
+      args:
+        - '--noprofile'
+        - '--norc'
+      env: {}
+    type: local
+    id: local:custom:bash-(noprofile):89841a3e-6192-4b89-8be1-67c6313fc5fe
   - name: nushell
     icon: fas fa-terminal
     options:
@@ -8,6 +18,7 @@ profiles:
       args:
         - '--login'
     id: local:custom:nushell:a408301a-1276-43a4-bdd6-a90d055b64d5
+    disableDynamicTitle: true
     type: local
   - icon: fas fa-terminal
     options:
@@ -19,17 +30,57 @@ profiles:
     id: local:custom:pwsh:a998b1be-6e97-4d62-afe5-1c2bfc15f295
     behaviorOnSessionEnd: keep
     type: local
-  - name: bash (noprofile)
-    icon: fas fa-terminal
+  - name: nas
+    icon: fas fa-database
     options:
-      command: /usr/bin/bash
-      args:
-        - '--noprofile'
-        - '--norc'
       env: {}
+      command: /bin/bash
+      args:
+        - '-i'
+        - '-c'
+        - ssh nas
+    id: local:custom:nas-copy:7b80a183-7213-4d74-a3e8-dc8968ef0ce0
+    group: 8e5f2fd5-18d2-4c85-940d-a6e0c72298e0
     type: local
-    id: local:custom:bash-(noprofile):89841a3e-6192-4b89-8be1-67c6313fc5fe
-groups: []
+  - name: pi4
+    icon: fas fa-server
+    options:
+      env: {}
+      command: /bin/bash
+      args:
+        - '-i'
+        - '-c'
+        - ssh pi4
+    group: 8e5f2fd5-18d2-4c85-940d-a6e0c72298e0
+    type: local
+    id: local:custom:pi4:49971d9c-3166-41d9-89fa-cadc9f8a69ae
+  - name: downloader
+    icon: fas fa-download
+    options:
+      env: {}
+      command: /bin/bash
+      args:
+        - '-i'
+        - '-c'
+        - ssh downloader
+    group: 8e5f2fd5-18d2-4c85-940d-a6e0c72298e0
+    type: local
+    id: local:custom:downloader:36143d38-575c-47d8-b20d-203e2038f4f6
+  - name: router
+    icon: fas fa-fire
+    options:
+      env: {}
+      command: /bin/bash
+      args:
+        - '-i'
+        - '-c'
+        - ssh firewall.rvp.giggio.dev
+    group: 8e5f2fd5-18d2-4c85-940d-a6e0c72298e0
+    type: local
+    id: local:custom:router:9e7e61de-da5c-446f-8e08-fa94c848a903
+groups:
+  - id: 8e5f2fd5-18d2-4c85-940d-a6e0c72298e0
+    name: SSH
 configSync:
   parts: {}
 hotkeys:
@@ -225,22 +276,29 @@ terminal:
   customColorSchemes: []
   font: CaskaydiaCove Nerd Font Mono
   ligatures: true
-  fontSize: 16
   profile: local:custom:nushell:a408301a-1276-43a4-bdd6-a90d055b64d5
-  showTabProfileIcon: true
   frontend: xterm
-ssh: {}
+  fontSize: 10
+  hideTabOptionsButton: true
+  hideTabIndex: true
+ssh:
+  knownHosts: []
 clickableLinks: {}
 accessibility: {}
 appearance:
   lastTabClosesWindow: true
   tabsInFullscreen: true
+  spaciness: 0.6
+  flexTabs: true
 hacks: {}
 providerBlacklist: []
 commandBlacklist: []
 enableAnalytics: false
 enableWelcomeTab: false
-pluginBlacklist: []
+pluginBlacklist:
+  - ssh
+  - telnet
+  - serial
 profileDefaults:
   ssh:
     disableDynamicTitle: true
@@ -290,3 +348,12 @@ profileBlacklist:
   - local:usrbindash
   - local:default
 recoverTabs: false
+backgroundPlugin:
+  backgroundEnabled: true
+  backgroundPath: >-
+    /home/giggio/onedrive/Pictures/TerminalWindows/backgrounds/cof_orange_hex.png
+  backgroundShowType: float
+  backgroundFloatSize: 192
+  backgroundFloatX: 18
+  backgroundFloatY: 36
+  backgroundOpacity: 15

@@ -33,6 +33,7 @@ rec {
           wget
           file
           gnupg
+          pinentry-gnome3
           vim_configurable
           htop
           git
@@ -90,6 +91,7 @@ rec {
           hwloc
           nerdfonts
           obsidian
+          onlyoffice-bin
           pinta
           telegram-desktop
           vlc
@@ -203,7 +205,93 @@ rec {
     };
   };
 
-  fonts.fontconfig.enable = true;
+  fonts.fontconfig.enable = !wsl;
+
+  xdg = {
+    mimeApps = {
+      enable = true;
+      defaultApplications = if wsl then {} else {
+        # onlyoffice:
+        "application/vnd.oasis.opendocument.text" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.text-template" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.text-web" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.text-master" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.sun.xml.writer" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.sun.xml.writer.template" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.sun.xml.writer.global" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/msword" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-word" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/x-doc" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/rtf" = [ "onlyoffice-desktopeditors.desktop" ];
+        "text/rtf" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.wordperfect" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/wordperfect" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-word.document.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.template" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-word.template.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.spreadsheet" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.spreadsheet-template" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.sun.xml.calc" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.sun.xml.calc.template" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/msexcel" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-excel" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-excel.sheet.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.template" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-excel.template.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-excel.sheet.binary.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+        "text/csv" = [ "onlyoffice-desktopeditors.desktop" ];
+        "text/spreadsheet" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/csv" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/excel" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/x-excel" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/x-msexcel" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/x-ms-excel" = [ "onlyoffice-desktopeditors.desktop" ];
+        "text/comma-separated-values" = [ "onlyoffice-desktopeditors.desktop" ];
+        "text/tab-separated-values" = [ "onlyoffice-desktopeditors.desktop" ];
+        "text/x-comma-separated-values" = [ "onlyoffice-desktopeditors.desktop" ];
+        "text/x-csv" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.presentation" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.presentation-template" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.sun.xml.impress" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.sun.xml.impress.template" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/mspowerpoint" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-powerpoint" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-powerpoint.presentation.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.openxmlformats-officedocument.presentationml.template" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-powerpoint.template.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.openxmlformats-officedocument.presentationml.slide" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.openxmlformats-officedocument.presentationml.slideshow" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-powerpoint.slideshow.macroEnabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+        "x-scheme-handler/oo-office" = [ "onlyoffice-desktopeditors.desktop" ];
+        "text/docxf" = [ "onlyoffice-desktopeditors.desktop" ];
+        "text/oform;" = [ "onlyoffice-desktopeditors.desktop" ];
+        # browser:
+        "text/html"=["microsoft-edge.desktop"];
+        "x-scheme-handler/http"=["microsoft-edge.desktop"];
+        "x-scheme-handler/https"=["microsoft-edge.desktop"];
+        "x-scheme-handler/about"=["microsoft-edge.desktop"];
+        "x-scheme-handler/unknown"=["microsoft-edge.desktop"];
+        "application/pdf"=["microsoft-edge.desktop"];
+        "x-scheme-handler/mailto"=["microsoft-edge.desktop"];
+        "application/xhtml+xml"=["microsoft-edge.desktop"];
+        # telegram:
+        "x-scheme-handler/tg"=["org.telegram.desktop.desktop"];
+      };
+    };
+  };
+
+  services = {
+    gpg-agent = {
+      enable = !wsl;
+      enableExtraSocket = true;
+      enableScDaemon = true;
+      enableSshSupport = true;
+      pinentryPackage = pkgs.pinentry-gnome3;
+    };
+  };
 
   # systemd = {
   #   user = {

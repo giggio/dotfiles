@@ -353,7 +353,7 @@ backgroundPlugin:
   backgroundPath: >-
     /home/giggio/onedrive/Pictures/TerminalWindows/backgrounds/cof_orange_hex.png
   backgroundShowType: float
-  backgroundFloatSize: 192
+  backgroundFloatSize: 85
   backgroundFloatX: 18
   backgroundFloatY: 36
   backgroundOpacity: 15

@@ -30,6 +30,7 @@
     ~/.config/carapace/overlays: config/carapace/overlays
     ~/.config/carapace/specs: config/carapace/specs
     ~/.config/git: config/git
+    ~/.config/kitty: config/kitty
     ~/.config/navi/config.yaml: config/navi-config.yaml
     ~/.config/nix/nix.conf: config/nix/nix.conf
     ~/.config/nushell: nuscripts

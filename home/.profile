@@ -18,3 +18,10 @@ fi
 
 # set PATH so it includes user's private bin directories
 PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
+# setup n in .profile so it is picked up by all shells and desktop environments
+N_PREFIX=$HOME/.n
+if [ -d "$N_PREFIX" ]; then
+  export PATH=$N_PREFIX/bin:$PATH
+  export N_PREFIX
+fi

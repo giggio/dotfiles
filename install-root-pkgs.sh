@@ -121,6 +121,17 @@ if ! $WSL; then
   if ! hash docker 2>/dev/null; then
     curl -fsSL https://get.docker.com | bash
   fi
+
+  APT_PKGS_TO_INSTALL_NOT_WSL="kitty"
+  APT_PKGS_NOT_INSTALLED_NOT_WSL=`comm -23 <(echo "$APT_PKGS_TO_INSTALL_NOT_WSL") <(echo "$APT_PKGS_INSTALLED")`
+  if [ "$APT_PKGS_NOT_INSTALLED_NOT_WSL" != "" ]; then
+    # shellcheck disable=SC2086
+    writeBlue Run custom installations with APT - not WSL: $APT_PKGS_NOT_INSTALLED_NOT_WSL
+    # shellcheck disable=SC2086
+    apt-get install -y $APT_PKGS_NOT_INSTALLED_NOT_WSL
+  elif $VERBOSE; then
+    writeBlue "Not installing packages with APT (not WSL), they are all already installed."
+  fi
 fi
 
 # upgrade

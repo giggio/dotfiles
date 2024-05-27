@@ -81,6 +81,8 @@ rec {
           procs
           tealdeer
           githooks
+          ranger
+          colorized-logs
         ]);
         wsl_pkgs = if wsl then (with pkgs; [ wslu ]) else [ ];
         not_wsl_pkgs = if wsl then [] else
@@ -94,6 +96,7 @@ rec {
           onlyoffice-bin
           openrgb-with-all-plugins
           pinta
+          remmina
           telegram-desktop
           vlc
           youtube-music
@@ -165,6 +168,9 @@ rec {
           gox
           manifest-tool
           shfmt
+          dconf2nix
+          neofetch
+          imagemagick
         ]);
       in
       basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;

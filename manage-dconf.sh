@@ -66,6 +66,7 @@ DCONF_CONFIGS=(
   "org/gnome/shell/extensions/dash-to-dock"
   "org/gnome/shell/keybindings"
   "org/gnome/settings-daemon/plugins"
+  "desktop/ibus/panel/emoji"
 )
 BASE_DATA_DIR="$BASEDIR/config/dconf"
 if $EXPORT; then

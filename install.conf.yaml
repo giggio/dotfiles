@@ -48,6 +48,7 @@
     ~/.tmux.conf: home/.tmux.conf
     ~/.vim: vimfiles
     ~/.vimrc: home/.vimrc
+    ~/.w3m/config: config/w3mconfig
     ~/bin/dotnet-sdk: tools/dotnet-sdk-helpers/dotnet-sdk
     ~/bin/dotnet-uninstall: home/bin/dotnet-uninstall
     ~/bin/kubectx: tools/kubectx/kubectx

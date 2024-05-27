@@ -209,6 +209,9 @@ rec {
   fonts.fontconfig.enable = !wsl;
 
   xdg = {
+    configFile = {
+      "autostart/bitwarden.desktop".source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
+    };
     mimeApps = {
       enable = true;
       defaultApplications = if wsl then {} else {

@@ -92,6 +92,7 @@ rec {
           nerdfonts
           obsidian
           onlyoffice-bin
+          openrgb-with-all-plugins
           pinta
           telegram-desktop
           vlc

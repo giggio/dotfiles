@@ -26,6 +26,7 @@
 - link:
     ~/.bashrc: home/.bashrc
     ~/.XCompose: home/.XCompose
+    ~/.config/alacritty: config/alacritty
     ~/.config/carapace/overlays: config/carapace/overlays
     ~/.config/carapace/specs: config/carapace/specs
     ~/.config/git: config/git

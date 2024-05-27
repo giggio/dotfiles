@@ -1,0 +1,25 @@
+import = [
+  "~/.config/alacritty/ubuntu.toml",
+]
+
+[window]
+decorations = "None"
+opacity = 0.9
+blur = true
+startup_mode = "Maximized"
+decorations_theme_variant = "Dark"
+padding = { x = 5, y = 0 }
+
+[font]
+normal = { family = "CaskaydiaCove Nerd Font Mono", style = "Regular" }
+bold = { family = "CaskaydiaCove Nerd Font Mono", style = "Bold" }
+italic = { family = "CaskaydiaCove Nerd Font Mono", style = "Italic" }
+bold_italic = { family = "CaskaydiaCove Nerd Font Mono", style = "Bold Italic" }
+size = 14
+builtin_box_drawing = false
+
+[scrolling]
+history = 10000
+
+[colors]
+draw_bold_text_with_bright_colors = true

@@ -39,6 +39,7 @@
     ~/.config/starship.toml: config/starship.toml
     ~/.config/terminator/config: config/terminator/config
     ~/.config/tabby/config.yaml: config/tabby/config.yaml
+    ~/.config/zellij: config/zellij
     ~/.dotfiles:
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'

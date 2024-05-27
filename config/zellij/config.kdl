@@ -1,0 +1,12 @@
+keybinds {
+    normal {
+    }
+    pane {
+    }
+    locked {
+    }
+    shared_except "locked" {
+        bind "Alt t" { NewTab; SwitchToMode "Normal"; }
+        bind "Alt y" { NewTab; SwitchToMode "Normal"; }
+    }
+}

@@ -4,6 +4,7 @@ let
   basic_setup = (builtins.getEnv "BASIC_SETUP") == "true";
   wsl = (builtins.getEnv "WSL") == "true";
   githooks = inputs.githooks.packages."${pkgs.system}".default;
+  nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
 in
 rec {
   nixpkgs = {
@@ -92,7 +93,9 @@ rec {
           bitwarden-desktop
           firefox
           hwloc
+          (config.lib.nixGL.wrap kitty)
           nerdfonts
+          nixGLIntel
           obsidian
           onlyoffice-bin
           openrgb-with-all-plugins
@@ -324,7 +327,16 @@ rec {
     };
   };
 
-  imports = [ ./dconf/dconf.nix ];
+  imports = [
+    ./dconf/dconf.nix
+    # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
+    (builtins.fetchurl {
+      url = "https://raw.githubusercontent.com/Smona/home-manager/nixgl-compat/modules/misc/nixgl.nix";
+      sha256 = "74f9fb98f22581eaca2e3c518a0a3d6198249fb1490ab4a08f33ec47827e85db";
+    })
+  ];
+
+  nixGL.prefix = "${nixGLIntel}/bin/nixGLIntel";
 
   # systemd = {
   #   user = {

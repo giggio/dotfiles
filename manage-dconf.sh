@@ -75,6 +75,7 @@ fi
 
 DCONF_CONFIGS=(
   "apps/psensor"
+  "org/gnome/desktop/applications/terminal"
   "org/gnome/desktop/datetime"
   "org/gnome/desktop/interface"
   "org/gnome/desktop/input-sources"

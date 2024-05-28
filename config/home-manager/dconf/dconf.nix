@@ -1,6 +1,7 @@
 {
   imports = [
     ./apps/psensor.nix
+    ./org/gnome/desktop/applications/terminal.nix
     ./org/gnome/desktop/datetime.nix
     ./org/gnome/desktop/interface.nix
     ./org/gnome/desktop/input-sources.nix

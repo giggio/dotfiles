@@ -231,7 +231,17 @@ rec {
     };
     mimeApps = {
       enable = true;
-      defaultApplications = if wsl then {} else {
+      defaultApplications = if wsl then {
+        # browser:
+        "text/html"=["wslview.desktop"];
+        "x-scheme-handler/http"=["wslview.desktop"];
+        "x-scheme-handler/https"=["wslview.desktop"];
+        "x-scheme-handler/about"=["wslview.desktop"];
+        "x-scheme-handler/unknown"=["wslview.desktop"];
+        "application/pdf"=["wslview.desktop"];
+        "x-scheme-handler/mailto"=["wslview.desktop"];
+        "application/xhtml+xml"=["wslview.desktop"];
+      } else {
         # onlyoffice:
         "application/vnd.oasis.opendocument.text" = [ "onlyoffice-desktopeditors.desktop" ];
         "application/vnd.oasis.opendocument.text-template" = [ "onlyoffice-desktopeditors.desktop" ];

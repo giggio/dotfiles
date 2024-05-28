@@ -87,7 +87,8 @@ installHomeManagerUsingFlakes () {
   elif $UPDATE; then
     writeBlue "Update Nix home-manager."
     nix-channel --update
-    BASIC_SETUP=$BASIC_SETUP WSL=$WSL home-manager switch --show-trace --flake "$BASEDIR"/config/home-manager
+    rm "$BASEDIR"/config/home-manager/flake.lock
+    BASIC_SETUP=$BASIC_SETUP WSL=$WSL home-manager switch --show-trace --flake "$BASEDIR"/config/home-manager --refresh
     download_nixpkgs_cache_index
   elif $VERBOSE; then
     writeBlue "Not installing Nix home-manager, it is already installed."

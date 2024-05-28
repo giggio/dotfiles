@@ -70,6 +70,4 @@ if $WSL; then
   xdg-mime default wslview.desktop text/html
   xdg-mime default wslview.desktop x-scheme-handler/http
   xdg-mime default wslview.desktop x-scheme-handler/https
-else
-  "$BASEDIR"/manage-dconf.sh --import "$@"
 fi

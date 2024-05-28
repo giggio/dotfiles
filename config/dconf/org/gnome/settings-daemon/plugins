@@ -1,6 +1,0 @@
-[media-keys]
-home=['<Super>e']
-
-[power]
-sleep-inactive-ac-timeout=1800
-sleep-inactive-ac-type='suspend'

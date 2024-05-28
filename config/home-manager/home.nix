@@ -304,6 +304,8 @@ rec {
     };
   };
 
+  imports = [ ./dconf/dconf.nix ];
+
   # systemd = {
   #   user = {
   #     services = {

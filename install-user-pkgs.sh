@@ -82,12 +82,12 @@ installHomeManagerUsingFlakes () {
     nix-channel --add https://nixos.org/channels/nixos-unstable nixpkgs
     nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
     nix-channel --update
-    BASIC_SETUP=$BASIC_SETUP WSL=$WSL nix run home-manager/master -- init --switch --show-trace
+    BASIC_SETUP=$BASIC_SETUP WSL=$WSL nix run home-manager/master -- init --switch --show-trace --flake "$BASEDIR"/config/home-manager
     download_nixpkgs_cache_index
   elif $UPDATE; then
     writeBlue "Update Nix home-manager."
     nix-channel --update
-    BASIC_SETUP=$BASIC_SETUP WSL=$WSL home-manager switch --show-trace
+    BASIC_SETUP=$BASIC_SETUP WSL=$WSL home-manager switch --show-trace --flake "$BASEDIR"/config/home-manager
     download_nixpkgs_cache_index
   elif $VERBOSE; then
     writeBlue "Not installing Nix home-manager, it is already installed."

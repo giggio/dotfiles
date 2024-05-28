@@ -17,12 +17,6 @@
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - touch $HOME/.hushlogin
-    # creating hard links so home-manager works
-    # todo: remove when https://github.com/nix-community/home-manager/issues/4307 is fixed
-    - mkdir -p "$HOME"/.config/home-manager
-    - ln -f config/home-manager/home.nix "$HOME"/.config/home-manager/home.nix
-    - ln -f config/home-manager/flake.nix "$HOME"/.config/home-manager/flake.nix
-    - ln -f config/home-manager/flake.lock "$HOME"/.config/home-manager/flake.lock
 - link:
     ~/.bashrc: home/.bashrc
     ~/.XCompose: home/.XCompose

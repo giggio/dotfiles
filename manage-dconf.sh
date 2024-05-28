@@ -9,6 +9,7 @@ fi
 
 EXPORT=false
 IMPORT=false
+NIX=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
@@ -19,6 +20,10 @@ while [[ $# -gt 0 ]]; do
     ;;
     --export|-e)
     EXPORT=true
+    shift
+    ;;
+    --nix|-n)
+    NIX=true
     shift
     ;;
     --help|-h)
@@ -44,7 +49,9 @@ Usage:
   `readlink -f "$0"` [flags]
 
 Flags:
-  -u, --update                                       Will download and install/reinstall even if the tools are already installed
+  -i, --import                                       Imports into dconf config from files
+  -e, --export                                       Exports from from files into dconf config
+  -n, --nix                                          Use Nix format when exporting
       --verbose                                      Show verbose output
   -h, --help                                         This help
 EOF
@@ -52,7 +59,18 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS"
+  writeGreen "Running `basename "$0"` $ALL_ARGS
+  Import is $IMPORT
+  Export is $EXPORT
+  Nix is $NIX"
+fi
+
+if $NIX && ! $EXPORT; then
+  die "Nix can only be used with export."
+fi
+
+if $NIX && ! hash dconf2nix 2> /dev/null; then
+  die "dconf2nix is not installed."
 fi
 
 DCONF_CONFIGS=(
@@ -68,9 +86,15 @@ DCONF_CONFIGS=(
   "org/gnome/settings-daemon/plugins"
   "desktop/ibus/panel/emoji"
 )
-BASE_DATA_DIR="$BASEDIR/config/dconf"
+if $NIX; then
+  BASE_DATA_DIR="$BASEDIR/config/home-manager/dconf"
+else
+  BASE_DATA_DIR="$BASEDIR/config/dconf"
+fi
 if $EXPORT; then
   if $VERBOSE; then writeGreen "Will export to: $BASE_DATA_DIR"; fi
+  dconfnixfile='{
+  imports = ['
   for FULL_CONFIG in "${DCONF_CONFIGS[@]}"; do
     CONFIG=`basename "$FULL_CONFIG"`
     CONFIG_DIR=$BASE_DATA_DIR/`dirname "$FULL_CONFIG"`
@@ -79,9 +103,22 @@ if $EXPORT; then
       mkdir -p "$CONFIG_DIR"
     fi
     CONFIG_FILE="$CONFIG_DIR/$CONFIG"
+    if $NIX; then
+      CONFIG_FILE="$CONFIG_FILE.nix"
+    fi
+    dconfnixfile+=$'\n    './"`dirname "$FULL_CONFIG"`/$CONFIG.nix"
     if $VERBOSE; then writeGreen "Creating config into file '$CONFIG_FILE'..."; fi
-    dconf dump "/$FULL_CONFIG/" > "$CONFIG_FILE"
+    if $NIX; then
+      dconf dump "/$FULL_CONFIG/" | dconf2nix --emoji --root "$FULL_CONFIG" > "$CONFIG_FILE"
+    else
+      dconf dump "/$FULL_CONFIG/" > "$CONFIG_FILE"
+    fi
   done
+  dconfnixfile+='
+  ];
+}'
+  if $VERBOSE; then writeGreen "Creating $BASE_DATA_DIR/dconf.nix file..."; fi
+  echo "$dconfnixfile" > "$BASE_DATA_DIR/dconf.nix"
 elif $IMPORT; then
   if $VERBOSE; then writeGreen "Will import from: $BASE_DATA_DIR"; fi
   for FULL_CONFIG in "${DCONF_CONFIGS[@]}"; do

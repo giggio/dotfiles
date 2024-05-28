@@ -211,6 +211,16 @@ rec {
       # Let Home Manager install and manage itself.
       enable = true;
     };
+
+    gpg = {
+      enable = true;
+      publicKeys = [
+        {
+          source = ./gpg/giggio.pub; # https://links.giggio.net/pgp
+          trust = "ultimate";
+        }
+      ];
+    };
   };
 
   fonts.fontconfig.enable = !wsl;

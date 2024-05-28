@@ -44,18 +44,6 @@ if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS"
 fi
 
-keyId=275F6749AFD2379D1033548C1237AB122E6F4761
-if [[ `gpg --list-keys $keyId 2> /dev/null` == '' ]] || gpg --list-keys $keyId 2> /dev/null | grep ^uid | grep -qs '\[ultimate\]'; then
-  gpgPublicKeyFile=`mktemp`
-  curl -fsSL https://links.giggio.net/pgp --output "$gpgPublicKeyFile"
-  gpgOwnerTrustFile=`mktemp`
-  echo "$keyId:6:" > "$gpgOwnerTrustFile"
-  gpg --import "$gpgPublicKeyFile"
-  gpg --import-ownertrust "$gpgOwnerTrustFile"
-  rm "$gpgPublicKeyFile"
-  rm "$gpgOwnerTrustFile"
-fi
-
 if hash carapace 2>/dev/null && ! [ -f "$HOME"/.config/carapace/schema.json ]; then
   if $VERBOSE; then
     writeBlue "Setting up carapace schema."

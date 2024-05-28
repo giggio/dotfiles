@@ -25,3 +25,9 @@ if [ -d "$N_PREFIX" ]; then
   export PATH=$N_PREFIX/bin:$PATH
   export N_PREFIX
 fi
+
+# if we don't add it to the .profile, it will be set to 500 for login shells
+HISTSIZE=-1
+HISTFILESIZE=-1
+# see https://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
+HISTFILE=~/.bash_history2

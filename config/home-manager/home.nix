@@ -175,6 +175,7 @@ rec {
           dconf2nix
           neofetch
           imagemagick
+          git-lfs
         ]);
       in
       basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;

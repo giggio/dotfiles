@@ -344,8 +344,9 @@ rec {
     user = {
       services = let
         commonServices = {};
-        nonWslServices = lib.modules.mkIf (!env.wsl)  {};
-        wslServices = lib.modules.mkIf (env.wsl) {
+        otherServices = if !env.wsl then
+        {
+        } else {
           # necessary to run some wayland apps in WSL until https://github.com/microsoft/wslg/issues/1156#issuecomment-2094572691 gets fixed
           wsl-symlink-wayland = {
             Unit = { Description = "Symlink WSL wayland socket"; };
@@ -358,7 +359,7 @@ rec {
           };
         };
       in
-        nonWslServices // commonServices // wslServices;
+        commonServices // otherServices;
     };
   };
 

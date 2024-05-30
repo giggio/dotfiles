@@ -104,8 +104,6 @@ rec {
           bitwarden-desktop
           firefox
           hwloc
-          (config.lib.nixGL.wrap kitty)
-          nerdfonts
           nixGLIntel
           obsidian
           onlyoffice-bin
@@ -118,6 +116,8 @@ rec {
         ]);
         extra_pkgs = lib.lists.optionals (!env.basicSetup)
         (with pkgs; [
+          nerdfonts
+          (config.lib.nixGL.wrap kitty)
           deno
           opentofu
           krew
@@ -339,6 +339,28 @@ rec {
   };
 
   nixGL.prefix = "${nixGLIntel}/bin/nixGLIntel";
+
+  systemd = {
+    user = {
+      services = let
+        wslServices = {
+          # necessary to run some wayland apps in WSL until https://github.com/microsoft/wslg/issues/1156#issuecomment-2094572691 gets fixed
+          wsl-symlink-wayland = {
+            Unit = { Description = "Symlink WSL wayland socket"; };
+            Service = {
+              ExecStart = [ "ln -s /mnt/wslg/runtime-dir/wayland-0 %t/wayland-0" "ln -s /mnt/wslg/runtime-dir/wayland-0.lock %t/wayland-0.lock" ];
+              ExecStartPre=[ "rm -f %t/wayland-0 %t/wayland-0.lock" ];
+              Type = "oneshot";
+            };
+            Install = { WantedBy = [ "default.target" ]; };
+          };
+        };
+        nonWslServices = {};
+        commonServices = {};
+      in
+        wslServices // nonWslServices // commonServices;
+    };
+  };
 
   # systemd = {
   #   user = {

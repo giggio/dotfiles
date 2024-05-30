@@ -343,7 +343,9 @@ rec {
   systemd = {
     user = {
       services = let
-        wslServices = {
+        commonServices = {};
+        nonWslServices = lib.modules.mkIf (!env.wsl)  {};
+        wslServices = lib.modules.mkIf (env.wsl) {
           # necessary to run some wayland apps in WSL until https://github.com/microsoft/wslg/issues/1156#issuecomment-2094572691 gets fixed
           wsl-symlink-wayland = {
             Unit = { Description = "Symlink WSL wayland socket"; };
@@ -355,10 +357,8 @@ rec {
             Install = { WantedBy = [ "default.target" ]; };
           };
         };
-        nonWslServices = {};
-        commonServices = {};
       in
-        wslServices // nonWslServices // commonServices;
+        nonWslServices // commonServices // wslServices;
     };
   };
 

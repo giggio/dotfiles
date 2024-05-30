@@ -1,12 +1,22 @@
 { config, pkgs, lib, inputs, ... }:
 
 let
-  basic_setup = (builtins.getEnv "BASIC_SETUP") == "true";
-  wsl = (builtins.getEnv "WSL") == "true";
   githooks = inputs.githooks.packages."${pkgs.system}".default;
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
+  env = config.setup;
 in
 rec {
+  imports = [
+    ./setup.nix
+    ~/.config/nix/.env.nix
+    ./dconf/dconf.nix
+    # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
+    (builtins.fetchurl {
+      url = "https://raw.githubusercontent.com/Smona/home-manager/nixgl-compat/modules/misc/nixgl.nix";
+      sha256 = "74f9fb98f22581eaca2e3c518a0a3d6198249fb1490ab4a08f33ec47827e85db";
+    })
+  ];
+
   nixpkgs = {
     config = {
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
@@ -85,9 +95,10 @@ rec {
           ranger
           colorized-logs
           zellij
+          hub
         ]);
-        wsl_pkgs = if wsl then (with pkgs; [ wslu ]) else [ ];
-        not_wsl_pkgs = if wsl then [] else
+        wsl_pkgs = lib.lists.optionals env.wsl (with pkgs; [ wslu ]);
+        not_wsl_pkgs = lib.lists.optionals (!env.wsl)
         (with pkgs; [
           android-tools
           bitwarden-desktop
@@ -105,7 +116,7 @@ rec {
           vlc
           youtube-music
         ]);
-        extra_pkgs = if basic_setup then [ ] else
+        extra_pkgs = lib.lists.optionals (!env.basicSetup)
         (with pkgs; [
           deno
           opentofu
@@ -121,7 +132,6 @@ rec {
           fontforge
           ghostscript
           gzip
-          hub
           inotify-tools
           neovim
           nmap
@@ -227,7 +237,7 @@ rec {
     };
   };
 
-  fonts.fontconfig.enable = !wsl;
+  fonts.fontconfig.enable = !env.wsl;
 
   xdg = {
     configFile = {
@@ -235,7 +245,7 @@ rec {
     };
     mimeApps = {
       enable = true;
-      defaultApplications = if wsl then {
+      defaultApplications = if env.wsl then {
         # browser:
         "text/html"=["wslview.desktop"];
         "x-scheme-handler/http"=["wslview.desktop"];
@@ -320,22 +330,13 @@ rec {
 
   services = {
     gpg-agent = {
-      enable = !wsl;
+      enable = !env.wsl;
       enableExtraSocket = true;
       enableScDaemon = true;
       enableSshSupport = true;
       pinentryPackage = pkgs.pinentry-gnome3;
     };
   };
-
-  imports = [
-    ./dconf/dconf.nix
-    # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
-    (builtins.fetchurl {
-      url = "https://raw.githubusercontent.com/Smona/home-manager/nixgl-compat/modules/misc/nixgl.nix";
-      sha256 = "74f9fb98f22581eaca2e3c518a0a3d6198249fb1490ab4a08f33ec47827e85db";
-    })
-  ];
 
   nixGL.prefix = "${nixGLIntel}/bin/nixGLIntel";
 

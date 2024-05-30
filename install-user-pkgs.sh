@@ -77,18 +77,31 @@ installHomeManagerUsingFlakes () {
     wget -q -N "https://github.com/Mic92/nix-index-database/releases/latest/download/$filename"
     ln -f "$filename" files
   }
+  create_nix_env_file () {
+    cat <<EOF > "$HOME"/.config/nix/.env.nix
+{
+  setup = {
+    user = "$USER";
+    wsl = $WSL;
+    basicSetup = $BASIC_SETUP;
+  };
+}
+EOF
+  }
   if ! hash home-manager 2>/dev/null; then
     writeBlue "Install Nix home-manager."
     nix-channel --add https://nixos.org/channels/nixos-unstable nixpkgs
     nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
     nix-channel --update
-    BASIC_SETUP=$BASIC_SETUP WSL=$WSL nix run home-manager/master -- init --switch --show-trace --flake "$BASEDIR"/config/home-manager
+    create_nix_env_file
+    nix run home-manager/master -- init --switch --show-trace --flake "$BASEDIR"/config/home-manager --impure
     download_nixpkgs_cache_index
   elif $UPDATE; then
     writeBlue "Update Nix home-manager."
     nix-channel --update
-    rm "$BASEDIR"/config/home-manager/flake.lock
-    BASIC_SETUP=$BASIC_SETUP WSL=$WSL home-manager switch --show-trace --flake "$BASEDIR"/config/home-manager --refresh
+    create_nix_env_file
+    rm -f "$BASEDIR"/config/home-manager/flake.lock
+    home-manager switch --show-trace --flake "$BASEDIR"/config/home-manager --impure --refresh
     download_nixpkgs_cache_index
   elif $VERBOSE; then
     writeBlue "Not installing Nix home-manager, it is already installed."

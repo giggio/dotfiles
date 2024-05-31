@@ -43,10 +43,3 @@ fi
 if $VERBOSE; then
   writeGreen "Running `basename "$0"` $ALL_ARGS"
 fi
-
-if hash carapace 2>/dev/null && ! [ -f "$HOME"/.config/carapace/schema.json ]; then
-  if $VERBOSE; then
-    writeBlue "Setting up carapace schema."
-  fi
-  carapace _carapace > /dev/null
-fi

@@ -1,6 +1,7 @@
-# add completers to kubecolor to be equal to those from kubectl
+# yaml-language-server: $schema=https://carapace.sh/schemas/command.json
 ---
+# add completers to kubecolor to be equal to those from kubectl
 name: kubecolor
 description: Colorize your kubectl output
 completion:
-  positionalany: ["$_bridge.CarapaceBin([kubectl])"]
+  positionalany: ["$carapace.bridge.CarapaceBin([kubectl])"]

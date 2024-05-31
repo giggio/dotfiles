@@ -116,7 +116,7 @@ rec {
         ]);
         extra_pkgs = lib.lists.optionals (!env.basicSetup)
         (with pkgs; [
-          nerdfonts
+          (nerdfonts.override { fonts = [ "CascadiaCode" "NerdFontsSymbolsOnly" ]; })
           (config.lib.nixGL.wrap kitty)
           deno
           opentofu

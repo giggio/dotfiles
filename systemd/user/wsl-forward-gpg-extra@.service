@@ -1,8 +1,0 @@
-[Unit]
-Description=Forward gpg extra to Windows
-Requires=wsl-forward-gpg-extra.socket
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-ExecStart=%h/.local/lib/systemd/wsl-forward-gpg --gpg-extra --instance %i

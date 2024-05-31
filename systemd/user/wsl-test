@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-sleep infinity &
-sleep infinity &
-
-wait

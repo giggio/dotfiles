@@ -228,12 +228,9 @@ else
         writeBlue "Runned systemctl --user $ACTION $SERVICE."
       done
     done
+    # use nix to create systemd services, sockets etc
     # test a service with:
     # create_systemd_service_and_timer wsl-test
-    create_systemd_service_and_timer wsl-forward-gpg-all
-    create_systemd_service_and_timer wsl-forward-gpg
-    create_systemd_service_and_timer wsl-forward-gpg-extra
-    create_systemd_service_and_timer wsl-forward-ssh
   else
     if systemctl --user cat gcr-ssh-agent.socket &> /dev/null; then
       systemctl --user mask gcr-ssh-agent.socket

@@ -61,23 +61,12 @@ fi
 
 function create_systemd_service_and_timer {
   local NEEDS_RELOAD=false
-  if [ "$EUID" == '0' ]; then
-    local USER=''
-    local SOURCE_DIR="$BASEDIR"/systemd
-    local SCRIPT_DIR=/usr/local/sbin
-    local SYSTEMD_DIR=/etc/systemd/system
-  else
-    local USER='--user'
-    local SOURCE_DIR="$BASEDIR"/systemd/user
-    local SCRIPT_DIR=$HOME/.local/lib/systemd
-    local SYSTEMD_DIR=$HOME/.config/systemd/user
-    if ! [ -d "$SCRIPT_DIR" ]; then
-      mkdir -p "$SCRIPT_DIR"
-    fi
-    if ! [ -d "$SYSTEMD_DIR" ]; then
-      mkdir -p "$SYSTEMD_DIR"
-    fi
+  if [ "$EUID" != '0' ]; then
+    die "Use nix to create systemd user services, sockets etc."
   fi
+  local SOURCE_DIR="$BASEDIR"/systemd
+  local SCRIPT_DIR=/usr/local/sbin
+  local SYSTEMD_DIR=/etc/systemd/system
   if ! [ -v 1 ]; then
     die "No service name provided."
   fi
@@ -192,24 +181,36 @@ function create_systemd_service_and_timer {
   fi
   if $NEEDS_RELOAD; then
     writeBlue "Reloading systemd."
-    systemctl $USER daemon-reload
+    systemctl daemon-reload
   fi
   if ! $IS_TEMPLATE_SERVICE; then
-    if [ "`systemctl $USER is-enabled "$SERVICE.$SUFFIX"`" != 'enabled' ]; then
+    if [ "`systemctl is-enabled "$SERVICE.$SUFFIX"`" != 'enabled' ]; then
       writeBlue "Unit $SERVICE.$SUFFIX is not enabled, enabling..."
       # disable first so if it had different dependents they will be removed
-      systemctl $USER disable "$SERVICE.$SUFFIX"
-      systemctl $USER enable "$SERVICE.$SUFFIX"
+      systemctl disable "$SERVICE.$SUFFIX"
+      systemctl enable "$SERVICE.$SUFFIX"
     fi
   fi
   if $HAS_SOCKET; then
-    if [ "`systemctl $USER is-enabled "$SERVICE.socket"`" != 'enabled' ]; then
+    if [ "`systemctl is-enabled "$SERVICE.socket"`" != 'enabled' ]; then
       writeBlue "Enabling $SERVICE.socket..."
       # disable first so if it had different dependents they will be removed
-      systemctl $USER disable "$SERVICE.socket"
-      systemctl $USER enable "$SERVICE.socket"
+      systemctl disable "$SERVICE.socket"
+      systemctl enable "$SERVICE.socket"
     fi
   fi
+}
+
+function mask_user_service {
+  for SERVICE in "$@"; do
+    if systemctl --user cat "$SERVICE" &> /dev/null; then
+      for ACTION in stop mask; do
+        writeBlue "Running systemctl --user $ACTION $SERVICE..."
+        systemctl --user $ACTION "$SERVICE"
+        writeBlue "Runned systemctl --user $ACTION $SERVICE."
+      done
+    fi
+  done
 }
 
 if [ "$EUID" == '0' ]; then
@@ -220,23 +221,11 @@ if [ "$EUID" == '0' ]; then
     fi
   fi
 else
+  # use nix to create systemd services, sockets etc
+  # don't call create_systemd_service_and_timer, it will throw an error
   if $WSL; then
-    for SERVICE in gpg-agent-browser.socket gpg-agent-extra.socket gpg-agent-ssh.socket gpg-agent.socket dirmngr.socket gpg-agent dirmngr ssh-agent; do
-      for ACTION in stop mask; do
-        writeBlue "Running systemctl --user $ACTION $SERVICE..."
-        systemctl --user $ACTION $SERVICE
-        writeBlue "Runned systemctl --user $ACTION $SERVICE."
-      done
-    done
-    # use nix to create systemd services, sockets etc
-    # test a service with:
-    # create_systemd_service_and_timer wsl-test
+    mask_user_service gpg-agent-browser.socket gpg-agent-extra.socket gpg-agent-ssh.socket gpg-agent.socket dirmngr.socket gpg-agent dirmngr ssh-agent
   else
-    if systemctl --user cat gcr-ssh-agent.socket &> /dev/null; then
-      systemctl --user mask gcr-ssh-agent.socket
-    fi
-    if systemctl --user cat gcr-ssh-agent.service &> /dev/null; then
-      systemctl --user mask gcr-ssh-agent.service
-    fi
+    mask_user_service gcr-ssh-agent.socket gcr-ssh-agent.service
   fi
 fi

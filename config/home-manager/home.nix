@@ -204,23 +204,12 @@ rec {
       ])}";
     };
 
-    file =
-      let
-        sessionVariablesText = lib.concatStringsSep "\n" (lib.concatLists [
-          [
-            "std path add $\"($env.HOME)/.nix-profile/bin\" /nix/var/nix/profiles/default/bin"
-          ]
-          (lib.mapAttrsToList (k: v: "$env.${k} = ${v}") home.sessionVariables)
-        ]
-        );
-      in
-      {
-        ".local/lib/systemd/wsl-forward-gpg" = {
-          enable = env.wsl;
-          source = ./systemd/wsl-forward-gpg;
-        };
-        ".config/nushell/login.nu".text = sessionVariablesText;
+    file = {
+      ".local/lib/systemd/wsl-forward-gpg" = {
+        enable = env.wsl;
+        source = ./systemd/wsl-forward-gpg;
       };
+    };
 
   };
 
@@ -244,8 +233,21 @@ rec {
   fonts.fontconfig.enable = !env.wsl;
 
   xdg = {
-    configFile = {
-      "autostart/bitwarden.desktop".source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
+    configFile = let
+      sessionVariablesText = lib.concatStringsSep "\n" (lib.concatLists [
+        [
+          "std path add $\"($env.HOME)/.nix-profile/bin\" /nix/var/nix/profiles/default/bin"
+        ]
+        (lib.mapAttrsToList (k: v: "$env.${k} = ${v}") home.sessionVariables)
+      ]
+      );
+    in
+    {
+      "nushell/login.nu".text = sessionVariablesText;
+      "autostart/bitwarden.desktop" = {
+        enable = !env.wsl;
+        source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
+      };
     };
     mimeApps = {
       enable = true;

@@ -24,6 +24,7 @@ rec {
       ];
       # allowUnfree = true;
     };
+    overlays = [ inputs.fenix.overlays.default ];
   };
 
   home = {
@@ -75,7 +76,15 @@ rec {
           zoxide
           navi
           ruby_3_2
-          rustup
+          # rustup
+          (fenix.stable.withComponents [
+            "cargo"
+            "clippy"
+            "rust-src"
+            "rustc"
+            "rustfmt"
+          ])
+          rust-analyzer-nightly
           yq-go
           tzdata
           unzip

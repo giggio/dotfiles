@@ -25,7 +25,14 @@ rec {
       ];
       # allowUnfree = true;
     };
-    overlays = [ inputs.fenix.overlays.default ];
+    overlays = [
+      inputs.fenix.overlays.default
+      # todo: remove when https://github.com/NixOS/nixpkgs/pull/315618 gets merged
+      (final: prev: {
+        inherit (inputs.nushellUpdate.legacyPackages.${prev.system})
+          nushell;
+      })
+    ];
   };
 
   home = {
@@ -290,6 +297,7 @@ rec {
     configFile = let
       sessionVariablesText = lib.concatStringsSep "\n" (lib.concatLists [
         [
+          "use std"
           "std path add $\"($env.HOME)/.nix-profile/bin\" /nix/var/nix/profiles/default/bin"
         ]
         (lib.mapAttrsToList (k: v: "$env.${k} = ${v}") home.sessionVariables)

@@ -19,6 +19,8 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # todo: remove when https://github.com/NixOS/nixpkgs/pull/315618 gets merged
+    nushellUpdate.url = "github:getchoo/nixpkgs/pkgs/nushell/0.94.0";
   };
 
   outputs = { nixpkgs, home-manager, ... }@inputs:

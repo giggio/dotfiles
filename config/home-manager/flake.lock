@@ -136,13 +136,30 @@
         "type": "github"
       }
     },
+    "nushellUpdate": {
+      "locked": {
+        "lastModified": 1717069383,
+        "narHash": "sha256-1RsCAsHEtt+Gw6mHTtWCHal+GrQRaIIIb1gA9bo8JyA=",
+        "owner": "getchoo",
+        "repo": "nixpkgs",
+        "rev": "8c88d9db43861317be70b4be5489f73f5fef3299",
+        "type": "github"
+      },
+      "original": {
+        "owner": "getchoo",
+        "ref": "pkgs/nushell/0.94.0",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "fenix": "fenix",
         "githooks": "githooks",
         "home-manager": "home-manager",
         "nixGL": "nixGL",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nushellUpdate": "nushellUpdate"
       }
     },
     "rust-analyzer-src": {

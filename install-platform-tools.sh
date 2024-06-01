@@ -142,11 +142,6 @@ fi
 
 # npm tools
 export NG_CLI_ANALYTICS=ci
-N_PREFIX=$HOME/.n
-if [ -d "$N_PREFIX" ]; then
-  export PATH=$N_PREFIX/bin:$PATH
-  export N_PREFIX
-fi
 NPM_PKGS_INSTALLED=$(npm ls -g --parseable --depth 0 | tail -n +2 | sed -E "s/$(npm prefix -g | sed 's/\//\\\//g')\/lib\/node_modules\///g" | sort)
 NPM_PKGS_TO_INSTALL=`echo "@angular/cli
 @githubnext/github-copilot-cli

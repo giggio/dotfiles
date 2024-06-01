@@ -109,25 +109,6 @@ installHomeManagerUsingFlakes () {
 }
 installHomeManagerUsingFlakes
 
-# node
-installNode () {
-  export N_PREFIX=$HOME/.n
-  if ! hash node 2>/dev/null && ! [ -f "$HOME"/.n/bin/node ] || $UPDATE; then
-    writeBlue "Install latest Node version through n."
-    "$BASEDIR"/tools/n/bin/n install latest
-    "$BASEDIR"/tools/n/bin/n install lts
-  else
-    if $VERBOSE; then
-      writeBlue "Not installing Node.js version."
-    fi
-  fi
-  export PATH="$N_PREFIX/bin:$PATH"
-  if ! hash yarn 2>/dev/null; then
-    corepack enable # makes yarn available
-  fi
-}
-installNode
-
 # bin
 installBin () {
   if ! hash bin 2>/dev/null; then

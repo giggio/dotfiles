@@ -5,6 +5,16 @@ let
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
   env = config.setup;
   homeDir = "/home/${env.user}";
+  dotnetCombinedPackages = (with pkgs.dotnetCorePackages; combinePackages
+    [
+      sdk_6_0
+      sdk_7_0
+      sdk_8_0
+    ]);
+  # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
+  shellSessionVariables = {
+    DOTNET_ROOT = "${dotnetCombinedPackages}";
+  };
 in
 rec {
   imports = [
@@ -113,6 +123,8 @@ rec {
           colorized-logs
           zellij
           hub
+          nodePackages_latest.nodejs
+          nodePackages.yarn
         ]);
         wsl_pkgs = lib.lists.optionals env.wsl (with pkgs; [ wslu ]);
         not_wsl_pkgs = lib.lists.optionals (!env.wsl)
@@ -159,12 +171,7 @@ rec {
           silver-searcher
           w3m
           chromium
-          (with dotnetCorePackages; combinePackages
-            [
-              sdk_6_0
-              sdk_7_0
-              sdk_8_0
-            ])
+          dotnetCombinedPackages
           temurin-bin-21
           maven
           azure-cli
@@ -212,13 +219,7 @@ rec {
     # Manager then you have to manually source 'hm-session-vars.sh' located at
     #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
     sessionVariables = {
-      EDITOR = "vim";
-      DOTNET_ROOT = "${(with pkgs.dotnetCorePackages; combinePackages
-      [
-        sdk_6_0
-        sdk_7_0
-        sdk_8_0
-      ])}";
+      # this goes into ~/.nix-profile/etc/profile.d/hm-session-vars.sh which is loaded by .profile
     };
 
     file = {
@@ -254,8 +255,13 @@ rec {
       historyFileSize = -1;
       historyFile = "${homeDir}/.bash_history2";
       sessionVariables = {
-        PATH = "${homeDir}/bin:${homeDir}/.local/bin:$PATH";
-        N_PREFIX = "${homeDir}/.n";
+        # this goes to .profile, and only reloads if we logout and log back in
+        PATH = "${homeDir}/bin:${homeDir}/.local/bin:${homeDir}/.local/share/npm/bin:$PATH";
+        EDITOR = "vim";
+        XDG_DATA_HOME = "${homeDir}/.local/share";
+        XDG_STATE_HOME = "${homeDir}/.local/state";
+        XDG_CACHE_HOME = "${homeDir}/.cache";
+        NPM_CONFIG_PREFIX = "${homeDir}/.local/share/npm";
       };
       shellAliases = {
         l = "ls -la";
@@ -267,10 +273,13 @@ rec {
         "globstar"
         "checkjobs"
       ];
-      bashrcExtra =
-        ''
-        source "${homeDir}/.dotfiles/bashscripts/.bashrc"
-        '';
+      bashrcExtra = lib.concatStringsSep "\n" (lib.concatLists [
+          [
+            ''source "${homeDir}/.dotfiles/bashscripts/.bashrc"''
+          ]
+          (lib.mapAttrsToList (k: v: "${k}=${v}") shellSessionVariables)
+        ]
+        );
     };
 
     gpg = {
@@ -297,10 +306,9 @@ rec {
     configFile = let
       sessionVariablesText = lib.concatStringsSep "\n" (lib.concatLists [
         [
-          "use std"
-          "std path add $\"($env.HOME)/.nix-profile/bin\" /nix/var/nix/profiles/default/bin"
+          "# nushell"
         ]
-        (lib.mapAttrsToList (k: v: "$env.${k} = ${v}") home.sessionVariables)
+        (lib.mapAttrsToList (k: v: "$env.${k} = ${v}") shellSessionVariables)
       ]
       );
     in

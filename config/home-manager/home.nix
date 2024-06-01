@@ -4,7 +4,7 @@ let
   githooks = inputs.githooks.packages."${pkgs.system}".default;
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
   env = config.setup;
-  homeDir = "/home/${env.user}";
+  # homeDir = "/home/${env.user}";
   dotnetCombinedPackages = (with pkgs.dotnetCorePackages; combinePackages
     [
       sdk_6_0
@@ -12,6 +12,7 @@ let
       sdk_8_0
     ]);
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
+  # but, be careful, this is used by nushell and bash
   shellSessionVariables = {
     DOTNET_ROOT = "${dotnetCombinedPackages}";
   };
@@ -59,6 +60,9 @@ rec {
     packages =
       let
         basic_pkgs = (with pkgs; [
+          bash
+          bash-completion
+          (pkgs.callPackage ./completions.nix { inherit pkgs; })
           curl
           wget
           file
@@ -210,6 +214,7 @@ rec {
           neofetch
           imagemagick
           git-lfs
+          kubectx
         ]);
       in
       basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;
@@ -218,8 +223,19 @@ rec {
     # 'sessionVariables'. If you don't want to manage your shell through Home
     # Manager then you have to manually source 'hm-session-vars.sh' located at
     #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
+    sessionPath = [
+        "$HOME/bin"
+        "$HOME/.local/bin"
+        "$XDG_DATA_HOME/npm/bin"
+    ];
     sessionVariables = {
-      # this goes into ~/.nix-profile/etc/profile.d/hm-session-vars.sh which is loaded by .profile
+      # this goes into ~/.nix-profile/etc/profile.d/hm-session-vars.sh, which is
+      # loaded by .profile, and so only reloads if we logout and log back in
+      EDITOR = "vim";
+      XDG_DATA_HOME = "$HOME/.local/share";
+      XDG_STATE_HOME = "$HOME/.local/state";
+      XDG_CACHE_HOME = "$HOME/.cache";
+      NPM_CONFIG_PREFIX = "$HOME/.local/share/npm";
     };
 
     file = {
@@ -227,6 +243,38 @@ rec {
         enable = env.wsl;
         source = ./systemd/wsl-forward-gpg;
       };
+      ".local/bin/dotnet-uninstall".source =./bin/dotnet-uninstall;
+      ".hushlogin".text = "";
+      ".XCompose".text =
+      ''
+      <dead_acute> <C> : "Ç" Ccedilla # LATIN CAPITAL LETTER C WITH CEDILLA
+      <dead_acute> <c> : "ç" ccedilla # LATIN SMALL LETTER C WITH CEDILLA
+      '';
+      ".tmux.conf".text =
+      ''
+      set -g default-terminal "screen-256color"
+      set-option -g default-shell /bin/bash
+      set -g history-limit 10000
+      # shellcheck source=/dev/null
+      source "$HOME/.local/lib/python3.10/site-packages/powerline/bindings/tmux/powerline.conf"
+      set -g status-bg colour233
+      set-option -g status-position top
+      set -g mouse
+
+      # Smart pane switching with awareness of vim splits
+      bind -n C-h run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-h) || tmux select-pane -L"
+      bind -n C-j run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-j) || tmux select-pane -D"
+      bind -n C-k run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-k) || tmux select-pane -U"
+      bind -n C-l run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-l) || tmux select-pane -R"
+      # bind -n C-\ run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys 'C-\\') || tmux select-pane -l"
+      '';
+      ".w3m/config".text =
+      ''
+      inline_img_protocol 4
+      auto_image TRUE
+      '';
+      ".inputrc".text = "set bell-style none";
+      ".npmrc".text = "sign-git-tag=true";
     };
 
   };
@@ -253,15 +301,13 @@ rec {
         '';
       historySize = -1;
       historyFileSize = -1;
-      historyFile = "${homeDir}/.bash_history2";
+      historyFile = "$HOME/.bash_history2";
       sessionVariables = {
         # this goes to .profile, and only reloads if we logout and log back in
-        PATH = "${homeDir}/bin:${homeDir}/.local/bin:${homeDir}/.local/share/npm/bin:$PATH";
-        EDITOR = "vim";
-        XDG_DATA_HOME = "${homeDir}/.local/share";
-        XDG_STATE_HOME = "${homeDir}/.local/state";
-        XDG_CACHE_HOME = "${homeDir}/.cache";
-        NPM_CONFIG_PREFIX = "${homeDir}/.local/share/npm";
+        # it should go to .bashrc, but it's not possible to set it there
+        # see: https://github.com/nix-community/home-manager/issues/5474
+        # move `shellSessionVariables` here this issue closes and this starts to go to .bashrc
+        # but, carefully, `shellSessionVariables` is used by nushell and bash
       };
       shellAliases = {
         l = "ls -la";
@@ -275,7 +321,7 @@ rec {
       ];
       bashrcExtra = lib.concatStringsSep "\n" (lib.concatLists [
           [
-            ''source "${homeDir}/.dotfiles/bashscripts/.bashrc"''
+            ''source "$HOME/.dotfiles/bashscripts/.bashrc"''
           ]
           (lib.mapAttrsToList (k: v: "${k}=${v}") shellSessionVariables)
         ]
@@ -318,6 +364,10 @@ rec {
         enable = !env.wsl;
         source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
       };
+      "alacritty".source = ./config/alacritty;
+      "navi/config.yaml".source = ./config/navi-config.yaml;
+      "terminator/config".source = ./config/terminator-config;
+      "starship.toml".source = ./config/starship.toml;
     };
     mimeApps = {
       enable = true;

@@ -7,48 +7,34 @@
       relink: true
       create: true
 - clean:
-    - "~"
-    - ~/bin
+    '~':
+    ~/.config:
+      recursive: true
+    ~/bin:
 - create:
     - ~/.cache
-    - ~/.config
     - ~/p
     - ~/bin
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
-    - touch $HOME/.hushlogin
 - link:
-    ~/.XCompose: home/.XCompose
-    ~/.config/alacritty: config/alacritty
     ~/.config/carapace/bridges.yaml: config/carapace/bridges.yaml
     ~/.config/carapace/overlays: config/carapace/overlays
     ~/.config/carapace/specs: config/carapace/specs
     ~/.config/git: config/git
     ~/.config/kitty: config/kitty
-    ~/.config/navi/config.yaml: config/navi-config.yaml
     ~/.config/nix/nix.conf: config/nix/nix.conf
     ~/.config/nushell: nuscripts
     ~/.config/nvim: nvim
     ~/.config/powershell: poshfiles
-    ~/.config/starship.toml: config/starship.toml
-    ~/.config/terminator/config: config/terminator/config
     ~/.config/tabby/config.yaml: config/tabby/config.yaml
     ~/.config/zellij: config/zellij
     ~/.dotfiles:
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'
-    ~/.gittemplate: home/.gittemplate
     ~/.gitconfig: home/.gitconfig
-    ~/.inputrc: home/.inputrc
-    ~/.npmrc: home/.npmrc
-    ~/.tmux.conf: home/.tmux.conf
     ~/.vim: vimfiles
     ~/.vimrc: home/.vimrc
-    ~/.w3m/config: config/w3mconfig
     ~/bin/dotnet-sdk: tools/dotnet-sdk-helpers/dotnet-sdk
-    ~/bin/dotnet-uninstall: home/bin/dotnet-uninstall
-    ~/bin/kubectx: tools/kubectx/kubectx
-    ~/bin/kubens: tools/kubectx/kubens
-    ~/bin/n: tools/n/bin/n
 - shell:
     - ./cheats/build.sh

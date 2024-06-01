@@ -13,9 +13,6 @@
 [submodule "tools/dotnet-sdk-helpers"]
 	path = tools/dotnet-sdk-helpers
 	url = https://github.com/faniereynders/dotnet-sdk-helpers.git
-[submodule "tools/kubectx"]
-	path = tools/kubectx
-	url = https://github.com/ahmetb/kubectx.git
 [submodule "nvim"]
 	path = nvim
 	url = ../nvimfiles.git

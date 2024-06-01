@@ -18,7 +18,6 @@
     - [git submodule update --init --recursive, Installing submodules]
     - touch $HOME/.hushlogin
 - link:
-    ~/.bashrc: home/.bashrc
     ~/.XCompose: home/.XCompose
     ~/.config/alacritty: config/alacritty
     ~/.config/carapace/bridges.yaml: config/carapace/bridges.yaml
@@ -42,7 +41,6 @@
     ~/.gitconfig: home/.gitconfig
     ~/.inputrc: home/.inputrc
     ~/.npmrc: home/.npmrc
-    ~/.profile: home/.profile
     ~/.tmux.conf: home/.tmux.conf
     ~/.vim: vimfiles
     ~/.vimrc: home/.vimrc

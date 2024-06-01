@@ -4,6 +4,7 @@ let
   githooks = inputs.githooks.packages."${pkgs.system}".default;
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
   env = config.setup;
+  homeDir = "/home/${env.user}";
 in
 rec {
   imports = [
@@ -228,6 +229,43 @@ rec {
       enable = true;
     };
 
+    bash = {
+      enable = true;
+      initExtra = "# at the end of .bashrc";
+      logoutExtra =
+        ''
+        # when leaving the console clear the screen to increase privacy
+        if [ "$SHLVL" = 1 ]; then
+          [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
+        fi
+        '';
+      profileExtra =
+        ''
+        umask 022
+        '';
+      historySize = -1;
+      historyFileSize = -1;
+      historyFile = "${homeDir}/.bash_history2";
+      sessionVariables = {
+        PATH = "${homeDir}/bin:${homeDir}/.local/bin:$PATH";
+        N_PREFIX = "${homeDir}/.n";
+      };
+      shellAliases = {
+        l = "ls -la";
+      };
+      shellOptions = [
+        "histappend"
+        "checkwinsize"
+        "extglob"
+        "globstar"
+        "checkjobs"
+      ];
+      bashrcExtra =
+        ''
+        source "${homeDir}/.dotfiles/bashscripts/.bashrc"
+        '';
+    };
+
     gpg = {
       enable = true;
       publicKeys = [
@@ -236,6 +274,13 @@ rec {
           trust = "ultimate";
         }
       ];
+    };
+
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
     };
   };
 

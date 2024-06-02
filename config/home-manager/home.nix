@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, pkgs-master,... }:
 
 let
   githooks = inputs.githooks.packages."${pkgs.system}".default;
@@ -34,15 +34,9 @@ rec {
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
         "obsidian"
       ];
-      # allowUnfree = true;
     };
     overlays = [
       inputs.fenix.overlays.default
-      # todo: remove when https://github.com/NixOS/nixpkgs/pull/315618 gets merged
-      (final: prev: {
-        inherit (inputs.nushellUpdate.legacyPackages.${prev.system})
-          nushell;
-      })
     ];
   };
 
@@ -121,7 +115,8 @@ rec {
           dust
           fd
           just
-          nushell
+          # todo: change to nushell when the nixos-unstable branch gets updates from master.See https://status.nixos.org/
+          pkgs-master.nushell
           procs
           tealdeer
           githooks

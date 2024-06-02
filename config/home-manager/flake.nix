@@ -19,14 +19,15 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # todo: remove when https://github.com/NixOS/nixpkgs/pull/315618 gets merged
-    nushellUpdate.url = "github:getchoo/nixpkgs/pkgs/nushell/0.94.0";
+    # for when a package takes a while to get into nixos-unstable. See https://status.nixos.org/.
+    nixpkgs-master.url = "github:nixos/nixpkgs/master";
   };
 
   outputs = { nixpkgs, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      pkgs-master = inputs.nixpkgs-master.legacyPackages."${system}";
     in {
       homeConfigurations."giggio" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
@@ -35,6 +36,7 @@
 
         extraSpecialArgs = {
           inherit inputs;
+          inherit pkgs-master;
         };
       };
     };

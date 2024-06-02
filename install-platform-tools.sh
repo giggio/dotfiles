@@ -139,39 +139,3 @@ tail" | sort`
 else
   writeBlue "Krew not available, skipping..."
 fi
-
-if [ -f "$HOME"/.cargo/env ]; then
-  # shellcheck source=/dev/null
-  source "$HOME/.cargo/env"
-  # rust/cargo
-  CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
-  # todo: how to work with as-tree, which is not on crates.io?
-  # See issue: https://github.com/jez/as-tree/issues/14
-  CRATES_TO_INSTALL=""
-  CRATES_TO_INSTALL_NO_LOCK=""
-  CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
-  if [ "$CRATES_NOT_INSTALLED" != "" ]; then
-    writeBlue "Install crates $CRATES_NOT_INSTALLED."
-    # shellcheck disable=SC2086
-    cargo install --locked $CRATES_NOT_INSTALLED
-  else
-    if $VERBOSE; then
-      writeBlue "Not installing crates, they are already installed."
-    fi
-  fi
-  CRATES_NOT_INSTALLED_NO_LOCK=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL_NO_LOCK")) <(sort <(echo "$CRATES_INSTALLED"))`
-  if [ "$CRATES_NOT_INSTALLED_NO_LOCK" != "" ]; then
-    # shellcheck disable=SC2086
-    writeBlue Install crates $CRATES_NOT_INSTALLED_NO_LOCK without --locked.
-    # shellcheck disable=SC2086
-    cargo install $CRATES_NOT_INSTALLED_NO_LOCK
-  else
-    if $VERBOSE; then
-      writeBlue "Not installing crates without --locked, they are already installed."
-    fi
-  fi
-  if $UPDATE; then
-    writeBlue "Updating crates."
-    cargo install-update -a
-  fi
-fi

@@ -63,6 +63,8 @@ rec {
           bash
           bash-completion
           (pkgs.callPackage ./completions.nix { inherit pkgs; })
+          (pkgs.callPackage ./dotnet/dotnet-tools.nix { inherit pkgs; dotnet-sdk = dotnetCombinedPackages; })
+          powershell
           curl
           wget
           file

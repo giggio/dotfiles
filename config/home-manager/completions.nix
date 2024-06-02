@@ -1,13 +1,13 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  inherit (pkgs) stdenv installShellFiles emptyDirectory kubectl;
+  inherit (pkgs) stdenv installShellFiles kubectl;
   nodejs = pkgs.nodePackages_latest.nodejs;
 in
   stdenv.mkDerivation {
     pname = "extra-completions";
     version = "0.0.1";
-    src = emptyDirectory;
+    src = ./completions;
     nativeBuildInputs = [ installShellFiles ];
     # todo: remove node when https://github.com/NixOS/nixpkgs/issues/316507 is fixed
     buildPhase =''

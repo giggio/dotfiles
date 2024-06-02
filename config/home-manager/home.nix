@@ -199,7 +199,7 @@ rec {
           xlsx2csv
           clolcat
           bandwhich
-          # cargo-update # todo: has a problem
+          cargo-update
           cargo-edit
           cargo-expand
           cargo-outdated
@@ -241,6 +241,7 @@ rec {
     };
 
     file = {
+      ".cargo/.keep".text = "";
       ".local/lib/systemd/wsl-forward-gpg" = {
         enable = env.wsl;
         source = ./systemd/wsl-forward-gpg;

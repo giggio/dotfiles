@@ -147,7 +147,7 @@ if [ -f "$HOME"/.cargo/env ]; then
   CRATES_INSTALLED=`cargo install --list | cut -f1 -d' ' | awk 'NF'`
   # todo: how to work with as-tree, which is not on crates.io?
   # See issue: https://github.com/jez/as-tree/issues/14
-  CRATES_TO_INSTALL="cargo-update" # todo: cargo-update is not building: https://github.com/NixOS/nixpkgs/issues/288064
+  CRATES_TO_INSTALL=""
   CRATES_TO_INSTALL_NO_LOCK=""
   CRATES_NOT_INSTALLED=`comm -23 <(sort <(echo "$CRATES_TO_INSTALL")) <(sort <(echo "$CRATES_INSTALLED"))`
   if [ "$CRATES_NOT_INSTALLED" != "" ]; then
@@ -173,34 +173,5 @@ if [ -f "$HOME"/.cargo/env ]; then
   if $UPDATE; then
     writeBlue "Updating crates."
     cargo install-update -a
-  fi
-fi
-
-if [ -e "$HOME"/.go/bin/go ]; then
-  export PATH=$PATH:$HOME/.go/bin
-  if ! [[ -v GOPROXY ]]; then
-    export GOPROXY=https://proxy.golang.org
-  fi
-  writeBlue "Installing go packages."
-  declare -A GO_PKGS=(
-    ["gup"]="nao1215/gup"
-  )
-  for PKG in "${!GO_PKGS[@]}"; do
-    PKG_URL="${GO_PKGS[$PKG]}"
-    if [[ "$PKG_URL" =~ ^[[:alnum:]]+(\.{1}[[:alnum:]]+)+ ]]; then
-      FINAL_PKG_URL="$PKG_URL@latest"
-    else
-      FINAL_PKG_URL="github.com/$PKG_URL@latest"
-    fi
-    if ! hash "$PKG" 2>/dev/null; then
-      writeBlue "Install go package $PKG ($FINAL_PKG_URL)."
-      go install "$FINAL_PKG_URL"
-    elif $VERBOSE; then
-      writeBlue "Go package $PKG ($FINAL_PKG_URL) is already installed."
-    fi
-  done
-  if $UPDATE; then
-    writeBlue "Updating go packages."
-    gup update
   fi
 fi

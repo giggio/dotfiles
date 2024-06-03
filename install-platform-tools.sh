@@ -62,59 +62,6 @@ if $BASIC_SETUP; then
   exit
 fi
 
-# npm tools
-export NG_CLI_ANALYTICS=ci
-NPM_PKGS_INSTALLED=$(npm ls -g --parseable --depth 0 | tail -n +2 | sed -E "s/$(npm prefix -g | sed 's/\//\\\//g')\/lib\/node_modules\///g" | sort)
-NPM_PKGS_TO_INSTALL=`echo "@angular/cli
-@githubnext/github-copilot-cli
-bash-language-server
-bats
-bats-assert
-bats-support
-bower
-cross-env
-eslint
-express-generator
-gist-cli
-gitignore
-glob-tester-cli
-grunt-cli
-gulp
-http-server
-karma-cli
-license-checker
-loadtest
-madge
-mocha
-nodemon
-npmrc
-pm2
-prettier
-prettier-plugin-awk
-trash-cli
-typescript
-vtop
-yaml-cli" | sort`
-# todo: prettier-plugin-awk is causing installation problems, see: https://github.com/Beaglefoot/prettier-plugin-awk/issues/18
-NPM_PKGS_NOT_INSTALLED=`comm -23 <(echo "$NPM_PKGS_TO_INSTALL") <(echo "$NPM_PKGS_INSTALLED")`
-if [ "$NPM_PKGS_NOT_INSTALLED" != "" ]; then
-  # shellcheck disable=SC2086
-  writeBlue Install packages $NPM_PKGS_NOT_INSTALLED with npm.
-  # shellcheck disable=SC2086
-  npm install -g $NPM_PKGS_NOT_INSTALLED
-elif $VERBOSE; then
-  writeBlue "Not installing Npm packages, they are already installed."
-fi
-if $UPDATE; then
-  if [ "`npm outdated -g`" != '' ]; then
-    writeBlue "Updating npm packages."
-    npm update -g
-  else
-    if $VERBOSE; then
-      writeBlue "Not installing Npm packages, they are already up to date."
-    fi
-  fi
-fi
 
 # krew tools
 if hash krew 2>/dev/null; then

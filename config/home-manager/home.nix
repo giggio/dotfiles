@@ -33,6 +33,7 @@ rec {
     config = {
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
         "obsidian"
+        "gh-copilot"
       ];
     };
     overlays = [
@@ -117,8 +118,18 @@ rec {
           colorized-logs
           zellij
           hub
+          trash-cli
           nodePackages_latest.nodejs
           nodePackages.yarn
+          (pkgs.callPackage ./nodejs/loadtest.nix { inherit pkgs; })
+          (pkgs.callPackage ./nodejs/prettier-plugin-awk.nix { inherit pkgs; })
+          node2nix
+          nodePackages.prettier
+          nodePackages.eslint
+          nodePackages.bash-language-server
+          bats
+          git-ignore
+          http-server
         ]);
         wsl_pkgs = lib.lists.optionals env.wsl (with pkgs; [ wslu ]);
         not_wsl_pkgs = lib.lists.optionals (!env.wsl)
@@ -137,6 +148,7 @@ rec {
           telegram-desktop
           vlc
           youtube-music
+          xclip
         ]);
         extra_pkgs = lib.lists.optionals (!env.basicSetup)
         (with pkgs; [
@@ -177,6 +189,7 @@ rec {
           istioctl
           tflint
           gh
+          gh-copilot
           k9s
           awscli2
           k3d
@@ -289,6 +302,7 @@ rec {
         '';
       profileExtra =
         ''
+        # begin of .profile
         umask 022
         '';
       historySize = -1;
@@ -303,6 +317,11 @@ rec {
       };
       shellAliases = {
         l = "ls -la";
+        clip = "xclip -selection clipboard";
+        trash = "trash-put";
+        "??" = "gh-copilot suggest -t shell";
+        "?gh" = "gh-copilot suggest -t gh";
+        "?git" = "gh-copilot suggest -t git";
       };
       shellOptions = [
         "histappend"
@@ -313,6 +332,8 @@ rec {
       ];
       bashrcExtra = lib.concatStringsSep "\n" (lib.concatLists [
           [
+            "# beginning of .bashrc"
+            "source ${pkgs.complete-alias}/bin/complete_alias"
             ''source "$HOME/.dotfiles/bashscripts/.bashrc"''
           ]
           (lib.mapAttrsToList (k: v: "${k}=${v}") shellSessionVariables)

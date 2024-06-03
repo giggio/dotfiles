@@ -15,6 +15,9 @@ let
   # but, be careful, this is used by nushell and bash
   shellSessionVariables = {
     DOTNET_ROOT = "${dotnetCombinedPackages}";
+    FZF_DEFAULT_COMMAND = "'fd --type file --color=always --exclude .git'";
+    FZF_DEFAULT_OPTS = "--ansi";
+    FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
   };
 in
 rec {
@@ -52,6 +55,8 @@ rec {
           bash-completion
           (pkgs.callPackage ./completions.nix { inherit pkgs; })
           (pkgs.callPackage ./dotnet/dotnet-tools.nix { inherit pkgs; dotnet-sdk = dotnetCombinedPackages; })
+          coreutils-full
+          libnotify
           powershell
           curl
           wget
@@ -103,6 +108,7 @@ rec {
           zip
           (python3.withPackages (python-pkgs: [
             python-pkgs.semver
+            python-pkgs.pygments
           ]))
           docker-client
           docker-compose
@@ -292,7 +298,31 @@ rec {
 
     bash = {
       enable = true;
-      initExtra = "# at the end of .bashrc";
+      initExtra =
+      ''
+      # at the end of .bashrc
+      eval "`zoxide init bash`"
+      if [ -d "$HOME/.kube" ]; then
+        KUBECONFIG=`find "$HOME"/.kube -maxdepth 1 -type f ! -name '*.bak' ! -name '*.backup' ! -name kubectx | sort | paste -sd ":" -`
+        export KUBECONFIG
+      fi
+      source ${pkgs.fzf}/share/fzf/key-bindings.bash
+      source ${pkgs.fzf}/share/fzf/completion.bash
+      function gitignore () {
+        if [ -v 1 ]; then
+          case "$1" in
+            -v|--version|-h|--help|-l|--list)
+            git-ignore "$@"
+            ;;
+            *)
+            git-ignore "$@" > .gitignore
+            ;;
+          esac
+        else
+          git-ignore -a > .gitignore
+        fi
+      }
+      '';
       logoutExtra =
         ''
         # when leaving the console clear the screen to increase privacy
@@ -316,12 +346,47 @@ rec {
         # but, carefully, `shellSessionVariables` is used by nushell and bash
       };
       shellAliases = {
-        l = "ls -la";
         clip = "xclip -selection clipboard";
         trash = "trash-put";
         "??" = "gh-copilot suggest -t shell";
         "?gh" = "gh-copilot suggest -t gh";
         "?git" = "gh-copilot suggest -t git";
+        ls = "ls --color=auto --hyperlink=always";
+        dir = "dir --color=auto";
+        vdir = "vdir --color=auto";
+        grep = "grep --color=auto";
+        fgrep = "fgrep --color=auto";
+        egrep = "egrep --color=auto";
+        ll = "eza --long --group --all --all --group-directories-first --hyperlink";
+        la = "ls -A";
+        l = "ls -CF";
+        cls = "clear";
+        alert = ''notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e ";\";";s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//";\";";)"'';
+        add = "git add";
+        st = "git status";
+        log = "git log";
+        ci = "git commit";
+        push = "git push";
+        pushf = "git push --force-with-lease";
+        co = "git checkout";
+        pull = "git pull";
+        fixup = "git fixup";
+        dif = "git diff";
+        pushsync = "git push --set-upstream origin `git rev-parse --abbrev-ref HEAD`";
+        git = "hub";
+        istio = "istioctl";
+        tf = "terraform";
+        ccat = "pygmentize -g -O style=vs -f console16m";
+        "cd-" = "cd -";
+        "cd.." = "cd ..";
+        "cd..." = "cd ../..";
+        "cd...." = "cd ../../..";
+        weather = "curl -s wttr.in";
+        toyaml = "bat --language yaml";
+        ghce = "gh-copilot explain";
+        ghcs = "gh-copilot suggest";
+        mg = "kitty +kitten hyperlinked_grep --smart-case";
+        hm = "home-manager --flake ~/.dotfiles/config/home-manager --impure";
       };
       shellOptions = [
         "histappend"
@@ -333,6 +398,7 @@ rec {
       bashrcExtra = lib.concatStringsSep "\n" (lib.concatLists [
           [
             "# beginning of .bashrc"
+            "source ${(pkgs.callPackage ./aliases/kubectl-aliases.nix { inherit pkgs; })}/bin/kubecolor_aliases.bash"
             "source ${pkgs.complete-alias}/bin/complete_alias"
             ''source "$HOME/.dotfiles/bashscripts/.bashrc"''
           ]

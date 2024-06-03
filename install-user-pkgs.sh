@@ -119,29 +119,6 @@ installDockerShowContext () {
 }
 installDockerShowContext
 
-# chart releaser - cr
-installCR() {
-  doInstallCR () {
-    CR_DL_URL=`githubReleaseDownloadUrl helm/chart-releaser linux_amd64.tar.gz$`
-    installTarToHomeBin "$CR_DL_URL" cr
-  }
-  if ! hash cr 2>/dev/null; then
-    writeBlue "Install Chart releaser (CR)."
-    doInstallCR
-  elif $UPDATE; then
-    CR_LATEST_VERSION=`githubLatestReleaseVersion helm/chart-releaser`
-    if versionSmaller "`cr version | grep GitVersion | awk '{print $2}'`" "$CR_LATEST_VERSION"; then
-      writeBlue "Update Chart releaser (CR)."
-      doInstallCR
-    elif $VERBOSE; then
-      writeBlue "Not updating cr, it is already up to date."
-    fi
-  elif $VERBOSE; then
-    writeBlue "Not installing Chart Releaser, it is already installed."
-  fi
-  }
-installCR
-
 # dotnet-install
 installDotnetInstall () {
   if ! [ -e "$HOME"/bin/dotnet-install ]; then

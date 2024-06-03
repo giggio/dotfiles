@@ -155,11 +155,12 @@ rec {
           vlc
           youtube-music
           xclip
+          (nerdfonts.override { fonts = [ "CascadiaCode" "NerdFontsSymbolsOnly" ]; })
+          (config.lib.nixGL.wrap kitty)
         ]);
         extra_pkgs = lib.lists.optionals (!env.basicSetup)
         (with pkgs; [
-          (nerdfonts.override { fonts = [ "CascadiaCode" "NerdFontsSymbolsOnly" ]; })
-          (config.lib.nixGL.wrap kitty)
+          (pkgs.callPackage ./golang/chart-releaser.nix { inherit pkgs; })
           deno
           opentofu
           krew
@@ -347,6 +348,7 @@ rec {
         # but, carefully, `shellSessionVariables` is used by nushell and bash
       };
       shellAliases = {
+        start = "xdg-open";
         clip = "xclip -selection clipboard";
         trash = "trash-put";
         "??" = "gh-copilot suggest -t shell";

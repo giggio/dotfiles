@@ -10,9 +10,6 @@
 [submodule "vimfiles"]
 	path = vimfiles
 	url = ../vimfiles.git
-[submodule "tools/dotnet-sdk-helpers"]
-	path = tools/dotnet-sdk-helpers
-	url = https://github.com/faniereynders/dotnet-sdk-helpers.git
 [submodule "nvim"]
 	path = nvim
 	url = ../nvimfiles.git

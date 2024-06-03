@@ -286,6 +286,7 @@ rec {
       '';
       ".inputrc".text = "set bell-style none";
       ".npmrc".text = "sign-git-tag=true";
+      ".vimrc".text = "source ~/.vim/.vimrc";
     };
 
   };
@@ -447,6 +448,10 @@ rec {
       "navi/config.yaml".source = ./config/navi-config.yaml;
       "terminator/config".source = ./config/terminator-config;
       "starship.toml".source = ./config/starship.toml;
+      "git/attributes".source = ./config/git-attributes;
+      "carapace/bridges.yaml".source = ./config/carapace/bridges.yaml;
+      "carapace/overlays".source = ./config/carapace/overlays;
+      "carapace/specs".source = ./config/carapace/specs;
     };
     mimeApps = {
       enable = true;

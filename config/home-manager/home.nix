@@ -134,6 +134,7 @@ rec {
           bitwarden-desktop
           firefox
           hwloc
+          keybase-gui
           nixGLIntel
           obsidian
           onlyoffice-bin
@@ -460,6 +461,8 @@ rec {
       enableSshSupport = true;
       pinentryPackage = pkgs.pinentry-gnome3;
     };
+    keybase.enable = !env.wsl;
+    kbfs.enable = !env.wsl;
   };
 
   nixGL.prefix = "${nixGLIntel}/bin/nixGLIntel";

@@ -9,7 +9,6 @@ fi
 
 BASIC_SETUP=false
 CURL_GH_HEADERS=()
-GH_TOKEN=''
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
@@ -18,11 +17,6 @@ while [[ $# -gt 0 ]]; do
     --basic|-b)
     BASIC_SETUP=true
     shift
-    ;;
-    --gh)
-    CURL_GH_HEADERS=(-H "Authorization: token $2")
-    GH_TOKEN=$2
-    shift 2
     ;;
     --update|-u)
     UPDATE=true
@@ -109,41 +103,6 @@ installHomeManagerUsingFlakes () {
 }
 installHomeManagerUsingFlakes
 
-# bin
-installBin () {
-  if ! hash bin 2>/dev/null; then
-    writeBlue "Install Bin."
-    BIN_ARCH=''
-    case `uname -m` in
-      x86_64)
-        BIN_ARCH=amd64
-        ;;
-      aarch64)
-        BIN_ARCH=arm64
-        ;;
-      *)
-        writeBlue "Bin will not be installed: unsupported architecture: `uname -m`"
-        ;;
-    esac
-    if [ "$BIN_ARCH" != '' ]; then
-      BIN_DL_URL=`githubReleaseDownloadUrl marcosnils/bin linux_$BIN_ARCH`
-      curl -fsSL --output /tmp/bin "$BIN_DL_URL"
-      chmod +x /tmp/bin
-      mkdir -p "$HOME"/.config/bin/
-      echo '{ "default_path": "'"$HOME"'/bin", "bins": { } }' > "$HOME"/.config/bin/config.json
-      /tmp/bin install github.com/marcosnils/bin
-      rm /tmp/bin
-    fi
-  elif $UPDATE; then
-    writeBlue "Update Bin."
-    export GITHUB_AUTH_TOKEN=$GH_TOKEN
-    bin update bin --yes
-  elif $VERBOSE; then
-    writeBlue "Not installing Bin, it is already installed."
-  fi
-}
-installBin
-
 if $BASIC_SETUP; then
   exit
 fi
@@ -159,17 +118,6 @@ installDockerShowContext () {
   fi
 }
 installDockerShowContext
-
-# githooks
-installGitHooks () {
-  if ! [ -d "$HOME"/.githooks ]; then
-    writeBlue "Install Githooks."
-    githooks-cli installer --non-interactive
-  elif $VERBOSE; then
-    writeBlue "Not installing Githooks, it is already installed."
-  fi
-}
-installGitHooks
 
 # chart releaser - cr
 installCR() {
@@ -198,7 +146,6 @@ installCR
 installDotnetInstall () {
   if ! [ -e "$HOME"/bin/dotnet-install ]; then
     writeBlue "Install dotnet-install."
-    # installBinToUsrLocalBin https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
     installBinToHomeBin https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
     ln -s "$HOME"/bin/dotnet-install.sh "$HOME"/bin/dotnet-install
   elif $VERBOSE; then

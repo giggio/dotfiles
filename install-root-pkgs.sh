@@ -122,7 +122,7 @@ if ! $WSL; then
     curl -fsSL https://get.docker.com | bash
   fi
 
-  APT_PKGS_TO_INSTALL_NOT_WSL="kitty"
+  APT_PKGS_TO_INSTALL_NOT_WSL=""
   APT_PKGS_NOT_INSTALLED_NOT_WSL=`comm -23 <(echo "$APT_PKGS_TO_INSTALL_NOT_WSL") <(echo "$APT_PKGS_INSTALLED")`
   if [ "$APT_PKGS_NOT_INSTALLED_NOT_WSL" != "" ]; then
     # shellcheck disable=SC2086

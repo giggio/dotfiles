@@ -38,7 +38,7 @@ eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
   cat <<EOF
-Install platform tools (.NET tools, Npm tools, Pip tools etc).
+Install platform tools (Krew tools etc).
 
 Usage:
   `readlink -f "$0"` [flags]

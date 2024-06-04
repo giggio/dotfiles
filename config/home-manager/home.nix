@@ -52,6 +52,7 @@ rec {
     stateVersion = "24.05"; # Check if there are state version changes before changing this fiels: https://nix-community.github.io/home-manager/release-notes.xhtml
     packages =
       let
+        rustStable = (pkgs.fenix.stable.withComponents [ "cargo" "clippy" "rust-src" "rustc" "rustfmt" ]);
         basic_pkgs = (with pkgs; [
           bash
           bash-completion
@@ -98,15 +99,9 @@ rec {
           zoxide
           navi
           ruby_3_2
-          # rustup
-          (fenix.stable.withComponents [
-            "cargo"
-            "clippy"
-            "rust-src"
-            "rustc"
-            "rustfmt"
-          ])
-          rust-analyzer-nightly
+          rustStable
+          (pkgs.callPackage ./rust/cargo-completions.nix { inherit pkgs; rust = rustStable; })
+          rust-analyzer
           yq-go
           tzdata
           unzip

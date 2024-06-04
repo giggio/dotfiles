@@ -12,8 +12,9 @@ let
       sdk_8_0
     ]);
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
-  # but, be careful, this is used by nushell and bash
+  # but, be careful, this is used by nushell and bash (.bashrc)
   shellSessionVariables = {
+    DOCKER_BUILDKIT = "1";
     DOTNET_ROOT = "${dotnetCombinedPackages}";
     FZF_DEFAULT_COMMAND = "'fd --type file --color=always --exclude .git'";
     FZF_DEFAULT_OPTS = "--ansi";
@@ -239,10 +240,14 @@ rec {
       "$HOME/bin"
       "$HOME/.local/bin"
       "$XDG_DATA_HOME/npm/bin"
+      "$HOME/.krew/bin"
     ];
     sessionVariables = {
       # this goes into ~/.nix-profile/etc/profile.d/hm-session-vars.sh, which is
       # loaded by .profile, and so only reloads if we logout and log back in
+      LC_ALL = "en_US.UTF-8";
+      TMP = "/tmp";
+      TEMP = "/tmp";
       EDITOR = "vim";
       XDG_DATA_HOME = "$HOME/.local/share";
       XDG_STATE_HOME = "$HOME/.local/state";
@@ -303,8 +308,15 @@ rec {
       enable = true;
       initExtra =
         ''
-          # at the end of .bashrc
+          # end of nix configuration
+
+          # ending of .bashrc:
+          if [ -f "$HOME"/.cargo/env ]; then
+            source "$HOME/.cargo/env"
+          fi
+          export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
           eval "`zoxide init bash`"
+          export RUSTC_WRAPPER="${pkgs.sccache}/bin/sccache"
           if [ -d "$HOME/.kube" ]; then
             KUBECONFIG=`find "$HOME"/.kube -maxdepth 1 -type f ! -name '*.bak' ! -name '*.backup' ! -name kubectx | sort | paste -sd ":" -`
             export KUBECONFIG
@@ -325,6 +337,15 @@ rec {
               git-ignore -a > .gitignore
             fi
           }
+          source "${ ./bash/navi.bash }"
+          # setup ssh socket
+          if $WSL; then
+            # forward ssh socket to Windows
+            export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gnupg/ssh.sock"
+          else
+            # deal with ssh socket forwarding to gpg or using ssh-agent
+            source "${ ./bash/ssh-socket.bash }"
+          fi
         '';
       logoutExtra =
         ''
@@ -337,10 +358,19 @@ rec {
         ''
           # begin of .profile
           umask 022
+          if ! [ -v XDG_RUNTIME_DIR ]; then
+            XDG_RUNTIME_DIR=/run/user/`id -u`/
+            export XDG_RUNTIME_DIR
+            if ! [ -d "$XDG_RUNTIME_DIR" ]; then
+              mkdir -p "$XDG_RUNTIME_DIR"
+              chmod 755 "$XDG_RUNTIME_DIR"
+            fi
+          fi
         '';
       historySize = -1;
       historyFileSize = -1;
       historyFile = "$HOME/.bash_history2";
+      historyControl = [ "ignoreboth" ];
       sessionVariables = {
         # this goes to .profile, and only reloads if we logout and log back in
         # it should go to .bashrc, but it's not possible to set it there
@@ -401,10 +431,24 @@ rec {
       ];
       bashrcExtra = lib.concatStringsSep "\n" (lib.concatLists [
         [
-          "# beginning of .bashrc"
-          "source ${(pkgs.callPackage ./aliases/kubectl-aliases.nix { inherit pkgs; })}/bin/kubecolor_aliases.bash"
-          "source ${pkgs.complete-alias}/bin/complete_alias"
-          ''source "$HOME/.dotfiles/bashscripts/.bashrc"''
+          ''
+            # beginning of .bashrc
+            unset MAILCHECK
+            # If not running interactively, don't do anything
+            [[ $- == *i* ]] || return
+            # configure vi mode
+            set -o vi
+            bind '"jj":"\e"'
+            tabs -4
+            bind 'set completion-ignore-case on'
+            source ${(pkgs.callPackage ./aliases/kubectl-aliases.nix { inherit pkgs; })}/bin/kubecolor_aliases.bash
+            source ${pkgs.complete-alias}/bin/complete_alias
+            source "$HOME/.dotfiles/bashscripts/.bashrc"
+            # make less more friendly for non-text input files, see lesspipe(1)
+            [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+            # beginning of nix configuration
+          ''
         ]
         (lib.mapAttrsToList (k: v: "${k}=${v}") shellSessionVariables)
       ]

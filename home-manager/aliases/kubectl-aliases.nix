@@ -5,6 +5,7 @@ pkgs.stdenv.mkDerivation {
   src = builtins.fetchGit {
     url = "https://github.com/giggio/kubectl-aliases.git";
     ref = "newstuff";
+    rev = "7a8d93a5b2adc03d46f9d5ee719632328b409d56";
   };
   installPhase = ''
     mkdir -p $out/bin

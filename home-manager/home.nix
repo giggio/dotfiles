@@ -24,7 +24,6 @@ in
 rec {
   imports = [
     ./setup.nix
-    ~/.config/nix/.env.nix
     ./dconf/dconf.nix
     # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
     (builtins.fetchurl {
@@ -424,7 +423,7 @@ rec {
         ghce = "gh-copilot explain";
         ghcs = "gh-copilot suggest";
         mg = "kitty +kitten hyperlinked_grep --smart-case";
-        hm = "home-manager --flake ~/.dotfiles/home-manager?submodules=1 --impure";
+        hm = "home-manager --flake ~/.dotfiles/home-manager?submodules=1";
       };
       shellOptions = [
         "histappend"

@@ -64,7 +64,8 @@ export PATH="$HOME"/bin:"$PATH"
 
 # nix home-manager
 create_nix_env_file () {
-  cat <<EOF > "$HOME"/.config/nix/.env.nix
+  mkdir -p "$HOME"/.config/nixpkgs/
+  cat <<EOF > "$HOME"/.config/nixpkgs/config.nix
 {
   setup = {
     user = "$USER";
@@ -88,14 +89,14 @@ installHomeManagerUsingFlakes () {
     nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
     nix-channel --update
     create_nix_env_file
-    nix run home-manager/master -- init --switch --show-trace --flake "$BASEDIR"/home-manager?submodules=1 --impure
+    nix run home-manager/master -- init --switch --show-trace --flake "$BASEDIR"/home-manager?submodules=1
     download_nixpkgs_cache_index
   elif $UPDATE; then
     writeBlue "Update Nix home-manager."
     nix-channel --update
     create_nix_env_file
     rm -f "$BASEDIR"/home-manager/flake.lock
-    home-manager switch --show-trace --flake "$BASEDIR"/home-manager?submodules=1 --impure --refresh
+    home-manager switch --show-trace --flake "$BASEDIR"/home-manager?submodules=1 --refresh
     download_nixpkgs_cache_index
   elif $VERBOSE; then
     writeBlue "Not installing Nix home-manager, it is already installed."

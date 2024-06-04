@@ -37,6 +37,8 @@ rec {
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
         "obsidian"
         "gh-copilot"
+        "terraform"
+        "vault"
       ];
     };
     overlays = [
@@ -56,6 +58,8 @@ rec {
           (pkgs.callPackage ./completions.nix { inherit pkgs; })
           (pkgs.callPackage ./dotnet/dotnet-tools.nix { inherit pkgs; dotnet-sdk = dotnetCombinedPackages; })
           (pkgs.callPackage ./dotnet/dotnet-install.nix { inherit pkgs; })
+          (pkgs.callPackage ./unfree/terraform.nix { inherit pkgs; })
+          (pkgs.callPackage ./unfree/vault.nix { inherit pkgs; })
           coreutils-full
           libnotify
           powershell

@@ -17,5 +17,5 @@
 	path = nuscripts
 	url = ../nuscripts.git
 [submodule "cheats"]
-	path = cheats
+	path = home-manager/cheats
 	url = ../cheats

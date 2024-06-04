@@ -51,6 +51,7 @@ rec {
     username = "giggio";
     homeDirectory = "/home/" + home.username;
     stateVersion = "24.05"; # Check if there are state version changes before changing this fiels: https://nix-community.github.io/home-manager/release-notes.xhtml
+    preferXdgDirectories = true;
     packages =
       let
         rustStable = (pkgs.fenix.stable.withComponents [ "cargo" "clippy" "rust-src" "rustc" "rustfmt" ]);
@@ -58,11 +59,13 @@ rec {
           bash
           bash-completion
           (pkgs.callPackage ./completions.nix { inherit pkgs; })
+          (pkgs.callPackage ./cheats/default.nix { inherit pkgs; })
           (pkgs.callPackage ./dotnet/dotnet-tools.nix { inherit pkgs; dotnet-sdk = dotnetCombinedPackages; })
           (pkgs.callPackage ./dotnet/dotnet-install.nix { inherit pkgs; })
           (pkgs.callPackage ./unfree/terraform.nix { inherit pkgs; })
           (pkgs.callPackage ./unfree/vault.nix { inherit pkgs; })
           coreutils-full
+          util-linux
           libnotify
           powershell
           curl
@@ -337,7 +340,6 @@ rec {
               git-ignore -a > .gitignore
             fi
           }
-          source "${ ./bash/navi.bash }"
           # setup ssh socket
           if $WSL; then
             # forward ssh socket to Windows
@@ -346,6 +348,8 @@ rec {
             # deal with ssh socket forwarding to gpg or using ssh-agent
             source "${ ./bash/ssh-socket.bash }"
           fi
+          # auto complete all aliases
+          complete -F _complete_alias "''${!BASH_ALIASES[@]}"
         '';
       logoutExtra =
         ''
@@ -420,7 +424,7 @@ rec {
         ghce = "gh-copilot explain";
         ghcs = "gh-copilot suggest";
         mg = "kitty +kitten hyperlinked_grep --smart-case";
-        hm = "home-manager --flake ~/.dotfiles/home-manager --impure";
+        hm = "home-manager --flake ~/.dotfiles/home-manager?submodules=1 --impure";
       };
       shellOptions = [
         "histappend"
@@ -429,7 +433,17 @@ rec {
         "globstar"
         "checkjobs"
       ];
-      bashrcExtra = lib.concatStringsSep "\n" (lib.concatLists [
+      bashrcExtra = let
+        bashSessionVariables = {
+          # environment variables to add only to .bashrc
+          NAVI_PATH = "${config.home.profileDirectory}/share/navi/cheats/common/:${config.home.profileDirectory}/share/navi/cheats/bash/:${config.home.profileDirectory}/share/navi/cheats/linux/common/:${config.home.profileDirectory}/share/navi/cheats/linux/bash/";
+        };
+      in
+      lib.concatStringsSep "\n" (lib.concatLists [
+        ["# Shell session variables:"]
+        (lib.mapAttrsToList (k: v: "export ${k}=${v}") shellSessionVariables)
+        ["# Bash session variables:"]
+        (lib.mapAttrsToList (k: v: "export ${k}=${v}") bashSessionVariables)
         [
           ''
             # beginning of .bashrc
@@ -446,11 +460,11 @@ rec {
             source "$HOME/.dotfiles/bashscripts/.bashrc"
             # make less more friendly for non-text input files, see lesspipe(1)
             [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+            eval "$(navi widget bash)"
 
             # beginning of nix configuration
           ''
         ]
-        (lib.mapAttrsToList (k: v: "${k}=${v}") shellSessionVariables)
       ]
       );
     };
@@ -504,6 +518,8 @@ rec {
         "carapace/overlays".source = ./config/carapace/overlays;
         "carapace/specs".source = ./config/carapace/specs;
       };
+    dataFile = {
+    };
     mimeApps = {
       enable = true;
       defaultApplications =

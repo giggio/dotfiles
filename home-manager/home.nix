@@ -60,10 +60,10 @@ rec {
           bash-completion
           (pkgs.callPackage ./completions.nix { inherit pkgs; })
           (pkgs.callPackage ./cheats/default.nix { inherit pkgs; })
-          (pkgs.callPackage ./dotnet/dotnet-tools.nix { inherit pkgs; dotnet-sdk = dotnetCombinedPackages; })
-          (pkgs.callPackage ./dotnet/dotnet-install.nix { inherit pkgs; })
-          (pkgs.callPackage ./unfree/terraform.nix { inherit pkgs; })
-          (pkgs.callPackage ./unfree/vault.nix { inherit pkgs; })
+          (pkgs.callPackage ./pkgs/dotnet/dotnet-tools.nix { inherit pkgs; dotnet-sdk = dotnetCombinedPackages; })
+          (pkgs.callPackage ./pkgs/dotnet/dotnet-install.nix { inherit pkgs; })
+          (pkgs.callPackage ./pkgs/unfree/terraform.nix { inherit pkgs; })
+          (pkgs.callPackage ./pkgs/unfree/vault.nix { inherit pkgs; })
           coreutils-full
           util-linux
           libnotify
@@ -104,7 +104,7 @@ rec {
           navi
           ruby_3_2
           rustStable
-          (pkgs.callPackage ./rust/cargo-completions.nix { inherit pkgs; rust = rustStable; })
+          (pkgs.callPackage ./pkgs/rust/cargo-completions.nix { inherit pkgs; rust = rustStable; })
           rust-analyzer
           yq-go
           tzdata
@@ -131,8 +131,8 @@ rec {
           trash-cli
           nodePackages_latest.nodejs
           nodePackages.yarn
-          (pkgs.callPackage ./nodejs/loadtest.nix { inherit pkgs; })
-          (pkgs.callPackage ./nodejs/prettier-plugin-awk.nix { inherit pkgs; })
+          (pkgs.callPackage ./pkgs/nodejs/loadtest.nix { inherit pkgs; })
+          (pkgs.callPackage ./pkgs/nodejs/prettier-plugin-awk.nix { inherit pkgs; })
           node2nix
           nodePackages.prettier
           nodePackages.eslint
@@ -164,8 +164,8 @@ rec {
           ]);
         extra_pkgs = lib.lists.optionals (!env.basicSetup)
           (with pkgs; [
-            (pkgs.callPackage ./golang/chart-releaser.nix { inherit pkgs; })
-            (pkgs.callPackage ./golang/docker-show-context.nix { inherit pkgs; })
+            (pkgs.callPackage ./pkgs/golang/chart-releaser.nix { inherit pkgs; })
+            (pkgs.callPackage ./pkgs/golang/docker-show-context.nix { inherit pkgs; })
             deno
             opentofu
             krew

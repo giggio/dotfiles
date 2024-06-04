@@ -31,4 +31,4 @@
     ~/.gitconfig: home/.gitconfig
     ~/.vim: vimfiles
 - shell:
-    - ./cheats/build.sh
+    - ./home-manager/cheats/build.sh

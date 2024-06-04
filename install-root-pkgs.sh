@@ -108,15 +108,6 @@ elif $VERBOSE; then
 fi
 
 if ! $WSL; then
-  # onedriver
-  if ! hash onedriver 2>/dev/null; then
-    writeBlue "Install OneDriver."
-    echo 'deb http://download.opensuse.org/repositories/home:/jstaf/xUbuntu_23.10/ /' > /etc/apt/sources.list.d/home:jstaf.list
-    curl -fsSL https://download.opensuse.org/repositories/home:jstaf/xUbuntu_23.10/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/home_jstaf.gpg
-    apt-get update
-    apt-get install -y onedriver
-  fi
-
   # docker
   if ! hash docker 2>/dev/null; then
     curl -fsSL https://get.docker.com | bash
@@ -154,6 +145,17 @@ fi
 if $BASIC_SETUP; then
   clean
   exit
+fi
+
+if ! $WSL; then
+  # onedriver
+  if ! hash onedriver 2>/dev/null; then
+    writeBlue "Install OneDriver."
+    echo 'deb http://download.opensuse.org/repositories/home:/jstaf/xUbuntu_23.10/ /' > /etc/apt/sources.list.d/home:jstaf.list
+    curl -fsSL https://download.opensuse.org/repositories/home:jstaf/xUbuntu_23.10/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/home_jstaf.gpg
+    apt-get update
+    apt-get install -y onedriver
+  fi
 fi
 
 clean

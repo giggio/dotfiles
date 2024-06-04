@@ -161,6 +161,7 @@ rec {
         extra_pkgs = lib.lists.optionals (!env.basicSetup)
         (with pkgs; [
           (pkgs.callPackage ./golang/chart-releaser.nix { inherit pkgs; })
+          (pkgs.callPackage ./golang/docker-show-context.nix { inherit pkgs; })
           deno
           opentofu
           krew

@@ -107,18 +107,6 @@ if $BASIC_SETUP; then
   exit
 fi
 
-# docker-show-context
-installDockerShowContext () {
-  if ! hash docker-show-context 2>/dev/null && ! [ -e "$HOME"/bin/docker-show-context ]; then
-    writeBlue "Install docker-show-context."
-    curl -fsSL --output "$HOME"/bin/docker-show-context https://github.com/pwaller/docker-show-context/releases/latest/download/docker-show-context_linux_amd64
-    chmod +x "$HOME"/bin/docker-show-context
-  elif $VERBOSE; then
-    writeBlue "Not installing docker-show-context, it is already installed."
-  fi
-}
-installDockerShowContext
-
 # dotnet-install
 installDotnetInstall () {
   if ! [ -e "$HOME"/bin/dotnet-install ]; then

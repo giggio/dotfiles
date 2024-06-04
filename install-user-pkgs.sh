@@ -107,18 +107,6 @@ if $BASIC_SETUP; then
   exit
 fi
 
-# dotnet-install
-installDotnetInstall () {
-  if ! [ -e "$HOME"/bin/dotnet-install ]; then
-    writeBlue "Install dotnet-install."
-    installBinToHomeBin https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
-    ln -s "$HOME"/bin/dotnet-install.sh "$HOME"/bin/dotnet-install
-  elif $VERBOSE; then
-    writeBlue "Not installing dotnet-install, it is already installed."
-  fi
-}
-installDotnetInstall
-
 # vault
 installVault () {
   # see urls and details at: https://developer.hashicorp.com/vault/install

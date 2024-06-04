@@ -410,6 +410,9 @@ rec {
       ]
       );
     };
+    starship = {
+      enable = true;
+    };
 
     gpg = {
       enable = true;

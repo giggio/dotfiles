@@ -420,7 +420,7 @@ rec {
         ghce = "gh-copilot explain";
         ghcs = "gh-copilot suggest";
         mg = "kitty +kitten hyperlinked_grep --smart-case";
-        hm = "home-manager --flake ~/.dotfiles/config/home-manager --impure";
+        hm = "home-manager --flake ~/.dotfiles/home-manager --impure";
       };
       shellOptions = [
         "histappend"

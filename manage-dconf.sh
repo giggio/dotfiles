@@ -62,7 +62,7 @@ DCONF_CONFIGS=(
   "org/gnome/settings-daemon/plugins"
   "desktop/ibus/panel/emoji"
 )
-BASE_DATA_DIR="$BASEDIR/config/home-manager/dconf"
+BASE_DATA_DIR="$BASEDIR/home-manager/dconf"
 if $VERBOSE; then writeGreen "Will export to: $BASE_DATA_DIR"; fi
 dconfnixfile='{
   imports = ['

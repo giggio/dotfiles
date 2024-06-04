@@ -1,13 +1,13 @@
-{ pkgs, dotnet-sdk, ... }:
+{ lib, buildDotnetGlobalTool , dotnet-sdk }:
 
-pkgs.buildDotnetGlobalTool {
+buildDotnetGlobalTool {
   pname = "git-istage";
   version = "0.3.108";
 
   nugetSha256 = "sha256-jslnbY+0FeWvlAuUYEGAHKE3hUJFBMP1JtuKHJrFQJU=";
   dotnet-sdk = dotnet-sdk;
 
-  meta = with pkgs.lib; {
+  meta = with lib; {
     homepage = "https://github.com/terrajobst/git-istage";
     changelog = "https://github.com/terrajobst/git-istage/releases";
     license = licenses.mit;

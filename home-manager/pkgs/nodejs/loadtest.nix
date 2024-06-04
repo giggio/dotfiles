@@ -1,6 +1,5 @@
-{ pkgs, ... }:
+{ buildNpmPackage, fetchFromGitHub, lib  }:
 
-with pkgs;
 buildNpmPackage rec {
   pname = "loadtest";
   version = "8.0.9";
@@ -24,7 +23,7 @@ buildNpmPackage rec {
 
   NODE_OPTIONS = "";
 
-  meta = with pkgs.lib; {
+  meta = with lib; {
     description = "Bash Automated Testing System";
     homepage = "https://bats-core.readthedocs.io/";
     license = licenses.mit;

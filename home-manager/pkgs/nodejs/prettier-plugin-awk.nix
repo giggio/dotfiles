@@ -1,6 +1,5 @@
-{ pkgs, ... }:
+{ buildNpmPackage, fetchFromGitHub, lib  }:
 
-with pkgs;
 buildNpmPackage rec {
   pname = "prettier-plugin-awk";
   version = "0.3.1";
@@ -49,7 +48,7 @@ buildNpmPackage rec {
 
   NODE_OPTIONS = "";
 
-  meta = with pkgs.lib; {
+  meta = with lib; {
     description = "AWK plugin for Prettier code formatter";
     homepage = "https://github.com/Beaglefoot/prettier-plugin-awk";
     license = licenses.mit;

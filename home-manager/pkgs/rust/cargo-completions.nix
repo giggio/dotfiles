@@ -1,10 +1,15 @@
-{ pkgs ? import <nixpkgs> { }, rust }:
+{ bash, rust, coreutils }:
 
-pkgs.stdenv.mkDerivation {
+derivation {
   name = "cargo-completions";
-  src = pkgs.emptyDirectory;
-  installPhase = ''
-    mkdir -p "$out/share/bash-completion/completions/"
-    cp "${rust}/etc/bash_completion.d/cargo" "$out/share/bash-completion/completions/cargo"
-  '';
+  builder = "${bash}/bin/bash";
+  args = [
+    "-c"
+    ''
+      PATH="${coreutils}/bin"
+      mkdir -p "$out/share/bash-completion/completions/"
+      cp "${rust}/etc/bash_completion.d/cargo" "$out/share/bash-completion/completions/cargo"
+    ''
+  ];
+  system = builtins.currentSystem;
 }

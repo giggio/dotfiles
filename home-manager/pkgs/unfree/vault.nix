@@ -1,7 +1,7 @@
-{ pkgs ? import <nixpkgs> { }, ... }:
+{ stdenv, system, fetchzip, lib }:
 
 # see urls and details at: https://developer.hashicorp.com/vault/install
-pkgs.stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "vault";
   version = "1.16.3";
   src =
@@ -12,9 +12,9 @@ pkgs.stdenv.mkDerivation rec {
         "armv6-linux" = "arm";
         "armv7-linux" = "arm";
         "armv8-linux" = "arm";
-      }."${pkgs.system}";
+      }."${system}";
     in
-    pkgs.fetchzip {
+    fetchzip {
       url = "https://releases.hashicorp.com/vault/${version}/vault_${version}_linux_${arch}.zip";
       sha256 = "sha256-ExqFyWKU6hAKn8lRK2gjcsNA5QASJNT9CNJ4koJkzJI=";
       stripRoot = false;
@@ -26,7 +26,7 @@ pkgs.stdenv.mkDerivation rec {
     chmod +x $out/bin/vault
   '';
 
-  meta = with pkgs.lib; {
+  meta = with lib; {
     homepage = "https://www.hashicorp.com/products/vault";
     changelog = "https://developer.hashicorp.com/vault/docs/release-notes";
     license = licenses.bsl11;

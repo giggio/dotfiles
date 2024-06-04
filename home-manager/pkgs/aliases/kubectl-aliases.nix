@@ -1,6 +1,6 @@
-{ pkgs ? import <nixpkgs> {}, ... }:
+{ stdenv }:
 
-pkgs.stdenv.mkDerivation {
+stdenv.mkDerivation {
   name = "kubectl-aliases";
   src = builtins.fetchGit {
     url = "https://github.com/giggio/kubectl-aliases.git";

@@ -1,6 +1,6 @@
-{ pkgs, dotnet-sdk, ... }:
+{ lib, buildDotnetGlobalTool , dotnet-sdk }:
 
-pkgs.buildDotnetGlobalTool {
+buildDotnetGlobalTool {
   pname = "dotnet-interactive";
   nugetName = "Microsoft.dotnet-interactive";
   version = "1.0.522904";
@@ -8,7 +8,7 @@ pkgs.buildDotnetGlobalTool {
   nugetSha256 = "sha256-ULnG2D7BUJV39cSC4sarWlrngtv492vpd/BjeB5dKYQ=";
   dotnet-sdk = dotnet-sdk;
 
-  meta = with pkgs.lib; {
+  meta = with lib; {
     homepage = "https://github.com/dotnet/interactive";
     changelog = "https://github.com/dotnet/interactive/releases";
     license = licenses.mit;

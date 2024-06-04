@@ -4,18 +4,12 @@ let
   githooks = inputs.githooks.packages."${pkgs.system}".default;
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
   env = config.setup;
-  # homeDir = "/home/${env.user}";
-  dotnetCombinedPackages = (with pkgs.dotnetCorePackages; combinePackages
-    [
-      sdk_6_0
-      sdk_7_0
-      sdk_8_0
-    ]);
+  our_packages = pkgs.callPackage ./pkgs/default.nix { };
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
   # but, be careful, this is used by nushell and bash (.bashrc)
   shellSessionVariables = {
     DOCKER_BUILDKIT = "1";
-    DOTNET_ROOT = "${dotnetCombinedPackages}";
+    DOTNET_ROOT = "${our_packages.dotnet-sdk}";
     FZF_DEFAULT_COMMAND = "'fd --type file --color=always --exclude .git'";
     FZF_DEFAULT_OPTS = "--ansi";
     FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
@@ -53,16 +47,16 @@ rec {
     preferXdgDirectories = true;
     packages =
       let
-        rustStable = (pkgs.fenix.stable.withComponents [ "cargo" "clippy" "rust-src" "rustc" "rustfmt" ]);
-        basic_pkgs = (with pkgs; [
+        basic_pkgs = (with our_packages; [
           bash
           bash-completion
-          (pkgs.callPackage ./completions.nix { inherit pkgs; })
-          (pkgs.callPackage ./cheats/default.nix { inherit pkgs; })
-          (pkgs.callPackage ./pkgs/dotnet/dotnet-tools.nix { inherit pkgs; dotnet-sdk = dotnetCombinedPackages; })
-          (pkgs.callPackage ./pkgs/dotnet/dotnet-install.nix { inherit pkgs; })
-          (pkgs.callPackage ./pkgs/unfree/terraform.nix { inherit pkgs; })
-          (pkgs.callPackage ./pkgs/unfree/vault.nix { inherit pkgs; })
+          extra-completions
+          (callPackage ./cheats/default.nix { })
+          dotnet-install
+          dotnet-sdk
+          dotnet-tools
+          terraform
+          vault
           coreutils-full
           util-linux
           libnotify
@@ -102,8 +96,8 @@ rec {
           zoxide
           navi
           ruby_3_2
-          rustStable
-          (pkgs.callPackage ./pkgs/rust/cargo-completions.nix { inherit pkgs; rust = rustStable; })
+          rust
+          cargo-completions
           rust-analyzer
           yq-go
           tzdata
@@ -128,10 +122,10 @@ rec {
           zellij
           hub
           trash-cli
-          nodePackages_latest.nodejs
+          nodejs
           nodePackages.yarn
-          (pkgs.callPackage ./pkgs/nodejs/loadtest.nix { inherit pkgs; })
-          (pkgs.callPackage ./pkgs/nodejs/prettier-plugin-awk.nix { inherit pkgs; })
+          loadtest
+          prettier-plugin-awk
           node2nix
           nodePackages.prettier
           nodePackages.eslint
@@ -140,9 +134,9 @@ rec {
           git-ignore
           http-server
         ]);
-        wsl_pkgs = lib.lists.optionals env.wsl (with pkgs; [ wslu ]);
+        wsl_pkgs = lib.lists.optionals env.wsl (with our_packages; [ wslu ]);
         not_wsl_pkgs = lib.lists.optionals (!env.wsl)
-          (with pkgs; [
+          (with our_packages; [
             android-tools
             bitwarden-desktop
             firefox
@@ -162,9 +156,9 @@ rec {
             (config.lib.nixGL.wrap kitty)
           ]);
         extra_pkgs = lib.lists.optionals (!env.basicSetup)
-          (with pkgs; [
-            (pkgs.callPackage ./pkgs/golang/chart-releaser.nix { inherit pkgs; })
-            (pkgs.callPackage ./pkgs/golang/docker-show-context.nix { inherit pkgs; })
+          (with our_packages; [
+            chart-releaser
+            docker-show-context
             deno
             opentofu
             krew
@@ -189,7 +183,6 @@ rec {
             silver-searcher
             w3m
             chromium
-            dotnetCombinedPackages
             temurin-bin-21
             maven
             azure-cli
@@ -231,8 +224,9 @@ rec {
             git-lfs
             kubectx
           ]);
+          all_packages = basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;
       in
-      basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;
+        all_packages;
 
     # Home Manager can also manage your environment variables through
     # 'sessionVariables'. If you don't want to manage your shell through Home
@@ -454,7 +448,7 @@ rec {
             bind '"jj":"\e"'
             tabs -4
             bind 'set completion-ignore-case on'
-            source ${(pkgs.callPackage ./aliases/kubectl-aliases.nix { inherit pkgs; })}/bin/kubecolor_aliases.bash
+            source ${our_packages.kubectl-aliases}/bin/kubecolor_aliases.bash
             source ${pkgs.complete-alias}/bin/complete_alias
             source "$HOME/.dotfiles/bashscripts/.bashrc"
             # make less more friendly for non-text input files, see lesspipe(1)

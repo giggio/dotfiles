@@ -1,20 +1,20 @@
-{ pkgs, dotnet-sdk }:
+{ callPackage, symlinkJoin, dotnet-sdk }:
 
-pkgs.symlinkJoin {
+symlinkJoin {
   name = "dotnet-tools";
   paths = [
-    (import ./dotnet-counters.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./dotnet-dump.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./dotnet-trace.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./dotnet-sos.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./dotnet-symbol.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./dotnet-gcdump.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./dotnet-interactive.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./dotnet-aspnet-codegenerator.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./dotnet-script.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./dotnet-delice.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./git-istage.nix { inherit pkgs; inherit dotnet-sdk; })
-    (import ./httprepl.nix { inherit pkgs; inherit dotnet-sdk; })
+    (callPackage ./dotnet-counters.nix { inherit dotnet-sdk; })
+    (callPackage ./dotnet-dump.nix { inherit dotnet-sdk; })
+    (callPackage ./dotnet-trace.nix { inherit dotnet-sdk; })
+    (callPackage ./dotnet-sos.nix { inherit dotnet-sdk; })
+    (callPackage ./dotnet-symbol.nix { inherit dotnet-sdk; })
+    (callPackage ./dotnet-gcdump.nix { inherit dotnet-sdk; })
+    (callPackage ./dotnet-interactive.nix { inherit dotnet-sdk; })
+    (callPackage ./dotnet-aspnet-codegenerator.nix { inherit dotnet-sdk; })
+    (callPackage ./dotnet-script.nix { inherit dotnet-sdk; })
+    (callPackage ./dotnet-delice.nix { inherit dotnet-sdk; })
+    (callPackage ./git-istage.nix { inherit dotnet-sdk; })
+    (callPackage ./httprepl.nix { inherit dotnet-sdk; })
   ];
   meta.priority = 10;
 }

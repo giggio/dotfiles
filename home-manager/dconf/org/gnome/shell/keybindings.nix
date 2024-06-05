@@ -8,7 +8,7 @@ with lib.hm.gvariant;
     "org/gnome/shell/keybindings" = {
       screenshot = [ "Print" ];
       show-screenshot-ui = [ "<Shift><Super>s" ];
-      toggle-message-tray = [];
+      toggle-message-tray = [ ];
     };
 
   };

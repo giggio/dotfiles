@@ -1,5 +1,5 @@
 # used for testing with `nix-shell`
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs> { } }:
 let
   dotnet-sdk = (with pkgs.dotnetCorePackages; combinePackages
     [

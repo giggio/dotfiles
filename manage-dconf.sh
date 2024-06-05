@@ -87,5 +87,7 @@ done
 dconfnixfile+='
   ];
 }'
+if $VERBOSE; then writeGreen "Formatting files..."; fi
+nix fmt
 if $VERBOSE; then writeGreen "Creating $BASE_DATA_DIR/dconf.nix file..."; fi
 echo "$dconfnixfile" > "$BASE_DATA_DIR/dconf.nix"

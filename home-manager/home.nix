@@ -39,16 +39,16 @@ rec {
       (final: prev: (import ./pkgs/default.nix { pkgs = prev; }))
       # todo: remove patch when https://github.com/nix-community/dconf2nix/pull/95 is released and gets merged into nixpkgs
       (final: prev:
-      {
-        dconf2nix = prev.dconf2nix.overrideAttrs (old: {
-          patches = (old.patches or []) ++ [
-            (builtins.fetchurl {
-              url = "https://github.com/nix-community/dconf2nix/compare/2fc3b0dfbbce9f1ea2ee89f3689a7cb95b33b63f...e7e5187d4a738ad1b551f97de3fa9766b7d92167.patch";
-              sha256 = "sha256:0f1jn8xff6vk1w7x3l7lr5w18ki0az3rn2ihchgzzn0yszkk5g4d";
-            })
-          ];
-        });
-      })
+        {
+          dconf2nix = prev.dconf2nix.overrideAttrs (old: {
+            patches = (old.patches or [ ]) ++ [
+              (builtins.fetchurl {
+                url = "https://github.com/nix-community/dconf2nix/compare/2fc3b0dfbbce9f1ea2ee89f3689a7cb95b33b63f...e7e5187d4a738ad1b551f97de3fa9766b7d92167.patch";
+                sha256 = "sha256:0f1jn8xff6vk1w7x3l7lr5w18ki0az3rn2ihchgzzn0yszkk5g4d";
+              })
+            ];
+          });
+        })
     ];
   };
 
@@ -236,9 +236,9 @@ rec {
             git-lfs
             kubectx
           ]);
-          all_packages = basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;
+        all_packages = basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;
       in
-        all_packages;
+      all_packages;
 
     # Home Manager can also manage your environment variables through
     # 'sessionVariables'. If you don't want to manage your shell through Home
@@ -438,40 +438,41 @@ rec {
         "globstar"
         "checkjobs"
       ];
-      bashrcExtra = let
-        bashSessionVariables = {
-          # environment variables to add only to .bashrc
-          NAVI_PATH = "${config.home.profileDirectory}/share/navi/cheats/common/:${config.home.profileDirectory}/share/navi/cheats/bash/:${config.home.profileDirectory}/share/navi/cheats/linux/common/:${config.home.profileDirectory}/share/navi/cheats/linux/bash/";
-        };
-      in
-      lib.concatStringsSep "\n" (lib.concatLists [
-        ["# Shell session variables:"]
-        (lib.mapAttrsToList (k: v: "export ${k}=${v}") shellSessionVariables)
-        ["# Bash session variables:"]
-        (lib.mapAttrsToList (k: v: "export ${k}=${v}") bashSessionVariables)
-        [
-          ''
-            # beginning of .bashrc
-            unset MAILCHECK
-            # If not running interactively, don't do anything
-            [[ $- == *i* ]] || return
-            # configure vi mode
-            set -o vi
-            bind '"jj":"\e"'
-            tabs -4
-            bind 'set completion-ignore-case on'
-            source ${pkgs.kubectl-aliases}/bin/kubecolor_aliases.bash
-            source ${pkgs.complete-alias}/bin/complete_alias
-            source "$HOME/.dotfiles/bashscripts/.bashrc"
-            # make less more friendly for non-text input files, see lesspipe(1)
-            [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-            eval "$(navi widget bash)"
+      bashrcExtra =
+        let
+          bashSessionVariables = {
+            # environment variables to add only to .bashrc
+            NAVI_PATH = "${config.home.profileDirectory}/share/navi/cheats/common/:${config.home.profileDirectory}/share/navi/cheats/bash/:${config.home.profileDirectory}/share/navi/cheats/linux/common/:${config.home.profileDirectory}/share/navi/cheats/linux/bash/";
+          };
+        in
+        lib.concatStringsSep "\n" (lib.concatLists [
+          [ "# Shell session variables:" ]
+          (lib.mapAttrsToList (k: v: "export ${k}=${v}") shellSessionVariables)
+          [ "# Bash session variables:" ]
+          (lib.mapAttrsToList (k: v: "export ${k}=${v}") bashSessionVariables)
+          [
+            ''
+              # beginning of .bashrc
+              unset MAILCHECK
+              # If not running interactively, don't do anything
+              [[ $- == *i* ]] || return
+              # configure vi mode
+              set -o vi
+              bind '"jj":"\e"'
+              tabs -4
+              bind 'set completion-ignore-case on'
+              source ${pkgs.kubectl-aliases}/bin/kubecolor_aliases.bash
+              source ${pkgs.complete-alias}/bin/complete_alias
+              source "$HOME/.dotfiles/bashscripts/.bashrc"
+              # make less more friendly for non-text input files, see lesspipe(1)
+              [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+              eval "$(navi widget bash)"
 
-            # beginning of nix configuration
-          ''
+              # beginning of nix configuration
+            ''
+          ]
         ]
-      ]
-      );
+        );
     };
     starship = {
       enable = true;
@@ -527,8 +528,7 @@ rec {
         "carapace/overlays".source = ./config/carapace/overlays;
         "carapace/specs".source = ./config/carapace/specs;
       };
-    dataFile = {
-    };
+    dataFile = { };
     mimeApps = {
       enable = true;
       defaultApplications =

@@ -8,6 +8,9 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 max_line_length = 100
 
+[*.nix]
+end_of_line = lf
+
 [*.md]
 max_line_length = off
 trim_trailing_whitespace = false

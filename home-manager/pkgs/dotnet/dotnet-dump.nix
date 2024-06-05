@@ -1,4 +1,4 @@
-{ lib, buildDotnetGlobalTool , dotnet-sdk }:
+{ lib, buildDotnetGlobalTool, dotnet-sdk }:
 
 buildDotnetGlobalTool {
   pname = "dotnet-dump";

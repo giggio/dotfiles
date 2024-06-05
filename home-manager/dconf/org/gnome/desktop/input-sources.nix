@@ -8,7 +8,7 @@ with lib.hm.gvariant;
     "org/gnome/desktop/input-sources" = {
       mru-sources = [ (mkTuple [ "xkb" "us" ]) (mkTuple [ "xkb" "us+alt-intl" ]) ];
       sources = [ (mkTuple [ "xkb" "us" ]) (mkTuple [ "xkb" "us+alt-intl" ]) ];
-      xkb-options = [];
+      xkb-options = [ ];
     };
 
   };

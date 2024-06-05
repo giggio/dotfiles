@@ -1,6 +1,6 @@
 # used for testing with `nix-build -A dotnet-tools`
 let
-  pkgs = import <nixpkgs> {};
+  pkgs = import <nixpkgs> { };
   dotnet-sdk = (with pkgs.dotnetCorePackages; combinePackages
     [
       sdk_6_0

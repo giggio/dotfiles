@@ -6,7 +6,7 @@ with lib.hm.gvariant;
 {
   dconf.settings = {
     "org/gnome/desktop/wm/keybindings" = {
-      maximize = [];
+      maximize = [ ];
       move-to-workspace-down = [ "<Control><Shift><Alt>j" ];
       move-to-workspace-left = [ "<Control><Shift><Alt>h" ];
       move-to-workspace-right = [ "<Control><Shift><Alt>j" ];
@@ -16,7 +16,7 @@ with lib.hm.gvariant;
       switch-to-workspace-left = [ "<Control><Alt>h" ];
       switch-to-workspace-right = [ "<Control><Alt>l" ];
       switch-to-workspace-up = [ "<Control><Alt>k" ];
-      unmaximize = [];
+      unmaximize = [ ];
     };
 
   };

@@ -23,12 +23,15 @@
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
   };
 
-  outputs = { nixpkgs, home-manager, ... }@inputs:
+  outputs =
+    { nixpkgs, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       pkgs-master = inputs.nixpkgs-master.legacyPackages."${system}";
-    in {
+    in
+    {
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
       homeConfigurations."giggio" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 

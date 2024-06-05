@@ -1,4 +1,4 @@
-{ buildGoModule, fetchFromGitHub,  lib }:
+{ buildGoModule, fetchFromGitHub, lib }:
 
 buildGoModule rec {
   pname = "docker-show-context";

@@ -37,6 +37,18 @@ rec {
     overlays = [
       inputs.fenix.overlays.default
       (final: prev: (import ./pkgs/default.nix { pkgs = prev; }))
+      # todo: remove patch when https://github.com/nix-community/dconf2nix/pull/95 is released and gets merged into nixpkgs
+      (final: prev:
+      {
+        dconf2nix = prev.dconf2nix.overrideAttrs (old: {
+          patches = (old.patches or []) ++ [
+            (builtins.fetchurl {
+              url = "https://github.com/nix-community/dconf2nix/compare/2fc3b0dfbbce9f1ea2ee89f3689a7cb95b33b63f...e7e5187d4a738ad1b551f97de3fa9766b7d92167.patch";
+              sha256 = "sha256:0f1jn8xff6vk1w7x3l7lr5w18ki0az3rn2ihchgzzn0yszkk5g4d";
+            })
+          ];
+        });
+      })
     ];
   };
 
@@ -501,6 +513,10 @@ rec {
         "autostart/bitwarden.desktop" = {
           enable = !env.wsl;
           source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
+        };
+        "autostart/kitty.desktop" = {
+          enable = !env.wsl;
+          source = "${pkgs.kitty}/share/applications/kitty.desktop";
         };
         "alacritty".source = ./config/alacritty;
         "navi/config.yaml".source = ./config/navi-config.yaml;

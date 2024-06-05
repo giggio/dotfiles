@@ -1,4 +1,4 @@
-# Generated via dconf2nix: https://github.com/gvolpe/dconf2nix
+# Generated via dconf2nix: https://github.com/nix-commmunity/dconf2nix
 { lib, ... }:
 
 with lib.hm.gvariant;
@@ -9,7 +9,7 @@ with lib.hm.gvariant;
       background-panorama = "/home/giggio/Downloads/beach_cloudy_bridge.jpg";
       enable-panel-dragging = false;
       per-monitor-perspective = true;
-      window-parallax = 0.5317460317460317;
+      window-parallax = 0.531746;
     };
 
   };

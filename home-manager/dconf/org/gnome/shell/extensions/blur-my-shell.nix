@@ -1,4 +1,4 @@
-# Generated via dconf2nix: https://github.com/gvolpe/dconf2nix
+# Generated via dconf2nix: https://github.com/nix-commmunity/dconf2nix
 { lib, ... }:
 
 with lib.hm.gvariant;
@@ -26,6 +26,10 @@ with lib.hm.gvariant;
       sigma = 6;
       static-blur = true;
       style-dash-to-dock = 0;
+    };
+
+    "org/gnome/shell/extensions/blur-my-shell/dash-to-panel" = {
+      blur-original-panel = true;
     };
 
     "org/gnome/shell/extensions/blur-my-shell/lockscreen" = {

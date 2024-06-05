@@ -59,7 +59,6 @@ DCONF_CONFIGS=(
   "org/gnome/shell/extensions/blur-my-shell"
   "org/gnome/shell/extensions/burn-my-windows"
   "org/gnome/shell/extensions/clipboard-history"
-  "org/gnome/shell/extensions/dash-to-dock"
   "org/gnome/shell/extensions/desktop-cube"
   "org/gnome/shell/extensions/flypie"
   "org/gnome/shell/extensions/freon"
@@ -82,7 +81,7 @@ for FULL_CONFIG in "${DCONF_CONFIGS[@]}"; do
   CONFIG_FILE="$CONFIG_DIR/$CONFIG.nix"
   dconfnixfile+=$'\n    './"`dirname "$FULL_CONFIG"`/$CONFIG.nix"
   if $VERBOSE; then writeGreen "Creating config into file '$CONFIG_FILE'..."; fi
-  dconf dump "/$FULL_CONFIG/" | dconf2nix --emoji --root "$FULL_CONFIG" > "$CONFIG_FILE"
+  dconf dump "/$FULL_CONFIG/" | dconf2nix --root "$FULL_CONFIG" > "$CONFIG_FILE"
 done
 dconfnixfile+='
   ];

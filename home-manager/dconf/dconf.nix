@@ -10,6 +10,7 @@
     ./org/gnome/shell/extensions/blur-my-shell.nix
     ./org/gnome/shell/extensions/burn-my-windows.nix
     ./org/gnome/shell/extensions/clipboard-history.nix
+    ./org/gnome/shell/extensions/dash-to-dock.nix
     ./org/gnome/shell/extensions/desktop-cube.nix
     ./org/gnome/shell/extensions/flypie.nix
     ./org/gnome/shell/extensions/freon.nix

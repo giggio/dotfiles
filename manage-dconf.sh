@@ -59,6 +59,7 @@ DCONF_CONFIGS=(
   "org/gnome/shell/extensions/blur-my-shell"
   "org/gnome/shell/extensions/burn-my-windows"
   "org/gnome/shell/extensions/clipboard-history"
+  "org/gnome/shell/extensions/dash-to-dock"
   "org/gnome/shell/extensions/desktop-cube"
   "org/gnome/shell/extensions/flypie"
   "org/gnome/shell/extensions/freon"

@@ -10,12 +10,6 @@ source "$BASEDIR"/_functions.sh
 getOptions "$@"
 eval set -- "$PARSED_ARGS"
 
-if [ -f "$HOME"/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
-  set +u
-  # shellcheck source=/dev/null
-  source "$HOME"/.nix-profile/etc/profile.d/hm-session-vars.sh
-  set -u
-fi
 if [ -f /.dockerenv ] || grep docker /proc/1/cgroup -qa 2> /dev/null; then
   export RUNNING_IN_CONTAINER=true
 else

@@ -58,7 +58,6 @@ if $VERBOSE; then
   fi
 fi
 
-
 function create_systemd_service_and_timer {
   local NEEDS_RELOAD=false
   if [ "$EUID" != '0' ]; then

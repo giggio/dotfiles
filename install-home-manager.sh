@@ -46,7 +46,6 @@ Usage:
 
 Flags:
   -b, --basic              Will only install basic packages to get Bash working
-      --gh <user:pw>       GitHub username and password
   -u, --update             Will download and install/reinstall even if the tools are already installed
       --verbose            Show verbose output
   -h, --help               help
@@ -60,9 +59,6 @@ if $VERBOSE; then
   Basic setup is $BASIC_SETUP"
 fi
 
-export PATH="$HOME"/bin:"$PATH"
-
-# nix home-manager
 create_nix_env_file () {
   mkdir -p "$HOME"/.config/nixpkgs/
   cat <<EOF > "$HOME"/.config/nixpkgs/config.nix
@@ -75,14 +71,14 @@ create_nix_env_file () {
 }
 EOF
 }
+download_nixpkgs_cache_index () {
+  local filename
+  filename="index-$(uname -m | sed 's/^arm64$/aarch64/')-$(uname | tr '[:upper:]' '[:lower:]')"
+  mkdir -p ~/.cache/nix-index && cd ~/.cache/nix-index
+  wget -q -N "https://github.com/Mic92/nix-index-database/releases/latest/download/$filename"
+  ln -f "$filename" files
+}
 installHomeManagerUsingFlakes () {
-  download_nixpkgs_cache_index () {
-    local filename
-    filename="index-$(uname -m | sed 's/^arm64$/aarch64/')-$(uname | tr '[:upper:]' '[:lower:]')"
-    mkdir -p ~/.cache/nix-index && cd ~/.cache/nix-index
-    wget -q -N "https://github.com/Mic92/nix-index-database/releases/latest/download/$filename"
-    ln -f "$filename" files
-  }
   if ! hash home-manager 2>/dev/null; then
     writeBlue "Install Nix home-manager."
     nix-channel --add https://nixos.org/channels/nixos-unstable nixpkgs
@@ -102,4 +98,8 @@ installHomeManagerUsingFlakes () {
     writeBlue "Not installing Nix home-manager, it is already installed."
   fi
 }
-installHomeManagerUsingFlakes
+
+if ! (return 0 2>/dev/null); then
+  # if not sourced, run the installation
+  installHomeManagerUsingFlakes
+fi

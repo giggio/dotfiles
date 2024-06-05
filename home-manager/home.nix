@@ -130,7 +130,7 @@ rec {
           nodePackages.prettier
           nodePackages.eslint
           nodePackages.bash-language-server
-          bats
+          (bats.withLibraries (p: [ p.bats-support p.bats-assert ]))
           git-ignore
           http-server
         ]);

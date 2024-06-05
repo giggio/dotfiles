@@ -1,5 +1,4 @@
 *.log
 config/git/gitk
-.testsupport
 *.bak
 kitty-wsl.conf

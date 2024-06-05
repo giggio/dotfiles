@@ -1,4 +1,4 @@
-{ bash, coreutils }:
+{ bash, coreutils, system }:
 
 derivation {
   name = "dotnet-install";
@@ -19,5 +19,5 @@ derivation {
         chmod +x $out/bin/dotnet-install
       ''
     ];
-  system = builtins.currentSystem;
+  inherit system;
 }

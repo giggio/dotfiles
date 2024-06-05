@@ -1,4 +1,4 @@
-{ bash, rust, coreutils }:
+{ bash, rust-toolchain, coreutils, system }:
 
 derivation {
   name = "cargo-completions";
@@ -8,8 +8,8 @@ derivation {
     ''
       PATH="${coreutils}/bin"
       mkdir -p "$out/share/bash-completion/completions/"
-      cp "${rust}/etc/bash_completion.d/cargo" "$out/share/bash-completion/completions/cargo"
+      cp "${rust-toolchain}/etc/bash_completion.d/cargo" "$out/share/bash-completion/completions/cargo"
     ''
   ];
-  system = builtins.currentSystem;
+  inherit system;
 }

@@ -4,12 +4,11 @@ let
   githooks = inputs.githooks.packages."${pkgs.system}".default;
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
   env = config.setup;
-  our_packages = pkgs.callPackage ./pkgs/default.nix { };
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
   # but, be careful, this is used by nushell and bash (.bashrc)
   shellSessionVariables = {
     DOCKER_BUILDKIT = "1";
-    DOTNET_ROOT = "${our_packages.dotnet-sdk}";
+    DOTNET_ROOT = "${pkgs.dotnet-sdk}";
     FZF_DEFAULT_COMMAND = "'fd --type file --color=always --exclude .git'";
     FZF_DEFAULT_OPTS = "--ansi";
     FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
@@ -37,6 +36,7 @@ rec {
     };
     overlays = [
       inputs.fenix.overlays.default
+      (final: prev: (import ./pkgs/default.nix { pkgs = prev; }))
     ];
   };
 
@@ -47,7 +47,7 @@ rec {
     preferXdgDirectories = true;
     packages =
       let
-        basic_pkgs = (with our_packages; [
+        basic_pkgs = (with pkgs; [
           bash
           bash-completion
           extra-completions
@@ -96,7 +96,7 @@ rec {
           zoxide
           navi
           ruby_3_2
-          rust
+          rust-toolchain
           cargo-completions
           rust-analyzer
           yq-go
@@ -122,7 +122,7 @@ rec {
           zellij
           hub
           trash-cli
-          nodejs
+          nodePackages_latest.nodejs
           nodePackages.yarn
           loadtest
           prettier-plugin-awk
@@ -134,9 +134,9 @@ rec {
           git-ignore
           http-server
         ]);
-        wsl_pkgs = lib.lists.optionals env.wsl (with our_packages; [ wslu ]);
+        wsl_pkgs = lib.lists.optionals env.wsl (with pkgs; [ wslu ]);
         not_wsl_pkgs = lib.lists.optionals (!env.wsl)
-          (with our_packages; [
+          (with pkgs; [
             android-tools
             bitwarden-desktop
             firefox
@@ -156,7 +156,7 @@ rec {
             (config.lib.nixGL.wrap kitty)
           ]);
         extra_pkgs = lib.lists.optionals (!env.basicSetup)
-          (with our_packages; [
+          (with pkgs; [
             chart-releaser
             docker-show-context
             deno
@@ -448,7 +448,7 @@ rec {
             bind '"jj":"\e"'
             tabs -4
             bind 'set completion-ignore-case on'
-            source ${our_packages.kubectl-aliases}/bin/kubecolor_aliases.bash
+            source ${pkgs.kubectl-aliases}/bin/kubecolor_aliases.bash
             source ${pkgs.complete-alias}/bin/complete_alias
             source "$HOME/.dotfiles/bashscripts/.bashrc"
             # make less more friendly for non-text input files, see lesspipe(1)

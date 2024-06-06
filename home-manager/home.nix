@@ -29,10 +29,12 @@ rec {
   nixpkgs = {
     config = {
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
+        "code"
         "gh-copilot"
         "obsidian"
         "terraform"
         "vault"
+        "vscode"
       ];
     };
     overlays = [
@@ -250,7 +252,7 @@ rec {
             kubectx
             lazydocker
           ]);
-        nixos_pkgs = lib.lists.optionals (isNixOS)
+        nixos_pkgs = lib.lists.optionals isNixOS
           (with pkgs; [
             vscode-fhs
           ]);

@@ -28,8 +28,8 @@ rec {
   nixpkgs = {
     config = {
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
-        "obsidian"
         "gh-copilot"
+        "obsidian"
         "terraform"
         "vault"
       ];
@@ -151,17 +151,30 @@ rec {
           (with pkgs; [
             android-tools
             bitwarden-desktop
+            blanket
+            bubblewrap
+            eartag
+            eyedropper
             firefox
+            forge-sparks
+            gnome-podcasts
+            gnome.polari
+            gnome-solanum
             hwloc
             keybase-gui
+            newsflash
             nixGLIntel
             obsidian
             onlyoffice-bin
             openrgb-with-all-plugins
             pinta
             remmina
+            shortwave
+            switcheroo
             telegram-desktop
+            textpieces
             vlc
+            warp
             youtube-music
             xclip
             (nerdfonts.override { fonts = [ "CascadiaCode" "NerdFontsSymbolsOnly" ]; })
@@ -519,6 +532,16 @@ rec {
           enable = !env.wsl;
           source = "${pkgs.kitty}/share/applications/kitty.desktop";
         };
+        "autostart/forge-sparks.desktop".text =
+          ''
+            [Desktop Entry]
+            Name=Forge Sparks
+            Exec=forge-sparks --hidden
+            Type=Application
+            StartupNotify=true
+            Terminal=false
+            Icon=com.mardojai.ForgeSparks
+          '';
         "alacritty".source = ./config/alacritty;
         "navi/config.yaml".source = ./config/navi-config.yaml;
         "terminator/config".source = ./config/terminator-config;

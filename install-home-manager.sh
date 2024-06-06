@@ -61,12 +61,18 @@ fi
 
 create_nix_env_file () {
   mkdir -p "$HOME"/.config/nixpkgs/
+  if [ "`grep ^ID= /etc/os-release | cut -d'=' -f2`" == nixos ]; then
+    NIXOS=true
+  else
+    NIXOS=false
+  fi
   cat <<EOF > "$HOME"/.config/nixpkgs/config.nix
 {
   setup = {
     user = "$USER";
     wsl = $WSL;
     basicSetup = $BASIC_SETUP;
+    isNixOS = $NIXOS;
   };
 }
 EOF

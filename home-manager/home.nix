@@ -4,6 +4,7 @@ let
   githooks = inputs.githooks.packages."${pkgs.system}".default;
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
   env = config.setup;
+  isNixOS = env.isNixOS or false;
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
   # but, be careful, this is used by nushell and bash (.bashrc)
   shellSessionVariables = {
@@ -249,7 +250,11 @@ rec {
             kubectx
             lazydocker
           ]);
-        all_packages = basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;
+        nixos_pkgs = lib.lists.optionals (isNixOS)
+          (with pkgs; [
+            vscode-fhs
+          ]);
+        all_packages = basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs ++ nixos_pkgs;
       in
       all_packages;
 

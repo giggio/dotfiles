@@ -1,0 +1,14 @@
+--- pam.py	2024-06-06 01:37:13.106150547 -0300
++++ pam.py.patched	2024-06-06 01:37:23.958949692 -0300
+@@ -34,6 +34,11 @@
+ 	# Set up syslog
+ 	syslog.openlog("[HOWDY]", 0, syslog.LOG_AUTH)
+ 
++	# Abort if user is not root, and home directory is not mounted. This is for ecryptfs.
++	if pamh.get_user() != "root" and not os.path.ismount(os.path.expanduser("~" + pamh.get_user())):
++		syslog.syslog(syslog.LOG_INFO, "User directory not decrypted yet, don't use face detection")
++		return pamh.PAM_AUTHINFO_UNAVAIL
++
+ 	# Alert the user that we are doing face detection
+ 	if config.getboolean("core", "detection_notice"):
+ 		pamh.conversation(pamh.Message(pamh.PAM_TEXT_INFO, "Attempting face detection"))

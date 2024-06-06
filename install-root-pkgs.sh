@@ -134,6 +134,12 @@ if ! $WSL; then
   if ! hash flatpak 2>/dev/null; then
     apt_pkgs_to_install_not_wsl+=$'\n'flatpak
   fi
+  # howdy, from https://github.com/boltgolt/howdy
+  if ! hash howdy 2>/dev/null; then
+    add-apt-repository -y ppa:boltgolt/howdy
+    apt_pkgs_to_install_not_wsl+=$'\n'howdy
+    # patch with this code https://github.com/boltgolt/howdy/issues/199#issuecomment-2078573953
+  fi
 
   install_apt_pkgs "$apt_basic_pkgs_to_install_not_wsl" "$apt_pkgs_to_install_not_wsl" '(wsl)'
 

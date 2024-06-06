@@ -86,6 +86,7 @@ installHomeManagerUsingFlakes () {
     nix-channel --update
     create_nix_env_file
     nix run home-manager/master -- init --switch --show-trace --flake "$BASEDIR"/home-manager?submodules=1
+    home-manager switch --show-trace --flake "$BASEDIR"/home-manager?submodules=1
     download_nixpkgs_cache_index
   elif $UPDATE; then
     writeBlue "Update Nix home-manager."

@@ -110,6 +110,7 @@ function install_apt_pkgs () {
 install_apt_pkgs "`echo "apt-file
 gpgconf
 libnss3
+scdaemon
 socat
 vim" | sort`" ''
 

@@ -2,3 +2,5 @@
 config/git/gitk
 *.bak
 kitty-wsl.conf
+*.rej
+*.orig

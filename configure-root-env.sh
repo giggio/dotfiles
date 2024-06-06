@@ -71,6 +71,13 @@ elif $ANDROID; then
   "$BASEDIR"/configure-root-env-android.sh "$@"
 else
   # non-WSL, non-Android
+
+  # patch /etc/pam.d/common-session-noninteractive, see: https://askubuntu.com/a/1052885/832580
+  # this is to allow encrypted home to unmount on logout
+  verbose_flag=
+  if $VERBOSE; then verbose_flag="--verbose"; fi
+  patch --ignore-whitespace $verbose_flag -u /etc/pam.d/common-session-noninteractive -i "$BASEDIR"/patches/common-session-noninteractive.patch --merge
+
   if [ -v SUDO_USER ]; then
     groups_to_add=(docker i2c)
     for group in "${groups_to_add[@]}"; do

@@ -1,0 +1,10 @@
+--- common-session-noninteractive	2024-06-06 01:05:12.015066488 -0300
++++ common-session-noninteractive.patched	2024-06-06 01:07:08.239779953 -0300
+@@ -27,5 +27,6 @@
+ session optional			pam_umask.so
+ # and here are more per-package modules (the "Additional" block)
+ session	required	pam_unix.so 
+-session	optional	pam_ecryptfs.so unwrap
++# next line commented to allow for home unmount. See: https://askubuntu.com/a/1052885/832580
++# session	optional	pam_ecryptfs.so unwrap
+ # end of pam-auth-update config

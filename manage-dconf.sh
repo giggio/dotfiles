@@ -88,6 +88,8 @@ dconfnixfile+='
   ];
 }'
 if $VERBOSE; then writeGreen "Formatting files..."; fi
+pushd "$BASEDIR/home-manager/" > /dev/null
 nix fmt
+popd > /dev/null
 if $VERBOSE; then writeGreen "Creating $BASE_DATA_DIR/dconf.nix file..."; fi
 echo "$dconfnixfile" > "$BASE_DATA_DIR/dconf.nix"

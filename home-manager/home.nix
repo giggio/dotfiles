@@ -81,7 +81,6 @@ rec {
           vim_configurable
           htop
           git
-          tmux
           starship
           nix-index
           xdg-utils

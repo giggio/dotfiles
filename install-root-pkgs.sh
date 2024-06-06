@@ -83,29 +83,35 @@ clean() {
 writeBlue "Update APT metadata."
 apt-get update
 
-APT_BASIC_PKGS_TO_INSTALL=`echo "apt-file
+function install_apt_pkgs () {
+  local apt_basic_pkgs_to_install=$1
+  local apt_pkgs_to_install=$2
+  if [ -v 3 ]; then
+    local wsl=" $3"
+  else
+    local wsl=
+  fi
+  if $BASIC_SETUP; then
+    apt_pkgs_to_install=$apt_basic_pkgs_to_install
+  else
+    apt_pkgs_to_install=`echo "$apt_basic_pkgs_to_install"$'\n'"$apt_pkgs_to_install" | sort`
+  fi
+  apt_pkgs_installed=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
+  apt_pkgs_not_installed=`comm -23 <(echo "$apt_pkgs_to_install") <(echo "$apt_pkgs_installed")`
+  if [ "$apt_pkgs_not_installed" != "" ]; then
+    # shellcheck disable=SC2086
+    writeBlue Run custom installations with APT$wsl: $apt_pkgs_not_installed
+    # shellcheck disable=SC2086
+    apt-get install -y $apt_pkgs_not_installed
+  elif $VERBOSE; then
+    writeBlue "Not installing packages with APT$wsl, they are all already installed."
+  fi
+}
+install_apt_pkgs "`echo "apt-file
 gpgconf
 libnss3
-scdaemon
 socat
-tmux
-vim" | sort`
-APT_PKGS_TO_INSTALL=
-if $BASIC_SETUP; then
-  APT_PKGS_TO_INSTALL=$APT_BASIC_PKGS_TO_INSTALL
-else
-  APT_PKGS_TO_INSTALL=`echo "$APT_BASIC_PKGS_TO_INSTALL"$'\n'"$APT_PKGS_TO_INSTALL" | sort`
-fi
-APT_PKGS_INSTALLED=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
-APT_PKGS_NOT_INSTALLED=`comm -23 <(echo "$APT_PKGS_TO_INSTALL") <(echo "$APT_PKGS_INSTALLED")`
-if [ "$APT_PKGS_NOT_INSTALLED" != "" ]; then
-  # shellcheck disable=SC2086
-  writeBlue Run custom installations with APT: $APT_PKGS_NOT_INSTALLED
-  # shellcheck disable=SC2086
-  apt-get install -y $APT_PKGS_NOT_INSTALLED
-elif $VERBOSE; then
-  writeBlue "Not installing packages with APT, they are all already installed."
-fi
+vim" | sort`" ''
 
 if ! $WSL; then
   # docker
@@ -113,48 +119,64 @@ if ! $WSL; then
     curl -fsSL https://get.docker.com | bash
   fi
 
-  APT_PKGS_TO_INSTALL_NOT_WSL=""
-  APT_PKGS_NOT_INSTALLED_NOT_WSL=`comm -23 <(echo "$APT_PKGS_TO_INSTALL_NOT_WSL") <(echo "$APT_PKGS_INSTALLED")`
-  if [ "$APT_PKGS_NOT_INSTALLED_NOT_WSL" != "" ]; then
-    # shellcheck disable=SC2086
-    writeBlue Run custom installations with APT - not WSL: $APT_PKGS_NOT_INSTALLED_NOT_WSL
-    # shellcheck disable=SC2086
-    apt-get install -y $APT_PKGS_NOT_INSTALLED_NOT_WSL
-  elif $VERBOSE; then
-    writeBlue "Not installing packages with APT (not WSL), they are all already installed."
-  fi
-fi
+  apt_basic_pkgs_to_install_not_wsl=
+  apt_pkgs_to_install_not_wsl=
 
-# upgrade
-if $UPDATE; then
-  writeBlue "Upgrade with APT."
-  apt-get upgrade -y
-else
-  if $VERBOSE; then
-    writeBlue "Not updating with APT."
-  fi
-fi
-
-if ! hash nix-instantiate 2>/dev/null || ! nix-instantiate '<nixpkgs>' -A hello &> /dev/null; then
-  writeBlue "Install Nix."
-  sh <(curl -L https://nixos.org/nix/install) --daemon --yes
-fi
-
-# exit if basic setup is requested
-# up until this point we had the necessary packages
-if $BASIC_SETUP; then
-  clean
-  exit
-fi
-
-if ! $WSL; then
   # onedriver
   if ! hash onedriver 2>/dev/null; then
     writeBlue "Install OneDriver."
     echo 'deb http://download.opensuse.org/repositories/home:/jstaf/xUbuntu_23.10/ /' > /etc/apt/sources.list.d/home:jstaf.list
     curl -fsSL https://download.opensuse.org/repositories/home:jstaf/xUbuntu_23.10/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/home_jstaf.gpg
     apt-get update
-    apt-get install -y onedriver
+    apt_pkgs_to_install_not_wsl+=$'\n'onedriver
+  fi
+  # flatpak
+  if ! hash flatpak 2>/dev/null; then
+    apt_pkgs_to_install_not_wsl+=$'\n'flatpak
+  fi
+
+  install_apt_pkgs "$apt_basic_pkgs_to_install_not_wsl" "$apt_pkgs_to_install_not_wsl" '(wsl)'
+
+  function install_platpak_pkgs () {
+    local flatpak_basic_pkgs_to_install=$1
+    local flatpak_pkgs_to_install=$2
+    if $BASIC_SETUP; then
+      flatpak_pkgs_to_install=$flatpak_basic_pkgs_to_install
+    else
+      flatpak_pkgs_to_install=`echo "$flatpak_basic_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install" | sort`
+    fi
+    flatpak_pkgs_installed=`flatpak list --app --columns=application --system | tail -n+1 | sort -u`
+    flatpak_pkgs_not_installed=`comm -23 <(echo "$flatpak_pkgs_to_install") <(echo "$flatpak_pkgs_installed")`
+    if [ "$flatpak_pkgs_not_installed" != "" ]; then
+      # shellcheck disable=SC2086
+      writeBlue Run custom installations with Flatpak: $flatpak_pkgs_not_installed
+      # shellcheck disable=SC2086
+      apt-get install -y $flatpak_pkgs_not_installed
+    elif $VERBOSE; then
+      writeBlue "Not installing packages with Flatpak, they are all already installed."
+    fi
+  }
+  install_platpak_pkgs '' "`echo "com.valvesoftware.Steam
+net.davidotek.pupgui2" | sort`" ''
+
+fi
+
+# nix
+if ! [ -f /etc/bash.bashrc.backup-before-nix ]; then
+  writeBlue "Install Nix."
+  sh <(curl -L https://nixos.org/nix/install) --daemon --yes
+elif $VERBOSE; then
+  writeBlue "Not installing Nix, it is already installed."
+fi
+
+# upgrade
+if $UPDATE; then
+  writeBlue "Upgrade with APT."
+  apt-get upgrade -y
+  flatpak update -y
+else
+  if $VERBOSE; then
+    writeBlue "Not updating with APT."
   fi
 fi
 

@@ -247,6 +247,7 @@ rec {
             imagemagick
             git-lfs
             kubectx
+            lazydocker
           ]);
         all_packages = basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs;
       in

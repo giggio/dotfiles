@@ -13,5 +13,9 @@
       type = lib.types.bool;
       default = false;
     };
+    isNixOS = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 }

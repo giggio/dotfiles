@@ -17,6 +17,8 @@
     - ~/bin
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
+    - |
+      [ ! -f "$HOME/.npmrc" ] && echo 'sign-git-tag=true' > "$HOME/.npmrc" || true
 - link:
     ~/.config/kitty: config/kitty
     ~/.config/nix/nix.conf: config/nix/nix.conf

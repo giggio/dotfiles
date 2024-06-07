@@ -320,7 +320,6 @@ rec {
           auto_image TRUE
         '';
       ".inputrc".text = "set bell-style none";
-      ".npmrc".text = "sign-git-tag=true";
       ".vimrc".text = "source ~/.vim/.vimrc";
     };
 

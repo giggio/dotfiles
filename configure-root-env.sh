@@ -53,6 +53,15 @@ else
   fi
 fi
 
+if ! [ -f /etc/profile.d/xdg_dirs_extra.sh ]; then
+  if $VERBOSE; then
+    writeBlue "Copying xdg_dirs_extra.sh to /etc/profile.d/."
+  fi
+  cp "$BASEDIR"/setup/xdg_dirs_extra.sh /etc/profile.d/
+elif $VERBOSE; then
+  writeBlue "Not copying xdg_dirs_extra.sh, it already exists."
+fi
+
 if $WSL && ! $RUNNING_IN_CONTAINER; then
   if hash wslview 2>/dev/null; then
     setAlternative x-www-browser wslview

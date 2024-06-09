@@ -17,7 +17,7 @@ let
 in
 rec {
   imports = [
-    ./setup.nix
+    ./setup-options.nix
     ./dconf/dconf.nix
     # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
     (builtins.fetchurl {
@@ -159,8 +159,9 @@ rec {
             eyedropper
             firefox
             forge-sparks
-            gnome-podcasts
+            gnome.gnome-contacts
             gnome.polari
+            gnome-podcasts
             gnome-solanum
             hwloc
             keybase-gui
@@ -181,7 +182,21 @@ rec {
             xclip
             (nerdfonts.override { fonts = [ "CascadiaCode" "NerdFontsSymbolsOnly" ]; })
             (config.lib.nixGL.wrap kitty)
-          ]);
+          ] ++ (with gnomeExtensions; [
+            # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
+            blur-my-shell
+            burn-my-windows
+            clipboard-history
+            compiz-alike-magic-lamp-effect
+            compiz-windows-effect
+            desktop-cube # not enabled
+            fly-pie
+            freon
+            hibernate-status-button
+            workspace-matrix
+          ])
+          );
+
         extra_pkgs = lib.lists.optionals (!env.basicSetup)
           (with pkgs; [
             chart-releaser
@@ -560,6 +575,13 @@ rec {
     dataFile = { };
     mimeApps = {
       enable = true;
+      associations = {
+        added =
+          if env.wsl then { } else {
+            "x-scheme-handler/sms" = "org.gnome.Shell.Extensions.GSConnect.desktop";
+            "x-scheme-handler/tel" = "org.gnome.Shell.Extensions.GSConnect.desktop";
+          };
+      };
       defaultApplications =
         if env.wsl then {
           # browser:

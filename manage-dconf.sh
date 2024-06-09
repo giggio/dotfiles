@@ -59,19 +59,24 @@ DCONF_CONFIGS=(
   "org/gnome/shell/extensions/blur-my-shell"
   "org/gnome/shell/extensions/burn-my-windows"
   "org/gnome/shell/extensions/clipboard-history"
+  "org/gnome/shell/extensions/com/github/hermes83/compiz-windows-effect"
   "org/gnome/shell/extensions/dash-to-dock"
   "org/gnome/shell/extensions/desktop-cube"
   "org/gnome/shell/extensions/flypie"
   "org/gnome/shell/extensions/freon"
+  "org/gnome/shell/extensions/hibernate-status-button"
+  "org/gnome/shell/extensions/ncom/github/hermes83/compiz-alike-magic-lamp-effect"
   "org/gnome/shell/extensions/wsmatrix"
   "org/gnome/shell/keybindings"
   "org/gnome/settings-daemon/plugins"
   "desktop/ibus/panel/emoji"
 )
 BASE_DATA_DIR="$BASEDIR/home-manager/dconf"
+find "$BASE_DATA_DIR" -mindepth 1 -maxdepth 1 -type d -exec rm -r '{}' \;
 if $VERBOSE; then writeGreen "Will export to: $BASE_DATA_DIR"; fi
 dconfnixfile='{
-  imports = ['
+  imports = [
+    ./dconf-config.nix'
 for FULL_CONFIG in "${DCONF_CONFIGS[@]}"; do
   CONFIG=`basename "$FULL_CONFIG"`
   CONFIG_DIR=$BASE_DATA_DIR/`dirname "$FULL_CONFIG"`

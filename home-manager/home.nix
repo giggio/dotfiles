@@ -292,7 +292,7 @@ rec {
       EDITOR = "vim";
       XDG_DATA_HOME = "\${XDG_DATA_HOME:-$HOME/.local/share}";
       XDG_STATE_HOME = "\${XDG_STATE_HOME:-$HOME/.local/state}";
-      XDG_CACHE_HOME = "\${XDG_CACHE_HOME:-HOME/.cache}";
+      XDG_CACHE_HOME = "\${XDG_CACHE_HOME:-$HOME/.cache}";
       NPM_CONFIG_PREFIX = "\${NPM_CONFIG_PREFIX:-$HOME/.local/share/npm}";
       BASIC_SETUP = "\${BASIC_SETUP:-false}";
     };

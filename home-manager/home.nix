@@ -278,7 +278,6 @@ rec {
     # Manager then you have to manually source 'hm-session-vars.sh' located at
     #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
     sessionPath = [
-      "$HOME/bin"
       "$HOME/.local/bin"
       "$XDG_DATA_HOME/npm/bin"
       "$HOME/.krew/bin"

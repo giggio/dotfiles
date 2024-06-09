@@ -1,6 +1,5 @@
 {
   imports = [
-    ./dconf-config.nix
     ./apps/psensor.nix
     ./org/gnome/desktop/applications/terminal.nix
     ./org/gnome/desktop/datetime.nix
@@ -22,5 +21,6 @@
     ./org/gnome/shell/keybindings.nix
     ./org/gnome/settings-daemon/plugins.nix
     ./desktop/ibus/panel/emoji.nix
+    ./dconf-config.nix
   ];
 }

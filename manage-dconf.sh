@@ -75,8 +75,7 @@ BASE_DATA_DIR="$BASEDIR/home-manager/dconf"
 find "$BASE_DATA_DIR" -mindepth 1 -maxdepth 1 -type d -exec rm -r '{}' \;
 if $VERBOSE; then writeGreen "Will export to: $BASE_DATA_DIR"; fi
 dconfnixfile='{
-  imports = [
-    ./dconf-config.nix'
+  imports = ['
 for FULL_CONFIG in "${DCONF_CONFIGS[@]}"; do
   CONFIG=`basename "$FULL_CONFIG"`
   CONFIG_DIR=$BASE_DATA_DIR/`dirname "$FULL_CONFIG"`
@@ -90,6 +89,7 @@ for FULL_CONFIG in "${DCONF_CONFIGS[@]}"; do
   dconf dump "/$FULL_CONFIG/" | dconf2nix --root "$FULL_CONFIG" > "$CONFIG_FILE"
 done
 dconfnixfile+='
+    ./dconf-config.nix
   ];
 }'
 if $VERBOSE; then writeGreen "Formatting files..."; fi

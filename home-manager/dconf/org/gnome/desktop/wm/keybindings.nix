@@ -6,7 +6,11 @@ with lib.hm.gvariant;
 {
   dconf.settings = {
     "org/gnome/desktop/wm/keybindings" = {
-      maximize = [ "<Super>Up" ];
+      maximize = [ ];
+      move-to-monitor-down = [ "<Shift><Super>j" ];
+      move-to-monitor-left = [ "<Shift><Super>h" ];
+      move-to-monitor-right = [ "<Shift><Super>l" ];
+      move-to-monitor-up = [ "<Shift><Super>k" ];
       move-to-workspace-down = [ "<Control><Shift><Alt>j" ];
       move-to-workspace-left = [ "<Control><Shift><Alt>h" ];
       move-to-workspace-right = [ "<Control><Shift><Alt>j" ];

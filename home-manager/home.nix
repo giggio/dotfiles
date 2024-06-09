@@ -160,6 +160,7 @@ rec {
             gnome.polari
             gnome-podcasts
             gnome-solanum
+            gnome-extension-manager
             hwloc
             keybase-gui
             newsflash

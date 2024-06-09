@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+if (return 0 2>/dev/null); then
+  >&2 echo  -e "\e[31mThis script should not be sourced.\e[0m"
+  return 1
+fi
+set -euo pipefail
+
+_hm () {
+  if grep '[Mm]icrosoft' /proc/version -q &> /dev/null; then
+    local wsl=true
+  else
+    local wsl=false
+  fi
+  if [ "`grep ^ID= /etc/os-release | cut -d'=' -f2`" == nixos ]; then
+    local is_nixos=true
+  else
+    local is_nixos=false
+  fi
+  if ! [ -v BASIC_SETUP ]; then
+    local basic_setup=false
+  else
+    if [ "$BASIC_SETUP" == 'true' ]; then
+      local basic_setup=true
+    else
+      local basic_setup=false
+    fi
+  fi
+  # available profiles: giggio, giggio_wsl, giggio_nixos, giggio_basic, giggio_wsl_basic, giggio_nixos_basic
+  local profile='giggio'
+  if $wsl; then
+    profile+='_wsl'
+  elif $is_nixos; then
+    profile+='_nixos'
+  fi
+  if $basic_setup; then profile+='_basic'; fi
+  local args=("$@")
+  local verbose=false
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --verbose)
+      verbose=true
+      shift
+      ;;
+      *)
+      shift
+      ;;
+    esac
+  done
+  if $verbose; then
+    echo -e "\e[32mRunning:\e[0m \e[34m`readlink -f "$0"`\e[0m --flake $HOME/.dotfiles/home-manager?submodules=1#$profile ${args[*]}"
+  fi
+  home-manager --flake "$HOME/.dotfiles/home-manager?submodules=1#$profile" "${args[@]}"
+}
+
+_hm "$@"

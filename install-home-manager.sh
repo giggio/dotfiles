@@ -59,24 +59,6 @@ if $VERBOSE; then
   Basic setup is $BASIC_SETUP"
 fi
 
-create_nix_env_file () {
-  mkdir -p "$HOME"/.config/nixpkgs/
-  if [ "`grep ^ID= /etc/os-release | cut -d'=' -f2`" == nixos ]; then
-    NIXOS=true
-  else
-    NIXOS=false
-  fi
-  cat <<EOF > "$HOME"/.config/nixpkgs/config.nix
-{
-  setup = {
-    user = "$USER";
-    wsl = $WSL;
-    basicSetup = $BASIC_SETUP;
-    isNixOS = $NIXOS;
-  };
-}
-EOF
-}
 download_nixpkgs_cache_index () {
   local filename
   filename="index-$(uname -m | sed 's/^arm64$/aarch64/')-$(uname | tr '[:upper:]' '[:lower:]')"
@@ -84,29 +66,35 @@ download_nixpkgs_cache_index () {
   wget -q -N "https://github.com/Mic92/nix-index-database/releases/latest/download/$filename"
   ln -f "$filename" files
 }
+hm_switch () {
+  local verbose_flag=
+  if $VERBOSE; then verbose_flag="--verbose"; fi
+  "$BASEDIR"/home-manager/bin/hm switch --show-trace $verbose_flag "$@"
+}
 installHomeManagerUsingFlakes () {
   if ! hash home-manager 2>/dev/null; then
     writeBlue "Install Nix home-manager."
     nix-channel --add https://nixos.org/channels/nixos-unstable nixpkgs
     nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
     nix-channel --update
-    create_nix_env_file
-    nix run home-manager/master -- init --switch --show-trace --flake "$BASEDIR"/home-manager?submodules=1
-    home-manager switch --show-trace --flake "$BASEDIR"/home-manager?submodules=1
+    nix run home-manager/master -- init --show-trace --flake "$BASEDIR"/home-manager?submodules=1
+    hm_switch
     download_nixpkgs_cache_index
   elif $UPDATE; then
     writeBlue "Update Nix home-manager."
     nix-channel --update
-    create_nix_env_file
     rm -f "$BASEDIR"/home-manager/flake.lock
-    home-manager switch --show-trace --flake "$BASEDIR"/home-manager?submodules=1 --refresh
+    hm_switch --refresh
     download_nixpkgs_cache_index
   elif $VERBOSE; then
     writeBlue "Not installing Nix home-manager, it is already installed."
   fi
 }
 
-if ! (return 0 2>/dev/null); then
+if (return 0 2>/dev/null); then
+  # if sourced, remove the set -euo pipefail
+  set +euo pipefail
+else
   # if not sourced, run the installation
   installHomeManagerUsingFlakes
 fi

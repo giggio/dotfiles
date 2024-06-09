@@ -1,10 +1,8 @@
-{ config, pkgs, lib, inputs, pkgs-master, ... }:
+{ config, pkgs, lib, inputs, setup, pkgs-master, ... }:
 
 let
   githooks = inputs.githooks.packages."${pkgs.system}".default;
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
-  env = config.setup;
-  isNixOS = env.isNixOS or false;
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
   # but, be careful, this is used by nushell and bash (.bashrc)
   shellSessionVariables = {
@@ -17,7 +15,6 @@ let
 in
 rec {
   imports = [
-    ./setup-options.nix
     ./dconf/dconf.nix
     # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
     (builtins.fetchurl {
@@ -148,8 +145,8 @@ rec {
           git-ignore
           http-server
         ]);
-        wsl_pkgs = lib.lists.optionals env.wsl (with pkgs; [ wslu ]);
-        not_wsl_pkgs = lib.lists.optionals (!env.wsl)
+        wsl_pkgs = lib.lists.optionals setup.wsl (with pkgs; [ wslu ]);
+        not_wsl_pkgs = lib.lists.optionals (!setup.wsl)
           (with pkgs; [
             android-tools
             bitwarden-desktop
@@ -197,7 +194,7 @@ rec {
           ])
           );
 
-        extra_pkgs = lib.lists.optionals (!env.basicSetup)
+        extra_pkgs = lib.lists.optionals (!setup.basicSetup)
           (with pkgs; [
             chart-releaser
             docker-show-context
@@ -267,7 +264,7 @@ rec {
             kubectx
             lazydocker
           ]);
-        nixos_pkgs = lib.lists.optionals isNixOS
+        nixos_pkgs = lib.lists.optionals setup.isNixOS
           (with pkgs; [
             vscode-fhs
           ]);
@@ -292,19 +289,21 @@ rec {
       TMP = "/tmp";
       TEMP = "/tmp";
       EDITOR = "vim";
-      XDG_DATA_HOME = "$HOME/.local/share";
-      XDG_STATE_HOME = "$HOME/.local/state";
-      XDG_CACHE_HOME = "$HOME/.cache";
-      NPM_CONFIG_PREFIX = "$HOME/.local/share/npm";
+      XDG_DATA_HOME = "\${XDG_DATA_HOME:-$HOME/.local/share}";
+      XDG_STATE_HOME = "\${XDG_STATE_HOME:-$HOME/.local/state}";
+      XDG_CACHE_HOME = "\${XDG_CACHE_HOME:-HOME/.cache}";
+      NPM_CONFIG_PREFIX = "\${NPM_CONFIG_PREFIX:-$HOME/.local/share/npm}";
+      BASIC_SETUP = "\${BASIC_SETUP:-false}";
     };
 
     file = {
       ".cargo/.keep".text = "";
       ".local/lib/systemd/wsl-forward-gpg" = {
-        enable = env.wsl;
+        enable = setup.wsl;
         source = ./systemd/wsl-forward-gpg;
       };
       ".local/bin/dotnet-uninstall".source = ./bin/dotnet-uninstall;
+      ".local/bin/hm".source = ./bin/hm;
       ".hushlogin".text = "";
       ".XCompose".text =
         ''
@@ -463,7 +462,7 @@ rec {
         ghce = "gh-copilot explain";
         ghcs = "gh-copilot suggest";
         mg = "kitty +kitten hyperlinked_grep --smart-case";
-        hm = "home-manager --flake ~/.dotfiles/home-manager?submodules=1";
+        keys = "dconf dump /org/gnome/desktop/wm/keybindings/";
       };
       shellOptions = [
         "histappend"
@@ -530,7 +529,7 @@ rec {
     };
   };
 
-  fonts.fontconfig.enable = !env.wsl;
+  fonts.fontconfig.enable = !setup.wsl;
 
   xdg = {
     configFile =
@@ -546,11 +545,11 @@ rec {
       {
         "nushell/login.nu".text = sessionVariablesText;
         "autostart/bitwarden.desktop" = {
-          enable = !env.wsl;
+          enable = !setup.wsl;
           source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
         };
         "autostart/kitty.desktop" = {
-          enable = !env.wsl;
+          enable = !setup.wsl;
           source = "${pkgs.kitty}/share/applications/kitty.desktop";
         };
         "autostart/forge-sparks.desktop".text =
@@ -571,19 +570,20 @@ rec {
         "carapace/bridges.yaml".source = ./config/carapace/bridges.yaml;
         "carapace/overlays".source = ./config/carapace/overlays;
         "carapace/specs".source = ./config/carapace/specs;
+        "mimeapps.list".force = true; # overwrite the default file which keeps being recreated by Ubuntu
       };
     dataFile = { };
     mimeApps = {
       enable = true;
       associations = {
         added =
-          if env.wsl then { } else {
+          if setup.wsl then { } else {
             "x-scheme-handler/sms" = "org.gnome.Shell.Extensions.GSConnect.desktop";
             "x-scheme-handler/tel" = "org.gnome.Shell.Extensions.GSConnect.desktop";
           };
       };
       defaultApplications =
-        if env.wsl then {
+        if setup.wsl then {
           # browser:
           "text/html" = [ "wslview.desktop" ];
           "x-scheme-handler/http" = [ "wslview.desktop" ];
@@ -668,14 +668,14 @@ rec {
 
   services = {
     gpg-agent = {
-      enable = !env.wsl;
+      enable = !setup.wsl;
       enableExtraSocket = true;
       enableScDaemon = true;
       enableSshSupport = true;
       pinentryPackage = pkgs.pinentry-gnome3;
     };
-    keybase.enable = !env.wsl;
-    kbfs.enable = !env.wsl;
+    keybase.enable = !setup.wsl;
+    kbfs.enable = !setup.wsl;
   };
 
   nixGL.prefix = "${nixGLIntel}/bin/nixGLIntel";
@@ -687,7 +687,7 @@ rec {
         let
           commonTargets = { };
           otherTargets =
-            if !env.wsl then
+            if !setup.wsl then
               { } else {
               wsl-forward-gpg-all = {
                 Unit = {
@@ -709,7 +709,7 @@ rec {
         let
           commonServices = { };
           otherServices =
-            if !env.wsl then
+            if !setup.wsl then
               { } else {
               # todo: remove. Necessary to run some wayland apps in WSL until https://github.com/microsoft/wslg/issues/1156#issuecomment-2094572691 gets fixed
               wsl-symlink-wayland = {
@@ -763,7 +763,7 @@ rec {
         let
           commonSockets = { };
           otherSockets =
-            if !env.wsl then
+            if !setup.wsl then
               { } else {
               wsl-forward-gpg-extra = {
                 Unit = {
@@ -819,19 +819,4 @@ rec {
         commonSockets // otherSockets;
     };
   };
-
-  # systemd = {
-  #   user = {
-  #     services = {
-  #       teste = {
-  #         Unit = { Description = "Teste"; };
-  #         Service = {
-  #           ExecStart = "sleep infinity";
-  #           Restart = "always";
-  #         };
-  #         Install = { WantedBy = [ "default.target" ]; };
-  #       };
-  #     };
-  #   };
-  # };
 }

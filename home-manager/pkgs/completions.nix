@@ -9,6 +9,7 @@ stdenv.mkDerivation {
   buildPhase = ''
     ${kubectl}/bin/kubectl completion bash | sed 's/kubectl/kubecolor/g' > kubecolor.bash
     ${nodejs}/bin/node --completion-bash > node.bash
+    echo '_completion_loader home-manager; complete -o default -F _home-manager_completions hm' > hm.bash
   '';
   installPhase = ''
     installShellCompletion *.bash

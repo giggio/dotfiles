@@ -29,10 +29,7 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       pkgs-master = inputs.nixpkgs-master.legacyPackages."${system}";
-    in
-    {
-      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
-      homeConfigurations."giggio" = home-manager.lib.homeManagerConfiguration {
+      mkHomeManagerConfiguration = { extraSpecialArgs, ... }: home-manager.lib.homeManagerConfiguration ({
         inherit pkgs;
 
         modules = [ ./home.nix ];
@@ -40,7 +37,49 @@
         extraSpecialArgs = {
           inherit inputs;
           inherit pkgs-master;
+        } // extraSpecialArgs;
+      });
+    in
+    {
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
+      homeConfigurations =
+        let
+          setup = {
+            wsl = false;
+            basicSetup = false;
+            isNixOS = false;
+          };
+        in
+        {
+          # available profiles: giggio, giggio_wsl, giggio_nixos, giggio_basic, giggio_wsl_basic, giggio_nixos_basic
+          giggio = mkHomeManagerConfiguration {
+            extraSpecialArgs = { inherit setup; };
+          };
+          giggio_wsl = mkHomeManagerConfiguration {
+            extraSpecialArgs = {
+              setup = setup // { wsl = true; };
+            };
+          };
+          giggio_nixos = mkHomeManagerConfiguration {
+            extraSpecialArgs = {
+              setup = setup // { isNixOS = true; };
+            };
+          };
+          giggio_basic = mkHomeManagerConfiguration {
+            extraSpecialArgs = {
+              setup = setup // { basicSetup = true; };
+            };
+          };
+          giggio_wsl_basic = mkHomeManagerConfiguration {
+            extraSpecialArgs = {
+              setup = setup // { wsl = true; basicSetup = true; };
+            };
+          };
+          giggio_nixos_basic = mkHomeManagerConfiguration {
+            extraSpecialArgs = {
+              setup = setup // { isNixOS = true; basicSetup = true; };
+            };
+          };
         };
-      };
     };
 }

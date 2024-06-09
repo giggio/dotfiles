@@ -9,8 +9,13 @@ fi
 
 SHOW_HELP=false
 VERBOSE=false
+BASIC_SETUP=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --basic|-b)
+    BASIC_SETUP=true
+    shift
+    ;;
     --help|-h)
     SHOW_HELP=true
     break
@@ -34,6 +39,7 @@ Usage:
   `readlink -f "$0"` [flags]
 
 Flags:
+  -b, --basic              Will only install basic packages to get Bash working
       --verbose            Show verbose output
   -h, --help               help
 EOF
@@ -41,8 +47,14 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS"
+  writeGreen "Running `basename "$0"` $ALL_ARGS
+  Basic setup is $BASIC_SETUP"
 fi
+
+if $VERBOSE; then
+  writeBlue "Setting basic setup to $BASIC_SETUP in /etc/profile.d/01-basic-setup.sh."
+fi
+echo "export BASIC_SETUP=$BASIC_SETUP" > /etc/profile.d/01-basic-setup.sh
 
 if ! [[ `locale -a` =~ en_US\.utf8 ]]; then
   writeBlue "Generate location."

@@ -86,6 +86,21 @@ fi
 
 setAlternative editor /usr/bin/vim.basic
 
+# todo: find a way to create apparmor profiles for nix packages
+# until then, make apparmor allow unprivileged user namespaces
+# This became a problem since Ubuntu 24.04
+# See: https://discourse.ubuntu.com/t/ubuntu-24-04-lts-noble-numbat-release-notes/39890#unprivileged-user-namespace-restrictions-15
+if [ -f /etc/sysctl.d/60-apparmor-namespace.conf ]; then
+  if $VERBOSE; then
+    writeBlue "Apparmor is already set to allow unprivileged user namespaces."
+  fi
+else
+  if $VERBOSE; then
+    writeBlue "Setting Apparmor to allow unprivileged user namespaces."
+  fi
+  echo 'kernel.apparmor_restrict_unprivileged_userns=0' > /etc/sysctl.d/60-apparmor-namespace.conf
+fi
+
 if $WSL; then
   "$BASEDIR"/configure-root-env-wsl.sh "$@"
 elif $ANDROID; then

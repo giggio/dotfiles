@@ -16,6 +16,7 @@ in
 rec {
   imports = [
     ./dconf/dconf.nix
+    ./virtualbox.nix
     # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
     (builtins.fetchurl {
       url = "https://raw.githubusercontent.com/Smona/home-manager/nixgl-compat/modules/misc/nixgl.nix";
@@ -59,7 +60,9 @@ rec {
     preferXdgDirectories = true;
     packages =
       let
+        nixGLwrap = pkg: if setup.isNixOS then pkg else config.lib.nixGL.wrap pkg;
         basic_pkgs = (with pkgs; [
+          # common basic packages
           bash
           bash-completion
           extra-completions
@@ -144,132 +147,141 @@ rec {
           (bats.withLibraries (p: [ p.bats-support p.bats-assert ]))
           git-ignore
           http-server
-        ]);
-        wsl_pkgs = lib.lists.optionals setup.wsl (with pkgs; [ wslu ]);
-        not_wsl_pkgs = lib.lists.optionals (!setup.wsl)
-          (with pkgs; [
-            android-tools
-            bitwarden-desktop
-            blanket
-            bubblewrap
-            eartag
-            eyedropper
-            firefox
-            forge-sparks
-            gnome.gnome-contacts
-            gnome.polari
-            gnome-podcasts
-            gnome-solanum
-            gnome-extension-manager
-            hwloc
-            keybase-gui
-            newsflash
-            nixGLIntel
-            obsidian
-            onlyoffice-bin
-            openrgb-with-all-plugins
-            pinta
-            remmina
-            shortwave
-            switcheroo
-            telegram-desktop
-            textpieces
-            vlc
-            warp
-            youtube-music
-            xclip
-            (nerdfonts.override { fonts = [ "CascadiaCode" "NerdFontsSymbolsOnly" ]; })
-            (config.lib.nixGL.wrap kitty)
-          ] ++ (with gnomeExtensions; [
-            # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
-            blur-my-shell
-            burn-my-windows
-            clipboard-history
-            compiz-alike-magic-lamp-effect
-            compiz-windows-effect
-            desktop-cube # not enabled
-            fly-pie
-            freon
-            hibernate-status-button
-            workspace-matrix
-          ])
-          );
-
-        extra_pkgs = lib.lists.optionals (!setup.basicSetup)
-          (with pkgs; [
-            chart-releaser
-            docker-show-context
-            deno
-            opentofu
-            krew
-            ctop
-            go
-            gcc
-            docker-slim
-            asciinema
-            bison
-            cowsay
-            figlet
-            fontforge
-            ghostscript
-            gzip
-            inotify-tools
-            neovim
-            nmap
-            pandoc
-            ripgrep
-            screenfetch
-            shellcheck
-            silver-searcher
-            w3m
-            chromium
-            temurin-bin-21
-            maven
-            azure-cli
-            kubectl
-            kubespy
-            dive
-            kubernetes-helm
-            istioctl
-            tflint
-            gh
-            gh-copilot
-            k9s
-            awscli2
-            k3d
-            act
-            kn
-            func
-            kubecolor
-            k6
-            xlsx2csv
-            clolcat
-            bandwhich
-            cargo-update
-            cargo-edit
-            cargo-expand
-            cargo-outdated
-            cargo-watch
-            cargo-cross
-            gping
-            grex
-            sccache
-            tokei
-            gox
-            manifest-tool
-            shfmt
-            dconf2nix
-            neofetch
-            imagemagick
-            git-lfs
-            kubectx
-            lazydocker
-          ]);
-        nixos_pkgs = lib.lists.optionals setup.isNixOS
-          (with pkgs; [
-            vscode-fhs
-          ]);
-        all_packages = basic_pkgs ++ wsl_pkgs ++ not_wsl_pkgs ++ extra_pkgs ++ nixos_pkgs;
+        ] ++ (if setup.wsl then [
+          # wsl basic packages
+          wslu
+        ] else [
+          # non wsl basic packages
+          android-tools
+          bitwarden-desktop
+          blanket
+          bubblewrap
+          eartag
+          eyedropper
+          firefox
+          forge-sparks
+          gnome.gnome-contacts
+          gnome.polari
+          gnome-podcasts
+          gnome-solanum
+          gnome-extension-manager
+          hwloc
+          keybase-gui
+          newsflash
+          obsidian
+          onlyoffice-bin
+          openrgb-with-all-plugins
+          pinta
+          remmina
+          shortwave
+          switcheroo
+          telegram-desktop
+          textpieces
+          vlc
+          warp
+          youtube-music
+          xclip
+          (nerdfonts.override { fonts = [ "CascadiaCode" "NerdFontsSymbolsOnly" ]; })
+          (nixGLwrap kitty)
+        ] ++ (with gnomeExtensions; [
+          # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
+          blur-my-shell
+          burn-my-windows
+          clipboard-history
+          compiz-alike-magic-lamp-effect
+          compiz-windows-effect
+          desktop-cube # not enabled
+          fly-pie
+          freon
+          hibernate-status-button
+          workspace-matrix
+        ])
+        ) ++ (if setup.isNixOS then [
+          # NixOS basic packages
+          vscode-fhs
+        ] else [
+          # non NixOS basic packages
+          nixGLIntel
+        ]));
+        non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs; [
+          # common non basic packages
+          chart-releaser
+          docker-show-context
+          deno
+          opentofu
+          krew
+          ctop
+          go
+          gcc
+          docker-slim
+          asciinema
+          bison
+          cowsay
+          figlet
+          fontforge
+          ghostscript
+          gzip
+          inotify-tools
+          neovim
+          nmap
+          pandoc
+          ripgrep
+          screenfetch
+          shellcheck
+          silver-searcher
+          w3m
+          chromium
+          temurin-bin-21
+          maven
+          azure-cli
+          kubectl
+          kubespy
+          dive
+          kubernetes-helm
+          istioctl
+          tflint
+          gh
+          gh-copilot
+          k9s
+          awscli2
+          k3d
+          act
+          kn
+          func
+          kubecolor
+          k6
+          xlsx2csv
+          clolcat
+          bandwhich
+          cargo-update
+          cargo-edit
+          cargo-expand
+          cargo-outdated
+          cargo-watch
+          cargo-cross
+          gping
+          grex
+          sccache
+          tokei
+          gox
+          manifest-tool
+          shfmt
+          dconf2nix
+          neofetch
+          imagemagick
+          git-lfs
+          kubectx
+          lazydocker
+        ] ++ (if setup.wsl then [
+          # wsl non basic packages
+        ] else [
+          # non wsl non basic packages
+        ]) ++ (if setup.isNixOS then [
+          # NixOS non basic packages
+        ] else [
+          # non NixOS non basic packages
+        ]));
+        all_packages = basic_pkgs ++ non_basic_pkgs;
       in
       all_packages;
 

@@ -26,12 +26,24 @@ _hm () {
       local basic_setup=false
     fi
   fi
-  # available profiles: giggio, giggio_wsl, giggio_nixos, giggio_basic, giggio_wsl_basic, giggio_nixos_basic
-  local profile='giggio'
+  local product_name
+  product_name=`cat /sys/devices/virtual/dmi/id/product_name`
+  if [ "$product_name" == "VirtualBox" ]; then
+    local is_virtualbox=true
+  else
+    local is_virtualbox=false
+  fi
+  # available profiles: giggio, giggio_wsl, giggio_virtualbox_nixos, giggio_nixos, giggio_basic, giggio_wsl_basic, giggio_virtualbox_basic, giggio_virtualbox_nixos_basic, giggio_nixos_basic
+  local profile=giggio
   if $wsl; then
-    profile+='_wsl'
-  elif $is_nixos; then
-    profile+='_nixos'
+    profile+=_wsl
+  else
+    if $is_virtualbox; then
+      profile+=_virtualbox
+    fi
+    if $is_nixos; then
+      profile+=_nixos
+    fi
   fi
   if $basic_setup; then profile+='_basic'; fi
   local args=("$@")

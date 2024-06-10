@@ -15,8 +15,6 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # for when a package takes a while to get into nixos-unstable. See https://status.nixos.org/.
-    nixpkgs-master.url = "github:nixos/nixpkgs/master";
   };
 
   outputs =
@@ -24,7 +22,6 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      pkgs-master = inputs.nixpkgs-master.legacyPackages."${system}";
       mkHomeManagerConfiguration = { extraSpecialArgs, ... }: home-manager.lib.homeManagerConfiguration ({
         inherit pkgs;
 
@@ -32,7 +29,6 @@
 
         extraSpecialArgs = {
           inherit inputs;
-          inherit pkgs-master;
         } // extraSpecialArgs;
       });
     in

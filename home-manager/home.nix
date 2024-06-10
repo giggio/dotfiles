@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, setup, pkgs-master, ... }:
+{ config, pkgs, lib, inputs, setup, ... }:
 
 let
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;

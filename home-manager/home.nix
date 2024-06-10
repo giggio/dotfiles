@@ -1,7 +1,6 @@
 { config, pkgs, lib, inputs, setup, pkgs-master, ... }:
 
 let
-  githooks = inputs.githooks.packages."${pkgs.system}".default;
   nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
   # but, be careful, this is used by nushell and bash (.bashrc)

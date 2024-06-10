@@ -9,6 +9,7 @@
         enabled-extensions = with pkgs.gnomeExtensions; [
           blur-my-shell.extensionUuid
           burn-my-windows.extensionUuid
+          caffeine.extensionUuid
           clipboard-history.extensionUuid
           compiz-alike-magic-lamp-effect.extensionUuid
           compiz-windows-effect.extensionUuid
@@ -23,7 +24,7 @@
         active-profile = (lib.mkForce "/home/giggio/.config/burn-my-windows/profiles/open.conf");
       };
       "org/gnome/desktop/wm/keybindings" = {
-        maximize = [ "<Super>Up" ];
+        maximize = (lib.mkForce [ "<Super>Up" ]);
       };
     };
   };

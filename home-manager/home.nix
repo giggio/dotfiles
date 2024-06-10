@@ -188,6 +188,7 @@ rec {
           # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
           blur-my-shell
           burn-my-windows
+          caffeine
           clipboard-history
           compiz-alike-magic-lamp-effect
           compiz-windows-effect

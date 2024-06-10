@@ -58,6 +58,7 @@ DCONF_CONFIGS=(
   "org/gnome/desktop/wm/keybindings"
   "org/gnome/shell/extensions/blur-my-shell"
   "org/gnome/shell/extensions/burn-my-windows"
+  "org/gnome/shell/extensions/caffeine"
   "org/gnome/shell/extensions/clipboard-history"
   "org/gnome/shell/extensions/com/github/hermes83/compiz-windows-effect"
   "org/gnome/shell/extensions/dash-to-dock"
@@ -71,7 +72,7 @@ DCONF_CONFIGS=(
   "org/gnome/settings-daemon/plugins"
   "desktop/ibus/panel/emoji"
 )
-BASE_DATA_DIR="$BASEDIR/home-manager/dconf"
+BASE_DATA_DIR="$BASEDIR/home-manager/dconf/exported"
 find "$BASE_DATA_DIR" -mindepth 1 -maxdepth 1 -type d -exec rm -r '{}' \;
 if $VERBOSE; then writeGreen "Will export to: $BASE_DATA_DIR"; fi
 dconfnixfile='{
@@ -89,12 +90,11 @@ for FULL_CONFIG in "${DCONF_CONFIGS[@]}"; do
   dconf dump "/$FULL_CONFIG/" | dconf2nix --root "$FULL_CONFIG" > "$CONFIG_FILE"
 done
 dconfnixfile+='
-    ./dconf-config.nix
   ];
 }'
 if $VERBOSE; then writeGreen "Formatting files..."; fi
 pushd "$BASEDIR/home-manager/" > /dev/null
 nix fmt
 popd > /dev/null
-if $VERBOSE; then writeGreen "Creating $BASE_DATA_DIR/dconf.nix file..."; fi
-echo "$dconfnixfile" > "$BASE_DATA_DIR/dconf.nix"
+if $VERBOSE; then writeGreen "Creating $BASE_DATA_DIR/dconf-exported.nix file..."; fi
+echo "$dconfnixfile" > "$BASE_DATA_DIR/dconf-exported.nix"

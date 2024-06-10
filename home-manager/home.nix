@@ -126,8 +126,7 @@ rec {
           dust
           fd
           just
-          # todo: change to nushell when the nixos-unstable branch gets updates from master.See https://status.nixos.org/
-          pkgs-master.nushell
+          nushell
           procs
           tealdeer
           githooks

@@ -708,6 +708,18 @@ rec {
 
   systemd = {
     user = {
+      settings = {
+        Manager = {
+          ManagerEnvironment = {
+            XDG_DATA_DIRS = "%u/.local/share:%u/.local/share/flatpak/exports/share:%u/.nix-profile/share:/nix/var/nix/profiles/default/share:/usr/local/share/:/usr/share/:/usr/share/gnome:/usr/share/ubuntu:/var/lib/flatpak/exports/share:/var/lib/snapd/desktop";
+            PATH = "/bin:%u/.local/bin:%u/.local/share/npm/bin:%u/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/sbin:/snap/bin:/usr/bin:/usr/games:/usr/local/bin:/usr/local/games:/usr/local/sbin:/usr/sbin";
+          };
+          DefaultEnvironment = {
+            XDG_DATA_DIRS = "%u/.local/share:%u/.local/share/flatpak/exports/share:%u/.nix-profile/share:/nix/var/nix/profiles/default/share:/usr/local/share/:/usr/share/:/usr/share/gnome:/usr/share/ubuntu:/var/lib/flatpak/exports/share:/var/lib/snapd/desktop";
+            PATH = "/bin:%u/.local/bin:%u/.local/share/npm/bin:%u/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/sbin:/snap/bin:/usr/bin:/usr/games:/usr/local/bin:/usr/local/games:/usr/local/sbin:/usr/sbin";
+          };
+        };
+      };
       startServices = "sd-switch";
       targets =
         let

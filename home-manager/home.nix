@@ -83,7 +83,7 @@ rec {
           pinentry-gnome3
           vim_configurable
           htop
-          git
+          gitFull
           starship
           nix-index
           xdg-utils

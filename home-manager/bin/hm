@@ -47,6 +47,7 @@ _hm () {
   fi
   if $basic_setup; then profile+='_basic'; fi
   local args=("$@")
+  local get_profile=false
   local verbose=false
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -54,11 +55,19 @@ _hm () {
       verbose=true
       shift
       ;;
+      --get-profile)
+      get_profile=true
+      shift
+      ;;
       *)
       shift
       ;;
     esac
   done
+  if $get_profile; then
+    echo $profile
+    return
+  fi
   if $verbose; then
     echo -e "\e[32mRunning:\e[0m \e[34m`readlink -f "$0"`\e[0m --flake $HOME/.dotfiles/home-manager?submodules=1#$profile ${args[*]}"
   fi

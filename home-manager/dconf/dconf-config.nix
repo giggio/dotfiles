@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   dconf = {
@@ -18,6 +18,9 @@
           hibernate-status-button.extensionUuid
           workspace-matrix.extensionUuid
         ];
+      };
+      "org/gnome/shell/extensions/burn-my-windows" = {
+        active-profile = (lib.mkForce "/home/giggio/.config/burn-my-windows/profiles/open.conf");
       };
       "org/gnome/desktop/wm/keybindings" = {
         maximize = [ "<Super>Up" ];

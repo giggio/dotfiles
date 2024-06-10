@@ -28,6 +28,7 @@ rec {
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
         "code"
         "gh-copilot"
+        "microsoft-edge-stable"
         "obsidian"
         "terraform"
         "vault"
@@ -204,6 +205,7 @@ rec {
         ]));
         non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs; [
           # common non basic packages
+          apparmor-utils
           chart-releaser
           docker-show-context
           deno
@@ -275,6 +277,7 @@ rec {
           # wsl non basic packages
         ] else [
           # non wsl non basic packages
+          microsoft-edge
           (nixGLwrap obs-studio)
           kdePackages.kdenlive
           glaxnimate

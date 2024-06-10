@@ -27,9 +27,11 @@ rec {
     config = {
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
         "code"
+        "discord"
         "gh-copilot"
         "microsoft-edge-stable"
         "obsidian"
+        "slack"
         "terraform"
         "vault"
         "vscode"
@@ -278,6 +280,8 @@ rec {
         ] else [
           # non wsl non basic packages
           microsoft-edge
+          slack
+          discord
           (nixGLwrap obs-studio)
           kdePackages.kdenlive
           glaxnimate
@@ -285,8 +289,6 @@ rec {
           vscode-fhs
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
-          discord
-          slack
           # protonup-qt # to use with steam
         ] else [
           # non NixOS non basic packages

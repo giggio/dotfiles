@@ -152,7 +152,7 @@ if ! $WSL; then
     patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$BASEDIR"/patches/pam.py.patch
   fi
 
-  function install_platpak_pkgs () {
+  function install_flatpak_pkgs () {
     local flatpak_basic_pkgs_to_install=$1
     local flatpak_pkgs_to_install=$2
     if $BASIC_SETUP; then
@@ -171,8 +171,31 @@ if ! $WSL; then
       writeBlue "Not installing packages with Flatpak, they are all already installed."
     fi
   }
-  install_platpak_pkgs '' "`echo "com.valvesoftware.Steam
+  install_flatpak_pkgs '' "`echo "com.valvesoftware.Steam
 net.davidotek.pupgui2" | sort`" ''
+
+  function install_snap_pkgs () {
+    local snap_basic_pkgs_to_install=$1
+    local snap_pkgs_to_install=$2
+    if $BASIC_SETUP; then
+      snap_pkgs_to_install=$snap_basic_pkgs_to_install
+    else
+      snap_pkgs_to_install=`echo "$snap_basic_pkgs_to_install"$'\n'"$snap_pkgs_to_install" | sort`
+    fi
+    snap_pkgs_installed=`snap list | awk '{ print $1 }' | tail -n+2 | sort -u`
+    snap_pkgs_not_installed=`comm -23 <(echo "$snap_pkgs_to_install") <(echo "$snap_pkgs_installed")`
+    if [ "$snap_pkgs_not_installed" != "" ]; then
+      # shellcheck disable=SC2086
+      writeBlue Run custom installations with Snap: $snap_pkgs_not_installed
+      # shellcheck disable=SC2086
+      echo "$snap_pkgs_not_installed" | xargs -t -L1 snap install
+    elif $VERBOSE; then
+      writeBlue "Not installing packages with Snap, they are all already installed."
+    fi
+  }
+  install_snap_pkgs '' "`echo "code
+code-insiders
+slack" | sort`" ''
 
 fi
 
@@ -189,6 +212,7 @@ if $UPDATE; then
   writeBlue "Upgrade with APT."
   apt-get upgrade -y
   flatpak update -y
+  snap refresh
 else
   if $VERBOSE; then
     writeBlue "Not updating with APT."

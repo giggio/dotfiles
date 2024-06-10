@@ -72,6 +72,7 @@ rec {
           dotnet-tools
           terraform
           vault
+          psmisc
           coreutils-full
           util-linux
           libnotify

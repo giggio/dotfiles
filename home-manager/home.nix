@@ -198,7 +198,6 @@ rec {
         ])
         ) ++ (if setup.isNixOS then [
           # NixOS basic packages
-          vscode-fhs
         ] else [
           # non NixOS basic packages
           nixGLIntel
@@ -276,8 +275,16 @@ rec {
           # wsl non basic packages
         ] else [
           # non wsl non basic packages
+          (nixGLwrap obs-studio)
+          kdePackages.kdenlive
+          glaxnimate
+          openshot-qt
+          vscode-fhs
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
+          discord
+          slack
+          # protonup-qt # to use with steam
         ] else [
           # non NixOS non basic packages
         ]));

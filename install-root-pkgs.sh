@@ -195,6 +195,7 @@ net.davidotek.pupgui2" | sort`" ''
   }
   install_snap_pkgs '' "`echo "code
 code-insiders
+discord
 slack" | sort`" ''
 
 fi

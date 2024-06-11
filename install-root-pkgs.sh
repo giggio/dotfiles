@@ -193,8 +193,7 @@ net.davidotek.pupgui2" | sort`" ''
       writeBlue "Not installing packages with Snap, they are all already installed."
     fi
   }
-  install_snap_pkgs '' "`echo "code
-code-insiders" | sort`" ''
+  install_snap_pkgs '' ''
 
 fi
 

@@ -287,11 +287,12 @@ rec {
           kdePackages.kdenlive
           glaxnimate
           openshot-qt
-          vscode-fhs
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
+          vscode-fhs
           # protonup-qt # to use with steam
         ] else [
+          vscode
           # non NixOS non basic packages
         ]));
         all_packages = basic_pkgs ++ non_basic_pkgs;

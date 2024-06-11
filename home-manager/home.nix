@@ -280,7 +280,6 @@ rec {
         ] else [
           # non wsl non basic packages
           whatsapp-for-linux
-          microsoft-edge
           slack
           discord
           (nixGLwrap obs-studio)
@@ -290,9 +289,11 @@ rec {
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
           vscode-fhs
+          microsoft-edge
           # protonup-qt # to use with steam
         ] else [
           vscode
+          microsoft-edge-pipewire
           # non NixOS non basic packages
         ]));
         all_packages = basic_pkgs ++ non_basic_pkgs;

@@ -20,4 +20,5 @@ with pkgs;
   chart-releaser = callPackage ./golang/chart-releaser.nix { };
   docker-show-context = callPackage ./golang/docker-show-context.nix { };
   kubectl-aliases = callPackage ./aliases/kubectl-aliases.nix { };
+  microsoft-edge-pipewire = callPackage ./ms-edge.nix { };
 }

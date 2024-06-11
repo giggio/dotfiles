@@ -279,6 +279,7 @@ rec {
           # wsl non basic packages
         ] else [
           # non wsl non basic packages
+          whatsapp-for-linux
           microsoft-edge
           slack
           discord

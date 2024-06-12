@@ -164,6 +164,7 @@ rec {
           forge-sparks
           gnome.gnome-contacts
           gnome.polari
+          gnome.gnome-tweaks
           gnome-podcasts
           gnome-solanum
           gnome-extension-manager
@@ -207,6 +208,8 @@ rec {
         ]));
         non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs; [
           # common non basic packages
+          ccd2iso
+          iat
           apparmor-utils
           chart-releaser
           docker-show-context
@@ -280,16 +283,17 @@ rec {
         ] else [
           # non wsl non basic packages
           whatsapp-for-linux
-          microsoft-edge
           slack
           discord
           (nixGLwrap obs-studio)
           kdePackages.kdenlive
           glaxnimate
           openshot-qt
+          wireshark
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
           vscode-fhs
+          microsoft-edge
           # protonup-qt # to use with steam
         ] else [
           vscode

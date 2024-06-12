@@ -24,7 +24,7 @@
         active-profile = (lib.mkForce "/home/giggio/.config/burn-my-windows/profiles/open.conf");
       };
       "org/gnome/desktop/wm/keybindings" = {
-        maximize = (lib.mkForce [ "<Super>Up" ]);
+        maximize = (lib.mkForce [ "<Super>k" ]);
       };
     };
   };

@@ -9,11 +9,9 @@ with lib.hm.gvariant;
       countdown-timer = 15;
       duration-timer = 2;
       enable-fullscreen = false;
-      indicator-position-max = 3;
+      indicator-position-max = 1;
       restore-state = false;
       screen-blank = "always";
-      toggle-state = false;
-      user-enabled = false;
     };
 
   };

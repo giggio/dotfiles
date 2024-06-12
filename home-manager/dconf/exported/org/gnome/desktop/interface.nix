@@ -10,9 +10,11 @@ with lib.hm.gvariant;
       clock-show-seconds = true;
       clock-show-weekday = true;
       color-scheme = "prefer-dark";
+      cursor-theme = "Adwaita";
       enable-hot-corners = false;
       gtk-theme = "Yaru-viridian-dark";
       icon-theme = "Yaru-viridian";
+      locate-pointer = false;
     };
 
   };

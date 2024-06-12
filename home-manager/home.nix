@@ -705,6 +705,12 @@ rec {
       enableScDaemon = true;
       enableSshSupport = true;
       pinentryPackage = pkgs.pinentry-gnome3;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+      defaultCacheTtl = 34560000; # 400 days
+      defaultCacheTtlSsh = 34560000;
+      maxCacheTtl = 34560000;
+      maxCacheTtlSsh = 34560000;
     };
     keybase.enable = !setup.wsl;
     kbfs.enable = !setup.wsl;

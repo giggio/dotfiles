@@ -593,6 +593,7 @@ rec {
             Icon=com.mardojai.ForgeSparks
           '';
         "burn-my-windows/profiles/close.conf".source = ./dconf/cfg/burn-close.conf;
+        "burn-my-windows/profiles/close-edge.conf".source = ./dconf/cfg/burn-close-edge.conf;
         "burn-my-windows/profiles/open.conf".source = ./dconf/cfg/burn-open.conf;
         "alacritty".source = ./config/alacritty;
         "navi/config.yaml".source = ./config/navi-config.yaml;

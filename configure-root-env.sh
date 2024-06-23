@@ -108,6 +108,17 @@ elif $ANDROID; then
 else
   # non-WSL, non-Android
 
+  # Kill users process on exit using logind
+  if [ -f /etc/systemd/logind.conf ]; then
+    if $VERBOSE; then
+      writeBlue "Setting KillUserProcesses=yes in /etc/systemd/logind.conf."
+    fi
+    sed -i 's/#KillUserProcesses=no/KillUserProcesses=yes/' /etc/systemd/logind.conf
+    systemctl reload systemd-logind
+  else
+    writeBlue "Logind configuration file does not exist."
+  fi
+
   # patch /etc/pam.d/common-session-noninteractive, see: https://askubuntu.com/a/1052885/832580
   # this is to allow encrypted home to unmount on logout
   verbose_flag=

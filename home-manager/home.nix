@@ -328,10 +328,6 @@ rec {
 
     file = {
       ".cargo/.keep".text = "";
-      ".local/lib/systemd/wsl-forward-gpg" = {
-        enable = setup.wsl;
-        source = ./systemd/wsl-forward-gpg;
-      };
       ".local/bin/dotnet-uninstall".source = ./bin/dotnet-uninstall;
       ".local/bin/hm".source = ./bin/hm;
       ".hushlogin".text = "";
@@ -796,7 +792,7 @@ rec {
                   Wants = "network-online.target";
                 };
                 Service = {
-                  ExecStart = "%h/.local/lib/systemd/wsl-forward-gpg --gpg-extra --instance %i";
+                  ExecStart = "${./systemd/wsl-forward-gpg} --gpg-extra --instance %i";
                 };
               };
               "wsl-forward-gpg@" = {
@@ -807,7 +803,7 @@ rec {
                   Wants = "network-online.target";
                 };
                 Service = {
-                  ExecStart = "%h/.local/lib/systemd/wsl-forward-gpg --gpg --instance %i";
+                  ExecStart = "${./systemd/wsl-forward-gpg} --gpg --instance %i";
                 };
               };
               "wsl-forward-ssh@" = {
@@ -818,7 +814,7 @@ rec {
                   Wants = "network-online.target";
                 };
                 Service = {
-                  ExecStart = "%h/.local/lib/systemd/wsl-forward-gpg --ssh --instance %i";
+                  ExecStart = "${./systemd/wsl-forward-gpg} --ssh --instance %i";
                 };
               };
             };

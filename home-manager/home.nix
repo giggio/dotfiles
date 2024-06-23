@@ -428,7 +428,7 @@ rec {
         '';
       profileExtra =
         ''
-          # begin of .profile
+          # beginning of .profile
           umask 022
           if ! [ -v XDG_RUNTIME_DIR ]; then
             XDG_RUNTIME_DIR=/run/user/`id -u`/
@@ -438,6 +438,7 @@ rec {
               chmod 755 "$XDG_RUNTIME_DIR"
             fi
           fi
+          # ending of .profile
         '';
       historySize = -1;
       historyFileSize = -1;
@@ -493,6 +494,7 @@ rec {
         ghcs = "gh-copilot suggest";
         mg = "kitty +kitten hyperlinked_grep --smart-case";
         keys = "dconf dump /org/gnome/desktop/wm/keybindings/";
+        cdr = "cd `git rev-parse --show-toplevel 2> /dev/null || echo '.'`";
       };
       shellOptions = [
         "histappend"

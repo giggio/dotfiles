@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+# This script mounts and on exit unmounts an ecryptfs mount point, using a key file.
+# Waiting for the sleep fg process to finish will keep this script in memory and
+# make sure that even if the encrypted home directory is unmounted, the trap will be executed
+# and the data directory will be unmounted.
+# This will only make sense if the home directory is also encrypted.
+
+# To create the key file add a text file with a single line without spaces to $XDG_CONFIG_HOME/mount/key
+# Then run:
+# cat $XDG_CONFIG_HOME/mount/key | ecryptfs-add-passphrase --fnek -
+# This will give you two signatures, add them to ~/.ecryptfs/data.sig, like this:
+# mvo74wq7jg5u927z
+# jqbc5ekxmjecqdv4
+# Also add to ~/.ecryptfs/data.conf the source and target directories, like this:
+# /media/abc /mnt/data ecryptfs
+# And create /mnt/data and chown it to the user.
+# The names `data.conf` and `data.sig` matter.
+
+set -euo pipefail
+
+unmount () {
+  echo "Stopping ($$)..."
+  if mount -t ecryptfs | grep -q /mnt/data; then
+    umount.ecryptfs_private -f data
+    echo "Unmounted."
+  else
+    echo "Not mounted."
+  fi
+  if ps -p $FG_PID -o comm= 1> /dev/null; then
+    kill -SIGTERM $FG_PID
+  fi
+  exit 0
+}
+trap 'unmount' SIGTERM
+
+mount_dir () {
+  echo "Mounting ($$)..."
+  local key_file="${XDG_CONFIG_HOME:-$HOME/.config}/mount/key"
+  if mount -t ecryptfs | grep -q /mnt/data; then
+    echo "Already mounted."
+  else
+    if [ ! -f "$key_file" ]; then
+      >&2 echo "Key file ($key_file) not found."
+      exit 1
+    fi
+    if [ "`stat --format %a "$key_file"`" -ne 600 ]; then
+      >&2 echo "Key file ($key_file) permissions are not 600, they are too open."
+      exit 1
+    fi
+    ecryptfs-add-passphrase --fnek - 1> /dev/null < "$key_file"
+    mount.ecryptfs_private data
+    echo "Mounted."
+  fi
+}
+mount_dir
+
+sleep infinity &
+export FG_PID=$!
+wait $FG_PID

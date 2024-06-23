@@ -763,7 +763,19 @@ rec {
           commonServices = { };
           otherServices =
             if !setup.wsl then
-              { } else {
+              {
+                mount-data = {
+                  Unit = { Description = "Mount private and ecrypted directory"; };
+                  Service = {
+                    ExecStart = [ ./systemd/mount-data ];
+                    StandardOutput = "journal";
+                    Type = "simple";
+                  };
+                  Install = {
+                    WantedBy = [ "default.target" ];
+                  };
+                };
+              } else {
               # todo: remove. Necessary to run some wayland apps in WSL until https://github.com/microsoft/wslg/issues/1156#issuecomment-2094572691 gets fixed
               wsl-symlink-wayland = {
                 Unit = { Description = "Symlink WSL wayland socket"; };

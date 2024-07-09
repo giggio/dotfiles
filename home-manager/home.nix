@@ -703,6 +703,10 @@ rec {
       defaultCacheTtlSsh = 34560000;
       maxCacheTtl = 34560000;
       maxCacheTtlSsh = 34560000;
+      extraConfig =
+        ''
+          pinentry-timeout 34560000
+        '';
     };
     keybase.enable = !setup.wsl;
     kbfs.enable = !setup.wsl;

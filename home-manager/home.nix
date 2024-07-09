@@ -152,7 +152,6 @@ rec {
           android-tools
           bitwarden-desktop
           blanket
-          bubblewrap
           eartag
           eyedropper
           firefox

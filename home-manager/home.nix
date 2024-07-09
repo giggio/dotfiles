@@ -41,6 +41,8 @@ rec {
       inputs.fenix.overlays.default
       (final: prev: (import ./pkgs/default.nix { pkgs = prev; }))
       # todo: remove patch when https://github.com/nix-community/dconf2nix/pull/95 is released and gets merged into nixpkgs
+      # check if https://github.com/nix-community/dconf2nix/releases/latest is > 0.1.1
+      # and https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/development/tools/haskell/dconf2nix/dconf2nix.nix
       (final: prev:
         {
           dconf2nix = prev.dconf2nix.overrideAttrs (old: {

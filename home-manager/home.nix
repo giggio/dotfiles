@@ -93,7 +93,6 @@ rec {
           nil
           nixpkgs-fmt
           bat
-          pipx
           iperf
           inetutils
           jq
@@ -120,10 +119,6 @@ rec {
           tzdata
           unzip
           zip
-          (python3.withPackages (python-pkgs: [
-            python-pkgs.semver
-            python-pkgs.pygments
-          ]))
           docker-client
           docker-compose
           dust
@@ -479,7 +474,6 @@ rec {
         git = "hub";
         istio = "istioctl";
         tf = "terraform";
-        ccat = "pygmentize -g -O style=vs -f console16m";
         "cd-" = "cd -";
         "cd.." = "cd ..";
         "cd..." = "cd ../..";

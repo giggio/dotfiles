@@ -89,7 +89,6 @@ rec {
           vim_configurable
           htop
           gitFull
-          starship
           nix-index
           xdg-utils
           nil
@@ -532,6 +531,8 @@ rec {
     };
     starship = {
       enable = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
     };
 
     gpg = {

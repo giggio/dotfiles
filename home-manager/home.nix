@@ -203,6 +203,7 @@ rec {
         ]));
         non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs; [
           # common non basic packages
+          hugo
           ccd2iso
           iat
           apparmor-utils

@@ -275,6 +275,7 @@ rec {
           git-lfs
           kubectx
           lazydocker
+          mqttx
         ] ++ (if setup.wsl then [
           # wsl non basic packages
         ] else [

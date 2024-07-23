@@ -27,9 +27,14 @@ _hm () {
     fi
   fi
   local product_name
-  product_name=`cat /sys/devices/virtual/dmi/id/product_name`
-  if [ "$product_name" == "VirtualBox" ]; then
-    local is_virtualbox=true
+  if [ -f /sys/devices/virtual/dmi/id/product_name ]; then
+    local product_name
+    product_name=`cat /sys/devices/virtual/dmi/id/product_name`
+    if [ "$product_name" == "VirtualBox" ]; then
+      local is_virtualbox=true
+    else
+      local is_virtualbox=false
+    fi
   else
     local is_virtualbox=false
   fi

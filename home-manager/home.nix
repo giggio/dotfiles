@@ -13,13 +13,15 @@ let
   };
 in
 rec {
-  imports = [
+  imports = (if setup.wsl then [
+  ] else [
     ./dconf/dconf.nix
     ./virtualbox.nix
+  ]) ++ [
     # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
     (builtins.fetchurl {
       url = "https://raw.githubusercontent.com/Smona/home-manager/nixgl-compat/modules/misc/nixgl.nix";
-      sha256 = "74f9fb98f22581eaca2e3c518a0a3d6198249fb1490ab4a08f33ec47827e85db";
+      sha256 = "0g5yk54766vrmxz26l3j9qnkjifjis3z2izgpsfnczhw243dmxz9";
     })
   ];
 
@@ -269,7 +271,6 @@ rec {
           gox
           manifest-tool
           shfmt
-          dconf2nix
           neofetch
           imagemagick
           git-lfs
@@ -280,6 +281,7 @@ rec {
           # wsl non basic packages
         ] else [
           # non wsl non basic packages
+          dconf2nix
           whatsapp-for-linux
           slack
           discord

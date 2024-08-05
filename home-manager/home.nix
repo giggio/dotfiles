@@ -238,7 +238,7 @@ rec {
           chromium
           temurin-bin-21
           maven
-          azure-cli
+          (azure-cli.withExtensions [ azure-cli.extensions.containerapp ])
           kubectl
           kubespy
           dive

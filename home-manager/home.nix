@@ -161,9 +161,9 @@ rec {
           forge-sparks
           gnome.gnome-contacts
           gnome.polari
-          gnome.gnome-tweaks
           gnome-podcasts
           gnome-solanum
+          gnome-tweaks
           gnome-extension-manager
           hwloc
           keybase-gui

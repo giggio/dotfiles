@@ -21,7 +21,7 @@ rec {
     # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
     (builtins.fetchurl {
       url = "https://raw.githubusercontent.com/Smona/home-manager/nixgl-compat/modules/misc/nixgl.nix";
-      sha256 = "0g5yk54766vrmxz26l3j9qnkjifjis3z2izgpsfnczhw243dmxz9";
+      sha256 = "01dkfr9wq3ib5hlyq9zq662mp0jl42fw3f6gd2qgdf8l8ia78j7i";
     })
   ];
 
@@ -37,6 +37,9 @@ rec {
         "terraform"
         "vault"
         "vscode"
+      ];
+      permittedInsecurePackages = [ # todo: remove. This is because of element-desktop. See: https://github.com/NixOS/nixpkgs/pull/334638#issuecomment-2289025802
+        "jitsi-meet-1.0.8043"
       ];
     };
     overlays = [
@@ -261,7 +264,7 @@ rec {
           cargo-update
           cargo-edit
           cargo-expand
-          cargo-outdated
+          # cargo-outdated # todo: build failing, retry later
           cargo-watch
           cargo-cross
           gping

@@ -38,9 +38,6 @@ rec {
         "vault"
         "vscode"
       ];
-      permittedInsecurePackages = [ # todo: remove. This is because of element-desktop. See: https://github.com/NixOS/nixpkgs/pull/334638#issuecomment-2289025802
-        "jitsi-meet-1.0.8043"
-      ];
     };
     overlays = [
       inputs.fenix.overlays.default
@@ -162,8 +159,8 @@ rec {
           eyedropper
           firefox
           forge-sparks
-          gnome.gnome-contacts
-          gnome.polari
+          gnome-contacts
+          polari
           gnome-podcasts
           gnome-solanum
           gnome-tweaks
@@ -264,7 +261,7 @@ rec {
           cargo-update
           cargo-edit
           cargo-expand
-          # cargo-outdated # todo: build failing, retry later
+          cargo-outdated
           cargo-watch
           cargo-cross
           gping

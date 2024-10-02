@@ -566,7 +566,7 @@ rec {
           [
             "# nushell"
           ]
-          (lib.mapAttrsToList (k: v: "$env.${k} = ${v}") shellSessionVariables)
+          (lib.mapAttrsToList (k: v: "$env.${k} = \"${v}\"") shellSessionVariables)
         ]
         );
       in

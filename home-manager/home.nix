@@ -446,50 +446,57 @@ rec {
         # move `shellSessionVariables` here this issue closes and this starts to go to .bashrc
         # but, carefully, `shellSessionVariables` is used by nushell and bash
       };
-      shellAliases = {
-        start = "xdg-open";
-        clip = "xclip -selection clipboard";
-        trash = "trash-put";
-        "??" = "gh-copilot suggest -t shell";
-        "?gh" = "gh-copilot suggest -t gh";
-        "?git" = "gh-copilot suggest -t git";
-        ls = "ls --color=auto --hyperlink=always";
-        dir = "dir --color=auto";
-        vdir = "vdir --color=auto";
-        grep = "grep --color=auto";
-        fgrep = "fgrep --color=auto";
-        egrep = "egrep --color=auto";
-        ll = "eza --long --group --all --all --group-directories-first --hyperlink";
-        la = "ls -A";
-        l = "ls -CF";
-        cls = "clear";
-        alert = ''notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e ";\";";s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//";\";";)"'';
-        add = "git add";
-        st = "git status";
-        log = "git log";
-        ci = "git commit";
-        push = "git push";
-        pushf = "git push --force-with-lease";
-        co = "git checkout";
-        pull = "git pull";
-        fixup = "git fixup";
-        dif = "git diff";
-        pushsync = "git push --set-upstream origin `git rev-parse --abbrev-ref HEAD`";
-        git = "hub";
-        istio = "istioctl";
-        tf = "terraform";
-        "cd-" = "cd -";
-        "cd.." = "cd ..";
-        "cd..." = "cd ../..";
-        "cd...." = "cd ../../..";
-        weather = "curl -s wttr.in";
-        toyaml = "bat --language yaml";
-        ghce = "gh-copilot explain";
-        ghcs = "gh-copilot suggest";
-        mg = "kitty +kitten hyperlinked_grep --smart-case";
-        keys = "dconf dump /org/gnome/desktop/wm/keybindings/";
-        cdr = "cd `git rev-parse --show-toplevel 2> /dev/null || echo '.'`";
-      };
+      shellAliases =
+        let
+          nonWsl = if setup.wsl then { } else {
+            clip = "xclip -selection clipboard";
+          };
+          wslOnly = if setup.wsl then { } else { };
+          common = {
+            start = "xdg-open";
+            trash = "trash-put";
+            "??" = "gh-copilot suggest -t shell";
+            "?gh" = "gh-copilot suggest -t gh";
+            "?git" = "gh-copilot suggest -t git";
+            ls = "ls --color=auto --hyperlink=always";
+            dir = "dir --color=auto";
+            vdir = "vdir --color=auto";
+            grep = "grep --color=auto";
+            fgrep = "fgrep --color=auto";
+            egrep = "egrep --color=auto";
+            ll = "eza --long --group --all --all --group-directories-first --hyperlink";
+            la = "ls -A";
+            l = "ls -CF";
+            cls = "clear";
+            alert = ''notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e ";\";";s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//";\";";)"'';
+            add = "git add";
+            st = "git status";
+            log = "git log";
+            ci = "git commit";
+            push = "git push";
+            pushf = "git push --force-with-lease";
+            co = "git checkout";
+            pull = "git pull";
+            fixup = "git fixup";
+            dif = "git diff";
+            pushsync = "git push --set-upstream origin `git rev-parse --abbrev-ref HEAD`";
+            git = "hub";
+            istio = "istioctl";
+            tf = "terraform";
+            "cd-" = "cd -";
+            "cd.." = "cd ..";
+            "cd..." = "cd ../..";
+            "cd...." = "cd ../../..";
+            weather = "curl -s wttr.in";
+            toyaml = "bat --language yaml";
+            ghce = "gh-copilot explain";
+            ghcs = "gh-copilot suggest";
+            mg = "kitty +kitten hyperlinked_grep --smart-case";
+            keys = "dconf dump /org/gnome/desktop/wm/keybindings/";
+            cdr = "cd `git rev-parse --show-toplevel 2> /dev/null || echo '.'`";
+          };
+        in
+        nonWsl // wslOnly // common;
       shellOptions = [
         "histappend"
         "checkwinsize"

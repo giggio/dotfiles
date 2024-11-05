@@ -40,7 +40,7 @@ rec {
       ];
     };
     overlays = [
-      inputs.fenix.overlays.default
+      inputs.fenix.overlays.default # rust toolchain
       (final: prev: (import ./pkgs/default.nix { pkgs = prev; }))
       # todo: remove patch when https://github.com/nix-community/dconf2nix/pull/95 is released and gets merged into nixpkgs
       # check if https://github.com/nix-community/dconf2nix/releases/latest is > 0.1.1
@@ -115,9 +115,8 @@ rec {
           zoxide
           navi
           ruby_3_2
-          rust-toolchain
+          fenix.complete.toolchain # or fenix.stable.defaultToolchain, or beta. Rust toolchains.
           cargo-completions
-          rust-analyzer
           yq-go
           tzdata
           unzip

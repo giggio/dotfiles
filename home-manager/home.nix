@@ -263,7 +263,7 @@ rec {
           cargo-expand
           cargo-outdated
           cargo-watch
-          cargo-cross
+          # cargo-cross # todo: not building, retry later
           gping
           grex
           sccache

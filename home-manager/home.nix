@@ -146,6 +146,7 @@ rec {
           (bats.withLibraries (p: [ p.bats-support p.bats-assert ]))
           git-ignore
           http-server
+          cachix # install cache, for example, with: $HOME/.nix-profile/bin/cachix use nix-community
         ] ++ (if setup.wsl then [
           # wsl basic packages
           wslu

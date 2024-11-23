@@ -205,6 +205,7 @@ rec {
         ]));
         non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs; [
           # common non basic packages
+          slides
           hugo
           element-desktop
           ccd2iso

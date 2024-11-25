@@ -3,7 +3,7 @@
 # see urls and details at: https://developer.hashicorp.com/terraform/install
 stdenv.mkDerivation rec {
   name = "terraform";
-  version = "1.8.4";
+  version = "1.9.8";
   src =
     let
       arch = {
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     in
     fetchzip {
       url = "https://releases.hashicorp.com/terraform/${version}/terraform_${version}_linux_${arch}.zip";
-      sha256 = "sha256-0AyFvnivHHl6etUNrno3+RddjZPINOSYjJX6Mclp+Fk=";
+      sha256 = "sha256-MkHttcewM/uKPexnk8/gVm9VH8UFDCwPt/EWEBcw9C4=";
       stripRoot = false;
     };
 

@@ -3,7 +3,7 @@
 # see urls and details at: https://developer.hashicorp.com/vault/install
 stdenv.mkDerivation rec {
   name = "vault";
-  version = "1.16.3";
+  version = "1.18.2";
   src =
     let
       arch = {
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     in
     fetchzip {
       url = "https://releases.hashicorp.com/vault/${version}/vault_${version}_linux_${arch}.zip";
-      sha256 = "sha256-ExqFyWKU6hAKn8lRK2gjcsNA5QASJNT9CNJ4koJkzJI=";
+      sha256 = "sha256-l1S/E6NYP6fjPcD7CdNlMKQfbrSCtxIsDjiykmu2+Pc=";
       stripRoot = false;
     };
 

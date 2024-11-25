@@ -291,6 +291,7 @@ rec {
           glaxnimate
           openshot-qt
           wireshark
+          brave
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
           vscode-fhs
@@ -691,14 +692,14 @@ rec {
           "text/docxf" = [ "onlyoffice-desktopeditors.desktop" ];
           "text/oform;" = [ "onlyoffice-desktopeditors.desktop" ];
           # browser:
-          "text/html" = [ "microsoft-edge.desktop" ];
-          "x-scheme-handler/http" = [ "microsoft-edge.desktop" ];
-          "x-scheme-handler/https" = [ "microsoft-edge.desktop" ];
-          "x-scheme-handler/about" = [ "microsoft-edge.desktop" ];
-          "x-scheme-handler/unknown" = [ "microsoft-edge.desktop" ];
-          "application/pdf" = [ "microsoft-edge.desktop" ];
-          "x-scheme-handler/mailto" = [ "microsoft-edge.desktop" ];
-          "application/xhtml+xml" = [ "microsoft-edge.desktop" ];
+          "text/html" = [ "brave-browser.desktop" ];
+          "x-scheme-handler/http" = [ "brave-browser.desktop" ];
+          "x-scheme-handler/https" = [ "brave-browser.desktop" ];
+          "x-scheme-handler/about" = [ "brave-browser.desktop" ];
+          "x-scheme-handler/unknown" = [ "brave-browser.desktop" ];
+          "application/pdf" = [ "brave-browser.desktop" ];
+          "x-scheme-handler/mailto" = [ "brave-browser.desktop" ];
+          "application/xhtml+xml" = [ "brave-browser.desktop" ];
           # telegram:
           "x-scheme-handler/tg" = [ "org.telegram.desktop.desktop" ];
         };

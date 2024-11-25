@@ -20,7 +20,8 @@ rec {
 
   nixGL = {
     packages = inputs.nixGL.packages;
-    # defaultWrapper = "mesa"; # choose from options
+    defaultWrapper = "mesa";
+    installScripts = [ "mesa" ];
   };
 
   nixpkgs = {

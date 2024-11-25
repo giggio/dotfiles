@@ -1,4 +1,4 @@
-{ buildNpmPackage, fetchFromGitHub, lib, nodejs_20 }:
+{ buildNpmPackage, fetchFromGitHub, lib }:
 
 buildNpmPackage rec {
   pname = "prettier-plugin-awk";
@@ -11,7 +11,6 @@ buildNpmPackage rec {
     hash = "sha256-r1dFQAryITTXK2EIP1SO/czj2/206yMMRr6VZjVB8qQ=";
   };
 
-  nodejs = nodejs_20; # todo: remove when it builds, but there is a bug in the package that make it not work with 21+: https://github.com/Beaglefoot/prettier-plugin-awk/issues/18
   npmDepsHash = "sha256-WepRHtx5zOo/1FYqAN6WmSy6xMggafzje70TJXQ/HR8=";
   npmBuildScript = "compile";
   postPatch =

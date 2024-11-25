@@ -1,11 +1,12 @@
-{ lib, buildDotnetGlobalTool, dotnet-sdk }:
+{ lib, buildDotnetGlobalTool, dotnet-sdk, dotnet-runtime }:
 
 buildDotnetGlobalTool {
   pname = "dotnet-aspnet-codegenerator";
-  version = "8.0.2";
+  version = "9.0.0";
 
-  nugetSha256 = "sha256-NGoEPq+hh742Lahd5RazQ87nVDVT9rHIMu6X4LhIV1A=";
+  nugetSha256 = "sha256-BTOpf51sLXNQEobzRIsiCsVIBCIhLeyDeZrMJqiMp4c=";
   dotnet-sdk = dotnet-sdk;
+  dotnet-runtime = dotnet-runtime;
 
   meta = with lib; {
     homepage = "https://github.com/dotnet/Scaffolding";

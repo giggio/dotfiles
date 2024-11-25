@@ -1,12 +1,13 @@
-{ lib, buildDotnetGlobalTool, dotnet-sdk }:
+{ lib, buildDotnetGlobalTool, dotnet-sdk, dotnet-runtime }:
 
 buildDotnetGlobalTool {
   pname = "httprepl";
   nugetName = "Microsoft.dotnet-httprepl";
-  version = "7.0.0";
+  version = "8.0.0";
 
-  nugetSha256 = "sha256-optL8O7C9jGOZaRdltZciqtCQOF4GhFtrNQ3FKa8qbE=";
+  nugetSha256 = "sha256-049MUmyjIweAYd2SdsKVghRl+nhVf0HhhjC+UQfvszI=";
   dotnet-sdk = dotnet-sdk;
+  dotnet-runtime = dotnet-runtime;
 
   meta = with lib; {
     homepage = "https://github.com/dotnet/HttpRepl";

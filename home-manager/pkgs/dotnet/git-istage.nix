@@ -1,4 +1,4 @@
-{ lib, buildDotnetGlobalTool, dotnet-sdk }:
+{ lib, buildDotnetGlobalTool, dotnet-sdk, dotnet-runtime }:
 
 buildDotnetGlobalTool {
   pname = "git-istage";
@@ -6,6 +6,7 @@ buildDotnetGlobalTool {
 
   nugetSha256 = "sha256-jslnbY+0FeWvlAuUYEGAHKE3hUJFBMP1JtuKHJrFQJU=";
   dotnet-sdk = dotnet-sdk;
+  dotnet-runtime = dotnet-runtime;
 
   meta = with lib; {
     homepage = "https://github.com/terrajobst/git-istage";

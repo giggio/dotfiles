@@ -4,11 +4,11 @@ with pkgs;
 {
   dotnet-sdk = with dotnetCorePackages; combinePackages
     [
-      sdk_6_0
-      sdk_7_0
       sdk_8_0
+      sdk_9_0
     ];
-  dotnet-tools = callPackage ./dotnet/dotnet-tools.nix { };
+  dotnet-runtime = dotnetCorePackages.sdk_9_0;
+  dotnet-tools = callPackage ./dotnet/dotnet-tools.nix { inherit dotnet-sdk; inherit dotnet-runtime; };
   dotnet-install = callPackage ./dotnet/dotnet-install.nix { };
   extra-completions = callPackage ./completions.nix { };
   terraform = callPackage ./unfree/terraform.nix { };

@@ -3,11 +3,11 @@
 let
   dotnet-sdk = (with pkgs.dotnetCorePackages; combinePackages
     [
-      sdk_6_0
-      sdk_7_0
       sdk_8_0
+      sdk_9_0
     ]);
+  dotnet-runtime = pkgs.dotnetCorePackages.sdk_9_0;
 in
 pkgs.mkShell {
-  nativeBuildInputs = [ (import ./dotnet-tools.nix { inherit pkgs; inherit dotnet-sdk; }) ];
+  nativeBuildInputs = [ (import ./dotnet-tools.nix { callPackage = pkgs.callPackage; symlinkJoin = pkgs.symlinkJoin; inherit dotnet-sdk; inherit dotnet-runtime; }) ];
 }

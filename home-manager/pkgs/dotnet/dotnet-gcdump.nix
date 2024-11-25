@@ -1,11 +1,12 @@
-{ lib, buildDotnetGlobalTool, dotnet-sdk }:
+{ lib, buildDotnetGlobalTool, dotnet-sdk, dotnet-runtime }:
 
 buildDotnetGlobalTool {
   pname = "dotnet-gcdump";
-  version = "8.0.510501";
+  version = "9.0.553101";
 
-  nugetSha256 = "sha256-y10InQA1sAvFYrRe+7I2+txKOvu1qQ1ii/7DnXvipxM=";
+  nugetSha256 = "sha256-pTtil4Rzg6GpFUu297YNXJAdoaSN+BetjKH2Ke0gyjs=";
   dotnet-sdk = dotnet-sdk;
+  dotnet-runtime = dotnet-runtime;
 
   meta = with lib; {
     homepage = "https://github.com/dotnet/diagnostics";

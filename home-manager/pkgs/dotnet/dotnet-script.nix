@@ -1,11 +1,12 @@
-{ lib, buildDotnetGlobalTool, dotnet-sdk }:
+{ lib, buildDotnetGlobalTool, dotnet-sdk, dotnet-runtime }:
 
 buildDotnetGlobalTool {
   pname = "dotnet-script";
-  version = "1.5.0";
+  version = "1.6.0";
 
-  nugetSha256 = "sha256-PRcgWOOr1+Tx3DNZYHjGgZ+zxHPSjEGwJsue0DoRXMg=";
+  nugetSha256 = "sha256-R2z02Orakl6T7nfmNLr3HSbBS2yxFhWRP1imy9B+Tqo=";
   dotnet-sdk = dotnet-sdk;
+  dotnet-runtime = dotnet-runtime;
 
   meta = with lib; {
     homepage = "https://github.com/dotnet-script/dotnet-script";

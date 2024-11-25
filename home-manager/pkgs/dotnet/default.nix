@@ -1,13 +1,9 @@
 # used for testing with `nix-build -A dotnet-tools`
 let
   pkgs = import <nixpkgs> { };
-  dotnet-sdk = (with pkgs.dotnetCorePackages; combinePackages
-    [
-      sdk_6_0
-      sdk_7_0
-      sdk_8_0
-    ]);
+  dotnet-sdk = pkgs.dotnetCorePackages.sdk_9_0;
+  dotnet-runtime = pkgs.dotnetCorePackages.sdk_9_0;
 in
 {
-  dotnet-tools = import ./dotnet-tools.nix { inherit pkgs; inherit dotnet-sdk; };
+  dotnet-tools = pkgs.callPackage ./dotnet-tools.nix { inherit dotnet-sdk; inherit dotnet-runtime; };
 }

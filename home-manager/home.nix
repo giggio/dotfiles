@@ -511,6 +511,7 @@ rec {
         let
           bashSessionVariables = {
             # environment variables to add only to .bashrc
+            PATH = "$HOME/.local/bin:$PATH"; # this is here so it is added before the other paths
             NAVI_PATH = "${config.home.profileDirectory}/share/navi/cheats/common/:${config.home.profileDirectory}/share/navi/cheats/bash/:${config.home.profileDirectory}/share/navi/cheats/linux/common/:${config.home.profileDirectory}/share/navi/cheats/linux/bash/";
           };
         in

@@ -1,7 +1,6 @@
 { config, pkgs, lib, inputs, setup, ... }:
 
 let
-  nixGLIntel = inputs.nixGL.packages."${pkgs.system}".nixGLIntel;
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
   # but, be careful, this is used by nushell and bash (.bashrc)
   shellSessionVariables = {
@@ -17,13 +16,12 @@ rec {
   ] else [
     ./dconf/dconf.nix
     ./virtualbox.nix
-  ]) ++ [
-    # todo: remove when https://github.com/nix-community/home-manager/pull/5355 gets merged:
-    (builtins.fetchurl {
-      url = "https://raw.githubusercontent.com/Smona/home-manager/nixgl-compat/modules/misc/nixgl.nix";
-      sha256 = "01dkfr9wq3ib5hlyq9zq662mp0jl42fw3f6gd2qgdf8l8ia78j7i";
-    })
-  ];
+  ]);
+
+  nixGL = {
+    packages = inputs.nixGL.packages;
+    # defaultWrapper = "mesa"; # choose from options
+  };
 
   nixpkgs = {
     config = {
@@ -41,6 +39,7 @@ rec {
     };
     overlays = [
       inputs.fenix.overlays.default # rust toolchain
+      inputs.nixGL.overlay
       (final: prev: (import ./pkgs/default.nix { pkgs = prev; }))
       # todo: remove patch when https://github.com/nix-community/dconf2nix/pull/95 is released and gets merged into nixpkgs
       # check if https://github.com/nix-community/dconf2nix/releases/latest is > 0.1.1
@@ -201,7 +200,7 @@ rec {
           # NixOS basic packages
         ] else [
           # non NixOS basic packages
-          nixGLIntel
+          pkgs.nixgl.nixGLIntel
         ]));
         non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs; [
           # common non basic packages
@@ -727,8 +726,6 @@ rec {
     keybase.enable = !setup.wsl;
     kbfs.enable = !setup.wsl;
   };
-
-  nixGL.prefix = "${nixGLIntel}/bin/nixGLIntel";
 
   systemd = {
     user = {

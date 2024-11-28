@@ -36,6 +36,7 @@ rec {
         "terraform"
         "vault"
         "vscode"
+        "ookla-speedtest"
       ];
     };
     overlays = [
@@ -205,6 +206,7 @@ rec {
         ]));
         non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs; [
           # common non basic packages
+          ookla-speedtest
           slides
           mermaid-cli
           presenterm

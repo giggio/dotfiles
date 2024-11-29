@@ -269,6 +269,7 @@ rec {
           cargo-outdated
           cargo-watch
           cargo-cross
+          cargo-binstall
           gping
           grex
           sccache

@@ -297,6 +297,7 @@ rec {
           openshot-qt
           wireshark
           brave
+          orca-slicer
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
           vscode-fhs

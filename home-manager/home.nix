@@ -297,7 +297,7 @@ rec {
           glaxnimate
           openshot-qt
           wireshark
-          brave
+          (nixGLwrap brave)
           orca-slicer
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages

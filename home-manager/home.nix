@@ -182,7 +182,8 @@ rec {
           warp
           youtube-music
           xclip
-          (nerdfonts.override { fonts = [ "CascadiaCode" "NerdFontsSymbolsOnly" ]; })
+          nerd-fonts.caskaydia-cove
+          nerd-fonts.symbols-only
           (nixGLwrap kitty)
         ] ++ (with gnomeExtensions; [
           # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301

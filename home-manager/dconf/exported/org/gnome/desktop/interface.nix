@@ -12,8 +12,8 @@ with lib.hm.gvariant;
       color-scheme = "prefer-dark";
       cursor-theme = "Adwaita";
       enable-hot-corners = false;
-      gtk-theme = "Yaru-viridian-dark";
-      icon-theme = "Yaru-viridian";
+      gtk-theme = "Adwaita";
+      icon-theme = "Adwaita";
       locate-pointer = false;
     };
 

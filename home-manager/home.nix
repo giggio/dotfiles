@@ -65,6 +65,12 @@ rec {
     homeDirectory = "/home/" + home.username;
     stateVersion = "24.05"; # Check if there are state version changes before changing this fiels: https://nix-community.github.io/home-manager/release-notes.xhtml
     preferXdgDirectories = true;
+    pointerCursor = {
+      gtk.enable = true;
+      package = pkgs.adwaita-icon-theme;
+      name = "Adwaita";
+      size = 22;
+    };
     packages =
       let
         nixGLwrap = pkg: if setup.isNixOS then pkg else config.lib.nixGL.wrap pkg;

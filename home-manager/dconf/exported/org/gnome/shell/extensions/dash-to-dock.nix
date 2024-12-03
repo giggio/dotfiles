@@ -22,6 +22,7 @@ with lib.hm.gvariant;
       running-indicator-style = "DASHES";
       scroll-action = "switch-workspace";
       show-apps-at-top = true;
+      show-mounts = false;
       show-mounts-network = false;
       show-mounts-only-mounted = true;
       show-trash = false;

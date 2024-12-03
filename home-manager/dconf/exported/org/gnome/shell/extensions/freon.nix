@@ -8,6 +8,7 @@ with lib.hm.gvariant;
     "org/gnome/shell/extensions/freon" = {
       hot-sensors = [ "CPU Package" ];
       show-decimal-value = true;
+      use-generic-liquidctl = false;
       use-generic-lmsensors = true;
       use-gpu-aticonfig = false;
     };

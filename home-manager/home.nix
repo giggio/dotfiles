@@ -160,7 +160,7 @@ rec {
         ] else [
           # non wsl basic packages
           android-tools
-          bitwarden-desktop
+          (nixGLwrap bitwarden-desktop)
           blanket
           eartag
           eyedropper
@@ -295,7 +295,7 @@ rec {
         ] else [
           # non wsl non basic packages
           dconf2nix
-          whatsapp-for-linux
+          (nixGLwrap whatsapp-for-linux)
           slack
           discord
           (nixGLwrap obs-studio)
@@ -304,16 +304,20 @@ rec {
           openshot-qt
           wireshark
           (nixGLwrap brave)
-          orca-slicer
+          (nixGLwrap orca-slicer)
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
           vscode-fhs
           microsoft-edge
           # protonup-qt # to use with steam
-        ] else [
-          vscode
-          # non NixOS non basic packages
-        ]));
+        ] else
+          (if setup.wsl then [
+            # non NixOS wsl non basic packages
+          ] else [
+            # non NixOS non wsl non basic packages
+            (nixGLwrap vscode)
+          ])
+        ));
         all_packages = basic_pkgs ++ non_basic_pkgs;
       in
       all_packages;

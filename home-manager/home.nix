@@ -73,7 +73,7 @@ rec {
     };
     packages =
       let
-        nixGLwrap = pkg: if setup.isNixOS then pkg else config.lib.nixGL.wrap pkg;
+        nixGLwrap = pkg: if setup.isNixOS || setup.wsl then pkg else config.lib.nixGL.wrap pkg;
         basic_pkgs = (with pkgs; [
           # common basic packages
           bash
@@ -164,7 +164,7 @@ rec {
           blanket
           eartag
           eyedropper
-          firefox
+          (nixGLwrap firefox)
           forge-sparks
           gnome-contacts
           polari
@@ -175,18 +175,18 @@ rec {
           hwloc
           keybase-gui
           newsflash
-          obsidian
-          onlyoffice-bin
-          openrgb-with-all-plugins
-          pinta
-          remmina
+          (nixGLwrap obsidian)
+          (nixGLwrap onlyoffice-bin)
+          (nixGLwrap openrgb-with-all-plugins)
+          (nixGLwrap pinta)
+          (nixGLwrap remmina)
           shortwave
           switcheroo
-          telegram-desktop
+          (nixGLwrap telegram-desktop)
           textpieces
-          vlc
-          warp
-          youtube-music
+          (nixGLwrap vlc)
+          (nixGLwrap warp)
+          (nixGLwrap youtube-music)
           xclip
           nerd-fonts.caskaydia-cove
           nerd-fonts.symbols-only
@@ -218,7 +218,7 @@ rec {
           mermaid-cli
           presenterm
           hugo
-          element-desktop
+          (nixGLwrap element-desktop)
           ccd2iso
           iat
           apparmor-utils
@@ -247,8 +247,8 @@ rec {
           shellcheck
           silver-searcher
           w3m
-          chromium
-          temurin-bin-21
+          (nixGLwrap chromium)
+          temurin-bin-23
           maven
           (azure-cli.withExtensions [ azure-cli.extensions.containerapp ])
           kubectl
@@ -299,10 +299,10 @@ rec {
           slack
           discord
           (nixGLwrap obs-studio)
-          kdePackages.kdenlive
-          glaxnimate
-          openshot-qt
-          wireshark
+          (nixGLwrap kdePackages.kdenlive)
+          (nixGLwrap glaxnimate)
+          (nixGLwrap openshot-qt)
+          (nixGLwrap wireshark)
           (nixGLwrap brave)
           (nixGLwrap orca-slicer)
         ]) ++ (if setup.isNixOS then [

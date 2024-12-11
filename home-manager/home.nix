@@ -73,7 +73,7 @@ rec {
     };
     packages =
       let
-        nixGLwrap = pkg: if setup.isNixOS || setup.wsl then pkg else config.lib.nixGL.wrap pkg;
+        nixGLwrap = pkg: if setup.isNixOS then pkg else config.lib.nixGL.wrap pkg;
         basic_pkgs = (with pkgs; [
           # common basic packages
           bash
@@ -154,6 +154,7 @@ rec {
           git-ignore
           http-server
           cachix # install cache, for example, with: $HOME/.nix-profile/bin/cachix use nix-community
+          (nixGLwrap kitty)
         ] ++ (if setup.wsl then [
           # wsl basic packages
           wslu
@@ -190,7 +191,6 @@ rec {
           xclip
           nerd-fonts.caskaydia-cove
           nerd-fonts.symbols-only
-          (nixGLwrap kitty)
         ] ++ (with gnomeExtensions; [
           # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
           blur-my-shell
@@ -805,8 +805,13 @@ rec {
               wsl-symlink-wayland = {
                 Unit = { Description = "Symlink WSL wayland socket"; };
                 Service = {
-                  ExecStart = [ "ln -s /mnt/wslg/runtime-dir/wayland-0 %t/wayland-0" "ln -s /mnt/wslg/runtime-dir/wayland-0.lock %t/wayland-0.lock" ];
-                  ExecStartPre = [ "rm -f %t/wayland-0 %t/wayland-0.lock" ];
+                  ExecStart = [
+                    "ln -s /mnt/wslg/runtime-dir/wayland-0 %t/wayland-0"
+                    "ln -s /mnt/wslg/runtime-dir/wayland-0.lock %t/wayland-0.lock"
+                  ];
+                  ExecStartPre = [
+                    "rm -f %t/wayland-0 %t/wayland-0.lock"
+                  ];
                   Type = "oneshot";
                 };
                 Install = {

@@ -133,7 +133,6 @@ rec {
           dust
           fd
           just
-          nushell
           procs
           tealdeer
           githooks
@@ -560,10 +559,33 @@ rec {
         ]
         );
     };
+
+    nushell = {
+      enable = true;
+      extraConfig =
+        ''
+          # beginning of extra nushell configuration
+          source ${home.homeDirectory}/.dotfiles/nuscripts/config.nu
+          # end of extra nushell configuration
+        '';
+      extraEnv =
+        ''
+          # beginning of extra nushell environment
+          source ${home.homeDirectory}/.dotfiles/nuscripts/env.nu
+          # end of extra nushell environment
+        '';
+      extraLogin =
+        ''
+          # beginning of extra nushell login
+          ${lib.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "$env.${k} = \"${v}\"") shellSessionVariables)}
+          # end of extra nushell login
+        '';
+    };
+
     starship = {
       enable = true;
       enableBashIntegration = true;
-      enableNushellIntegration = true;
+      enableNushellIntegration = false;
     };
 
     gpg = {
@@ -587,49 +609,38 @@ rec {
   fonts.fontconfig.enable = !setup.wsl;
 
   xdg = {
-    configFile =
-      let
-        sessionVariablesText = lib.concatStringsSep "\n" (lib.concatLists [
-          [
-            "# nushell"
-          ]
-          (lib.mapAttrsToList (k: v: "$env.${k} = \"${v}\"") shellSessionVariables)
-        ]
-        );
-      in
-      {
-        "nushell/login.nu".text = sessionVariablesText;
-        "autostart/bitwarden.desktop" = {
-          enable = !setup.wsl;
-          source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
-        };
-        "autostart/kitty.desktop" = {
-          enable = !setup.wsl;
-          source = "${pkgs.kitty}/share/applications/kitty.desktop";
-        };
-        "autostart/forge-sparks.desktop".text =
-          ''
-            [Desktop Entry]
-            Name=Forge Sparks
-            Exec=forge-sparks --hidden
-            Type=Application
-            StartupNotify=true
-            Terminal=false
-            Icon=com.mardojai.ForgeSparks
-          '';
-        "burn-my-windows/profiles/close.conf".source = ./dconf/cfg/burn-close.conf;
-        "burn-my-windows/profiles/close-edge.conf".source = ./dconf/cfg/burn-app-edge.conf;
-        "burn-my-windows/profiles/open.conf".source = ./dconf/cfg/burn-open.conf;
-        "alacritty".source = ./config/alacritty;
-        "navi/config.yaml".source = ./config/navi-config.yaml;
-        "terminator/config".source = ./config/terminator-config;
-        "starship.toml".source = ./config/starship.toml;
-        "git/attributes".source = ./config/git-attributes;
-        "carapace/bridges.yaml".source = ./config/carapace/bridges.yaml;
-        "carapace/overlays".source = ./config/carapace/overlays;
-        "carapace/specs".source = ./config/carapace/specs;
-        "mimeapps.list".force = true; # overwrite the default file which keeps being recreated by Ubuntu
+    configFile = {
+      "autostart/bitwarden.desktop" = {
+        enable = !setup.wsl;
+        source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
       };
+      "autostart/kitty.desktop" = {
+        enable = !setup.wsl;
+        source = "${pkgs.kitty}/share/applications/kitty.desktop";
+      };
+      "autostart/forge-sparks.desktop".text =
+        ''
+          [Desktop Entry]
+          Name=Forge Sparks
+          Exec=forge-sparks --hidden
+          Type=Application
+          StartupNotify=true
+          Terminal=false
+          Icon=com.mardojai.ForgeSparks
+        '';
+      "burn-my-windows/profiles/close.conf".source = ./dconf/cfg/burn-close.conf;
+      "burn-my-windows/profiles/close-edge.conf".source = ./dconf/cfg/burn-app-edge.conf;
+      "burn-my-windows/profiles/open.conf".source = ./dconf/cfg/burn-open.conf;
+      "alacritty".source = ./config/alacritty;
+      "navi/config.yaml".source = ./config/navi-config.yaml;
+      "terminator/config".source = ./config/terminator-config;
+      "starship.toml".source = ./config/starship.toml;
+      "git/attributes".source = ./config/git-attributes;
+      "carapace/bridges.yaml".source = ./config/carapace/bridges.yaml;
+      "carapace/overlays".source = ./config/carapace/overlays;
+      "carapace/specs".source = ./config/carapace/specs;
+      "mimeapps.list".force = true; # overwrite the default file which keeps being recreated by Ubuntu
+    };
     dataFile = { };
     mimeApps = {
       enable = true;

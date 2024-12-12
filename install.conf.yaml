@@ -22,7 +22,6 @@
 - link:
     ~/.config/kitty: config/kitty
     ~/.config/nix/nix.conf: config/nix/nix.conf
-    ~/.config/nushell: nuscripts
     ~/.config/nvim: nvim
     ~/.config/powershell: poshfiles
     ~/.config/tabby/config.yaml: config/tabby/config.yaml

@@ -156,6 +156,7 @@ rec {
           (nixGLwrap kitty)
           dhcping
           ipcalc
+          arp-scan
         ] ++ (if setup.wsl then [
           # wsl basic packages
           wslu

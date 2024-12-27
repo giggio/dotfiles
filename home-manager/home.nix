@@ -155,6 +155,7 @@ rec {
           cachix # install cache, for example, with: $HOME/.nix-profile/bin/cachix use nix-community
           (nixGLwrap kitty)
           dhcping
+          ipcalc
         ] ++ (if setup.wsl then [
           # wsl basic packages
           wslu

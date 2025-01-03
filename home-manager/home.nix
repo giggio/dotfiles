@@ -307,6 +307,7 @@ rec {
           (nixGLwrap wireshark)
           (nixGLwrap brave)
           (nixGLwrap orca-slicer)
+          (nixGLwrap fritzing)
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
           vscode-fhs

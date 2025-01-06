@@ -1,4 +1,4 @@
-{ buildNpmPackage, fetchFromGitHub, lib }:
+{ buildNpmPackage, fetchFromGitHub, lib, nodejs_20 }:
 
 buildNpmPackage rec {
   pname = "prettier-plugin-awk";
@@ -45,6 +45,8 @@ buildNpmPackage rec {
 
   # The prepack script runs the build script, which we'd rather do in the build phase.
   npmPackFlags = [ "--ignore-scripts" ];
+
+  nodejs = nodejs_20;
 
   NODE_OPTIONS = "";
 

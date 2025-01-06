@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, setup, ... }:
+{ config, pkgs, pkgs-stable, lib, inputs, setup, ... }:
 
 let
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
@@ -174,7 +174,7 @@ rec {
           gnome-podcasts
           gnome-solanum
           gnome-tweaks
-          gnome-extension-manager
+          # gnome-extension-manager # todo: remove from stable when published: https://github.com/NixOS/nixpkgs/issues/371171
           hwloc
           keybase-gui
           newsflash
@@ -292,6 +292,7 @@ rec {
           kubectx
           lazydocker
           mqttx
+          ghostty
         ] ++ (if setup.wsl then [
           # wsl non basic packages
         ] else [
@@ -306,7 +307,7 @@ rec {
           (nixGLwrap openshot-qt)
           (nixGLwrap wireshark)
           (nixGLwrap brave)
-          (nixGLwrap orca-slicer)
+          # (nixGLwrap orca-slicer) # todo: replace from stable when fixed: https://github.com/NixOS/nixpkgs/issues/369571
           (nixGLwrap fritzing)
         ]) ++ (if setup.isNixOS then [
           # NixOS non basic packages
@@ -321,7 +322,36 @@ rec {
             (nixGLwrap vscode)
           ])
         ));
-        all_packages = basic_pkgs ++ non_basic_pkgs;
+        stable_basic_pkgs = (with pkgs-stable; [
+          # common basic packages
+        ] ++ (if setup.wsl then [
+          # wsl basic packages
+        ] else [
+          # non wsl basic packages
+          gnome-extension-manager # todo: move to unstable when published: https://github.com/NixOS/nixpkgs/issues/371171
+        ]) ++ (if setup.isNixOS then [
+          # NixOS basic packages
+        ] else [
+          # non NixOS basic packages
+        ]));
+        stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs-stable; [
+          # common non basic packages
+        ] ++ (if setup.wsl then [
+          # wsl non basic packages
+        ] else [
+          # non wsl non basic packages
+          (nixGLwrap orca-slicer) # todo: move to unstable when fixed: https://github.com/NixOS/nixpkgs/issues/369571
+        ]) ++ (if setup.isNixOS then [
+          # NixOS non basic packages
+        ] else
+          (if setup.wsl then [
+            # non NixOS wsl non basic packages
+          ] else [
+            # non NixOS non wsl non basic packages
+          ])
+        ));
+        all_packages = basic_pkgs ++ non_basic_pkgs ++ stable_basic_pkgs ++ stable_non_basic_pkgs;
+        # all_packages = basic_pkgs ++ non_basic_pkgs;
       in
       all_packages;
 

@@ -134,6 +134,7 @@ let
     freon
     hibernate-status-button
     workspace-matrix
+    smart-auto-move
   ])
   ) ++ (if setup.isNixOS then [
     # NixOS basic packages

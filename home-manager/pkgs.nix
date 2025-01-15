@@ -236,7 +236,7 @@ let
     (nixGLwrap openshot-qt)
     (nixGLwrap wireshark)
     (nixGLwrap brave)
-    # (nixGLwrap orca-slicer) # todo: replace from stable when fixed: https://github.com/NixOS/nixpkgs/issues/369571
+    (nixGLwrap orca-slicer)
     (nixGLwrap fritzing)
   ]) ++ (if setup.isNixOS then [
     # NixOS non basic packages
@@ -269,7 +269,6 @@ let
     # wsl non basic packages
   ] else [
     # non wsl non basic packages
-    (nixGLwrap orca-slicer) # todo: move to unstable when fixed: https://github.com/NixOS/nixpkgs/issues/369571
   ]) ++ (if setup.isNixOS then [
     # NixOS non basic packages
   ] else

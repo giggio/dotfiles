@@ -102,7 +102,7 @@ let
     gnome-podcasts
     gnome-solanum
     gnome-tweaks
-    # gnome-extension-manager # todo: remove from stable when published: https://github.com/NixOS/nixpkgs/issues/371171
+    # gnome-extension-manager # todo: remove from stable when published: https://github.com/NixOS/nixpkgs/pull/369069 (from https://github.com/NixOS/nixpkgs/issues/371171)
     hwloc
     keybase-gui
     newsflash
@@ -222,6 +222,7 @@ let
     lazydocker
     mqttx
     ghostty
+    fabric-ai
   ] ++ (if setup.wsl then [
     # wsl non basic packages
   ] else [
@@ -257,7 +258,7 @@ let
     # wsl basic packages
   ] else [
     # non wsl basic packages
-    gnome-extension-manager # todo: move to unstable when published: https://github.com/NixOS/nixpkgs/issues/371171
+    gnome-extension-manager # todo: move to unstable when published: https://github.com/NixOS/nixpkgs/pull/369069 (from https://github.com/NixOS/nixpkgs/issues/371171)
   ]) ++ (if setup.isNixOS then [
     # NixOS basic packages
   ] else [

@@ -75,7 +75,7 @@ let
     prettier-plugin-awk
     node2nix
     nodePackages.prettier
-    nodePackages.eslint
+    # nodePackages.eslint # todo: move to unstable when fixed: https://github.com/NixOS/nixpkgs/issues/380266
     nodePackages.bash-language-server
     (bats.withLibraries (p: [ p.bats-support p.bats-assert ]))
     git-ignore
@@ -93,7 +93,7 @@ let
     android-tools
     (nixGLwrap bitwarden-desktop)
     blanket
-    eartag
+    # eartag # todo: move to unstable when fixed
     eyedropper
     (nixGLwrap firefox)
     forge-sparks
@@ -102,7 +102,7 @@ let
     gnome-podcasts
     gnome-solanum
     gnome-tweaks
-    # gnome-extension-manager # todo: remove from stable when published: https://github.com/NixOS/nixpkgs/pull/369069 (from https://github.com/NixOS/nixpkgs/issues/371171)
+    gnome-extension-manager
     hwloc
     keybase-gui
     newsflash
@@ -181,7 +181,7 @@ let
     (nixGLwrap chromium)
     temurin-bin-23
     maven
-    (azure-cli.withExtensions [ azure-cli.extensions.containerapp ])
+    # (azure-cli.withExtensions [ azure-cli.extensions.containerapp ]) # todo: move back to unstable when containerapp fixed: https://github.com/NixOS/nixpkgs/pull/381361
     kubectl
     kubespy
     dive
@@ -254,11 +254,12 @@ let
   ));
   stable_basic_pkgs = (with pkgs-stable; [
     # common basic packages
+    nodePackages.eslint # todo: move to unstable when fixed: https://github.com/NixOS/nixpkgs/issues/380266
   ] ++ (if setup.wsl then [
     # wsl basic packages
   ] else [
     # non wsl basic packages
-    gnome-extension-manager # todo: move to unstable when published: https://github.com/NixOS/nixpkgs/pull/369069 (from https://github.com/NixOS/nixpkgs/issues/371171)
+    eartag # todo: move to unstable when fixed
   ]) ++ (if setup.isNixOS then [
     # NixOS basic packages
   ] else [
@@ -266,6 +267,7 @@ let
   ]));
   stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs-stable; [
     # common non basic packages
+    (azure-cli.withExtensions [ azure-cli.extensions.containerapp ]) # todo: move to unstable when containerapp fixed: https://github.com/NixOS/nixpkgs/pull/381361
   ] ++ (if setup.wsl then [
     # wsl non basic packages
   ] else [

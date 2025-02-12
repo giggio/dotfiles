@@ -151,7 +151,6 @@ rec {
             source "$HOME/.cargo/env"
           fi
           export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
-          eval "`zoxide init bash`"
           export RUSTC_WRAPPER="${pkgs.sccache}/bin/sccache"
           if [ -d "$HOME/.kube" ]; then
             KUBECONFIG=`find "$HOME"/.kube -maxdepth 1 -type f ! -name '*.bak' ! -name '*.backup' ! -name kubectx | sort | paste -sd ":" -`
@@ -353,6 +352,12 @@ rec {
     direnv = {
       enable = true;
       nix-direnv.enable = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    zoxide = {
+      enable = true;
       enableBashIntegration = true;
       enableNushellIntegration = true;
     };

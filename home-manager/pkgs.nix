@@ -221,7 +221,7 @@ let
     kubectx
     lazydocker
     mqttx
-    ghostty
+    (nixGLwrap ghostty)
     fabric-ai
   ] ++ (if setup.wsl then [
     # wsl non basic packages

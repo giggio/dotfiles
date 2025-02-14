@@ -10,6 +10,7 @@ let
     FZF_DEFAULT_OPTS = "--ansi";
     FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
   };
+  nixGLwrap = pkg: if setup.isNixOS then pkg else config.lib.nixGL.wrap pkg;
 in
 rec {
   imports = (if setup.wsl then [
@@ -360,6 +361,19 @@ rec {
       enable = true;
       enableBashIntegration = true;
       enableNushellIntegration = true;
+    };
+
+    ghostty = {
+      enable = true;
+      package = (nixGLwrap pkgs.ghostty);
+      enableBashIntegration = true;
+      installVimSyntax = true;
+      settings = {
+        theme = "Ubuntu";
+        font-family = "CaskaydiaCove Nerd Font Mono";
+        font-size = 14;
+        window-decoration = false;
+      };
     };
   };
 

@@ -74,6 +74,11 @@ rec {
     };
     packages = import ./pkgs.nix { inherit config; inherit pkgs; inherit pkgs-stable; inherit lib; inherit setup; };
 
+    shell = {
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
     # Home Manager can also manage your environment variables through
     # 'sessionVariables'. If you don't want to manage your shell through Home
     # Manager then you have to manually source 'hm-session-vars.sh' located at
@@ -95,6 +100,7 @@ rec {
       XDG_CACHE_HOME = "\${XDG_CACHE_HOME:-$HOME/.cache}";
       NPM_CONFIG_PREFIX = "\${NPM_CONFIG_PREFIX:-$HOME/.local/share/npm}";
       BASIC_SETUP = "\${BASIC_SETUP:-false}";
+      _ZO_DOCTOR = "0"; # starship bash integration will cause zoxide to print a warning as it hides the zoxide call from $PROMPT_COMMAND behind a $STARSHIP_PROMPT_COMMAND variable. This config hides the warning.
     };
 
     file = {
@@ -183,6 +189,8 @@ rec {
           fi
           # auto complete all aliases
           complete -F _complete_alias "''${!BASH_ALIASES[@]}"
+
+          # end of .bashrc
         '';
       logoutExtra =
         ''
@@ -336,8 +344,6 @@ rec {
 
     starship = {
       enable = true;
-      enableBashIntegration = true;
-      enableNushellIntegration = false;
     };
 
     gpg = {
@@ -353,20 +359,15 @@ rec {
     direnv = {
       enable = true;
       nix-direnv.enable = true;
-      enableBashIntegration = true;
-      enableNushellIntegration = true;
     };
 
     zoxide = {
       enable = true;
-      enableBashIntegration = true;
-      enableNushellIntegration = true;
     };
 
     ghostty = {
       enable = true;
       package = (nixGLwrap pkgs.ghostty);
-      enableBashIntegration = true;
       installVimSyntax = true;
       settings = {
         theme = "Ubuntu";
@@ -513,8 +514,6 @@ rec {
       enableScDaemon = true;
       enableSshSupport = true;
       pinentryPackage = pkgs.pinentry-gnome3;
-      enableBashIntegration = true;
-      enableNushellIntegration = true;
       defaultCacheTtl = 34560000; # 400 days
       defaultCacheTtlSsh = 34560000;
       maxCacheTtl = 34560000;

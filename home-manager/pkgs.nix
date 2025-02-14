@@ -75,7 +75,7 @@ let
     prettier-plugin-awk
     node2nix
     nodePackages.prettier
-    # nodePackages.eslint # todo: move to unstable when fixed: https://github.com/NixOS/nixpkgs/issues/380266
+    nodePackages.eslint
     nodePackages.bash-language-server
     (bats.withLibraries (p: [ p.bats-support p.bats-assert ]))
     git-ignore
@@ -95,7 +95,6 @@ let
     blanket
     # eartag # todo: move to unstable when fixed
     eyedropper
-    (nixGLwrap firefox)
     forge-sparks
     gnome-contacts
     polari
@@ -181,7 +180,7 @@ let
     (nixGLwrap chromium)
     temurin-bin-23
     maven
-    # (azure-cli.withExtensions [ azure-cli.extensions.containerapp ]) # todo: move back to unstable when containerapp fixed: https://github.com/NixOS/nixpkgs/pull/381361
+    (azure-cli.withExtensions [ azure-cli.extensions.containerapp ])
     kubectl
     kubespy
     dive
@@ -237,6 +236,8 @@ let
     (nixGLwrap openshot-qt)
     (nixGLwrap wireshark)
     (nixGLwrap brave)
+    # (nixGLwrap librewolf-bin) # review if librewolf is better sometime in the future https://bsky.app/profile/giggio.net/post/3li63msr5r226
+    (nixGLwrap firefox)
     (nixGLwrap orca-slicer)
     (nixGLwrap fritzing)
   ]) ++ (if setup.isNixOS then [
@@ -254,7 +255,6 @@ let
   ));
   stable_basic_pkgs = (with pkgs-stable; [
     # common basic packages
-    nodePackages.eslint # todo: move to unstable when fixed: https://github.com/NixOS/nixpkgs/issues/380266
   ] ++ (if setup.wsl then [
     # wsl basic packages
   ] else [
@@ -267,7 +267,6 @@ let
   ]));
   stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs-stable; [
     # common non basic packages
-    (azure-cli.withExtensions [ azure-cli.extensions.containerapp ]) # todo: move to unstable when containerapp fixed: https://github.com/NixOS/nixpkgs/pull/381361
   ] ++ (if setup.wsl then [
     # wsl non basic packages
   ] else [

@@ -1,0 +1,43 @@
+--- config.ini	2025-02-14 14:10:46.235907428 -0300
++++ /usr/lib/security/howdy/config.ini	2025-02-14 14:13:34.359813918 -0300
+@@ -3,10 +3,10 @@
+ 
+ [core]
+ # Print that face detection is being attempted
+-detection_notice = false
++detection_notice = true
+ 
+ # Do not print anything when a face verification succeeds
+-no_confirmation = false
++no_confirmation = true
+ 
+ # When a user without a known face model tries to use this script, don't
+ # show an error but fail silently
+@@ -38,11 +38,12 @@
+ 
+ # The path of the device to capture frames from
+ # Should be set automatically by an installer if your distro has one
+-device_path = none
++# device_path = /dev/v4l/by-path/pci-0000:69:00.0-usb-0:3.2:1.0-video-index0
++device_path = /dev/video0
+ 
+ # Scale down the video feed to this maximum height
+ # Speeds up face recognition but can make it less precise
+-max_height = 320
++max_height = 480
+ 
+ # Set the camera input profile to this width and height
+ # The largest profile will be used if set to -1
+@@ -77,10 +78,10 @@
+ [snapshots]
+ # Capture snapshots of failed login attempts and save them to disk with metadata
+ # Snapshots are saved to the "snapshots" folder
+-capture_failed = true
++capture_failed = false
+ 
+ # Do the same as the option above but for successful attempts
+-capture_successful = true
++capture_successful = false
+ 
+ [debug]
+ # Show a short but detailed diagnostic report in console

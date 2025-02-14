@@ -140,17 +140,17 @@ if ! $WSL; then
   if ! hash howdy 2>/dev/null; then
     add-apt-repository -y ppa:boltgolt/howdy
     apt_pkgs_to_install_not_wsl+=$'\n'howdy
-    # patch with this code https://github.com/boltgolt/howdy/issues/199#issuecomment-2078573953
   fi
 
   install_apt_pkgs "$apt_basic_pkgs_to_install_not_wsl" "$apt_pkgs_to_install_not_wsl" '(wsl)'
 
   # patch /lib/security/howdy/pam.py to allow howdy to work with encrypted home and not try to detect face when home is encrypted
-  # See https://github.com/boltgolt/howdy/issues/199#issuecomment-1566749438
+  # See https://github.com/boltgolt/howdy/issues/199#issuecomment-2078573953
   verbose_flag=
   if $VERBOSE; then verbose_flag="--verbose"; fi
   if ! grep 'Abort if user is not root' /lib/security/howdy/pam.py -q; then
     patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$BASEDIR"/patches/pam.py.patch
+    patch --ignore-whitespace $verbose_flag -u /usr/lib/security/howdy/config.ini -i "$BASEDIR"/patches/howdy-config.patch
   fi
 
   function install_flatpak_pkgs () {

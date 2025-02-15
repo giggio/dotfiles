@@ -148,6 +148,7 @@ let
     mermaid-cli
     presenterm
     hugo
+    pagefind
     (nixGLwrap element-desktop)
     ccd2iso
     iat

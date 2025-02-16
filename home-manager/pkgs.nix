@@ -217,7 +217,6 @@ let
     shfmt
     neofetch
     imagemagick
-    git-lfs
     kubectx
     lazydocker
     mqttx

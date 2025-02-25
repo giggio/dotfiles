@@ -1,4 +1,4 @@
-{ stdenv, installShellFiles, kubectl, nodejs }:
+{ stdenv, installShellFiles }:
 
 stdenv.mkDerivation {
   pname = "extra-completions";

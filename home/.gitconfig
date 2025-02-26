@@ -98,8 +98,6 @@
   gpgsign = true
 [diff "pandoc2md"]
   textconv = pandoc --to=markdown
-[diff "wrap"]
-  textconv = fmt
 [diff "xlsx"]
   textconv = python -m xlsx2csv
 [diff "listzipfiles"]

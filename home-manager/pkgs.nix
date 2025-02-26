@@ -106,7 +106,7 @@ let
     keybase-gui
     newsflash
     (nixGLwrap obsidian)
-    (nixGLwrap onlyoffice-bin)
+    # (nixGLwrap onlyoffice-bin) # todo: move when fixed: https://github.com/NixOS/nixpkgs/issues/385406
     (nixGLwrap openrgb-with-all-plugins)
     (nixGLwrap pinta)
     (nixGLwrap remmina)
@@ -260,6 +260,7 @@ let
   ] else [
     # non wsl basic packages
     eartag # todo: move to unstable when fixed
+    (nixGLwrap onlyoffice-bin) # todo: move when fixed: https://github.com/NixOS/nixpkgs/issues/385406
   ]) ++ (if setup.isNixOS then [
     # NixOS basic packages
   ] else [

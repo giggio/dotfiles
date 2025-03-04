@@ -222,6 +222,7 @@ let
     mqttx
     (nixGLwrap ghostty)
     fabric-ai
+    nixpkgs-review
   ] ++ (if setup.wsl then [
     # wsl non basic packages
   ] else [

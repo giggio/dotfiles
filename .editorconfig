@@ -8,6 +8,17 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 max_line_length = 100
 
+[*.sh]
+# --language-variant
+shell_variant = bash
+binary_next_line = true
+# --case-indent
+switch_case_indent = true
+space_redirects = true
+keep_padding = true
+# --func-next-line
+function_next_line = false
+
 [*.nix]
 end_of_line = lf
 

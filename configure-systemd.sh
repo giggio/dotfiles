@@ -14,27 +14,27 @@ SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --help|-h)
-    SHOW_HELP=true
-    break
-    ;;
+    --help | -h)
+      SHOW_HELP=true
+      break
+      ;;
     --verbose)
-    VERBOSE=true
-    shift
-    ;;
+      VERBOSE=true
+      shift
+      ;;
     *)
-    shift
-    ;;
+      shift
+      ;;
   esac
 done
 eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
-  cat <<EOF
+  cat << EOF
 Configures systemd.
 
 Usage:
-  `readlink -f "$0"` [flags]
+  $(readlink -f "$0") [flags]
 
 Flags:
       --verbose            Show verbose output
@@ -44,8 +44,8 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS
-  User is `whoami` ($EUID)"
+  writeGreen "Running $(basename "$0") $ALL_ARGS
+  User is $(whoami) ($EUID)"
   if [ -v DBUS_SESSION_BUS_ADDRESS ]; then
     writeGreen "  DBUS_SESSION_BUS_ADDRESS is $DBUS_SESSION_BUS_ADDRESS"
   else
@@ -170,7 +170,7 @@ function create_systemd_service_and_timer {
     writeBlue "No script file $SOURCE_SCRIPT_FILE."
   fi
 
-  local SUFFIX;
+  local SUFFIX
   if $HAS_TARGET; then
     SUFFIX=target
   elif $HAS_TIMER; then
@@ -183,7 +183,7 @@ function create_systemd_service_and_timer {
     systemctl daemon-reload
   fi
   if ! $IS_TEMPLATE_SERVICE; then
-    if [ "`systemctl is-enabled "$SERVICE.$SUFFIX"`" != 'enabled' ]; then
+    if [ "$(systemctl is-enabled "$SERVICE.$SUFFIX")" != 'enabled' ]; then
       writeBlue "Unit $SERVICE.$SUFFIX is not enabled, enabling..."
       # disable first so if it had different dependents they will be removed
       systemctl disable "$SERVICE.$SUFFIX"
@@ -191,7 +191,7 @@ function create_systemd_service_and_timer {
     fi
   fi
   if $HAS_SOCKET; then
-    if [ "`systemctl is-enabled "$SERVICE.socket"`" != 'enabled' ]; then
+    if [ "$(systemctl is-enabled "$SERVICE.socket")" != 'enabled' ]; then
       writeBlue "Enabling $SERVICE.socket..."
       # disable first so if it had different dependents they will be removed
       systemctl disable "$SERVICE.socket"

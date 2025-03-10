@@ -4,7 +4,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$BASEDIR"/_common-setup.sh
 THIS_FILE="${BASH_SOURCE[0]}"
 
-if (return 0 2>/dev/null); then
+if (return 0 2> /dev/null); then
   echo "Don't source this script ($THIS_FILE)."
   exit 1
 fi
@@ -13,27 +13,27 @@ SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --help|-h)
-    SHOW_HELP=true
-    break
-    ;;
+    --help | -h)
+      SHOW_HELP=true
+      break
+      ;;
     --verbose)
-    VERBOSE=true
-    shift
-    ;;
+      VERBOSE=true
+      shift
+      ;;
     *)
-    shift
-    ;;
+      shift
+      ;;
   esac
 done
 eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
-  cat <<EOF
+  cat << EOF
 Configures root environment (WSL).
 
 Usage:
-  `readlink -f "$0"` [flags]
+  $(readlink -f "$0") [flags]
 
 Flags:
       --verbose            Show verbose output
@@ -43,7 +43,7 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS"
+  writeGreen "Running $(basename "$0") $ALL_ARGS"
 fi
 
 if ! $WSL; then
@@ -56,7 +56,8 @@ if [ "$EUID" != '0' ]; then
   writeYellow "Not running as root, will use $WSL_CONF instead of /etc/wsl.conf."
 fi
 
-isSetup=$(python3 << EOF
+isSetup=$(
+  python3 << EOF
 import configparser
 config = configparser.ConfigParser(allow_no_value=True)
 config.read('$WSL_CONF')

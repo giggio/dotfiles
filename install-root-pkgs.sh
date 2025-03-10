@@ -8,50 +8,45 @@ if [ "$EUID" != "0" ]; then
 fi
 
 BASIC_SETUP=false
-CURL_GH_HEADERS=()
 UPDATE=false
 CLEAN=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --basic|-b)
-    BASIC_SETUP=true
-    shift
-    ;;
-    --gh)
-    CURL_GH_HEADERS=(-H "Authorization: token $2")
-    shift 2
-    ;;
-    --clean|-c)
-    CLEAN=true
-    shift
-    ;;
-    --update|-u)
-    UPDATE=true
-    shift
-    ;;
-    --help|-h)
-    SHOW_HELP=true
-    break
-    ;;
+    --basic | -b)
+      BASIC_SETUP=true
+      shift
+      ;;
+    --clean | -c)
+      CLEAN=true
+      shift
+      ;;
+    --update | -u)
+      UPDATE=true
+      shift
+      ;;
+    --help | -h)
+      SHOW_HELP=true
+      break
+      ;;
     --verbose)
-    VERBOSE=true
-    shift
-    ;;
+      VERBOSE=true
+      shift
+      ;;
     *)
-    shift
-    ;;
+      shift
+      ;;
   esac
 done
 eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
-  cat <<EOF
+  cat << EOF
 Installs root packages.
 
 Usage:
-  `readlink -f "$0"` [flags]
+  $(readlink -f "$0") [flags]
 
 Flags:
   -b, --basic              Will only install basic packages to get Bash working
@@ -65,7 +60,7 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS
+  writeGreen "Running $(basename "$0") $ALL_ARGS
   Update is $UPDATE
   Basic setup is $BASIC_SETUP
   Clean is $CLEAN"
@@ -83,7 +78,7 @@ clean() {
 writeBlue "Update APT metadata."
 apt-get update
 
-function install_apt_pkgs () {
+function install_apt_pkgs() {
   local apt_basic_pkgs_to_install=$1
   local apt_pkgs_to_install=$2
   if [ -v 3 ]; then
@@ -94,10 +89,10 @@ function install_apt_pkgs () {
   if $BASIC_SETUP; then
     apt_pkgs_to_install=$apt_basic_pkgs_to_install
   else
-    apt_pkgs_to_install=`echo "$apt_basic_pkgs_to_install"$'\n'"$apt_pkgs_to_install" | sort`
+    apt_pkgs_to_install=$(echo "$apt_basic_pkgs_to_install"$'\n'"$apt_pkgs_to_install" | sort)
   fi
-  apt_pkgs_installed=`dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u`
-  apt_pkgs_not_installed=`comm -23 <(echo "$apt_pkgs_to_install") <(echo "$apt_pkgs_installed")`
+  apt_pkgs_installed=$(dpkg-query -W --no-pager --showformat='${Package}\n' | sort -u)
+  apt_pkgs_not_installed=$(comm -23 <(echo "$apt_pkgs_to_install") <(echo "$apt_pkgs_installed"))
   if [ "$apt_pkgs_not_installed" != "" ]; then
     # shellcheck disable=SC2086
     writeBlue Run custom installations with APT$wsl: $apt_pkgs_not_installed
@@ -107,17 +102,17 @@ function install_apt_pkgs () {
     writeBlue "Not installing packages with APT$wsl, they are all already installed."
   fi
 }
-install_apt_pkgs "`echo "apt-file
+install_apt_pkgs "$(echo "apt-file
 gpgconf
 libnss3
 pipx
 scdaemon
 socat
-vim" | sort`" ''
+vim" | sort)" ''
 
 if ! $WSL; then
   # docker
-  if ! hash docker 2>/dev/null; then
+  if ! hash docker 2> /dev/null; then
     curl -fsSL https://get.docker.com | bash
   fi
 
@@ -125,7 +120,7 @@ if ! $WSL; then
   apt_pkgs_to_install_not_wsl=
 
   # onedriver
-  if ! hash onedriver 2>/dev/null; then
+  if ! hash onedriver 2> /dev/null; then
     writeBlue "Install OneDriver."
     echo 'deb http://download.opensuse.org/repositories/home:/jstaf/xUbuntu_23.10/ /' > /etc/apt/sources.list.d/home:jstaf.list
     curl -fsSL https://download.opensuse.org/repositories/home:jstaf/xUbuntu_23.10/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/home_jstaf.gpg
@@ -133,11 +128,11 @@ if ! $WSL; then
     apt_pkgs_to_install_not_wsl+=$'\n'onedriver
   fi
   # flatpak
-  if ! hash flatpak 2>/dev/null; then
+  if ! hash flatpak 2> /dev/null; then
     apt_pkgs_to_install_not_wsl+=$'\n'flatpak
   fi
   # howdy, from https://github.com/boltgolt/howdy
-  if ! hash howdy 2>/dev/null; then
+  if ! hash howdy 2> /dev/null; then
     add-apt-repository -y ppa:boltgolt/howdy
     apt_pkgs_to_install_not_wsl+=$'\n'howdy
   fi
@@ -153,16 +148,16 @@ if ! $WSL; then
     patch --ignore-whitespace $verbose_flag -u /usr/lib/security/howdy/config.ini -i "$BASEDIR"/patches/howdy-config.patch
   fi
 
-  function install_flatpak_pkgs () {
+  function install_flatpak_pkgs() {
     local flatpak_basic_pkgs_to_install=$1
     local flatpak_pkgs_to_install=$2
     if $BASIC_SETUP; then
       flatpak_pkgs_to_install=$flatpak_basic_pkgs_to_install
     else
-      flatpak_pkgs_to_install=`echo "$flatpak_basic_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install" | sort`
+      flatpak_pkgs_to_install=$(echo "$flatpak_basic_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install" | sort)
     fi
-    flatpak_pkgs_installed=`flatpak list --app --columns=application --system | tail -n+1 | sort -u`
-    flatpak_pkgs_not_installed=`comm -23 <(echo "$flatpak_pkgs_to_install") <(echo "$flatpak_pkgs_installed")`
+    flatpak_pkgs_installed=$(flatpak list --app --columns=application --system | tail -n+1 | sort -u)
+    flatpak_pkgs_not_installed=$(comm -23 <(echo "$flatpak_pkgs_to_install") <(echo "$flatpak_pkgs_installed"))
     if [ "$flatpak_pkgs_not_installed" != "" ]; then
       # shellcheck disable=SC2086
       writeBlue Run custom installations with Flatpak: $flatpak_pkgs_not_installed
@@ -172,19 +167,19 @@ if ! $WSL; then
       writeBlue "Not installing packages with Flatpak, they are all already installed."
     fi
   }
-  install_flatpak_pkgs '' "`echo "com.valvesoftware.Steam
-net.davidotek.pupgui2" | sort`" ''
+  install_flatpak_pkgs '' "$(echo "com.valvesoftware.Steam
+net.davidotek.pupgui2" | sort)" ''
 
-  function install_snap_pkgs () {
+  function install_snap_pkgs() {
     local snap_basic_pkgs_to_install=$1
     local snap_pkgs_to_install=$2
     if $BASIC_SETUP; then
       snap_pkgs_to_install=$snap_basic_pkgs_to_install
     else
-      snap_pkgs_to_install=`echo "$snap_basic_pkgs_to_install"$'\n'"$snap_pkgs_to_install" | sort`
+      snap_pkgs_to_install=$(echo "$snap_basic_pkgs_to_install"$'\n'"$snap_pkgs_to_install" | sort)
     fi
-    snap_pkgs_installed=`snap list | awk '{ print $1 }' | tail -n+2 | sort -u`
-    snap_pkgs_not_installed=`comm -23 <(echo "$snap_pkgs_to_install") <(echo "$snap_pkgs_installed")`
+    snap_pkgs_installed=$(snap list | awk '{ print $1 }' | tail -n+2 | sort -u)
+    snap_pkgs_not_installed=$(comm -23 <(echo "$snap_pkgs_to_install") <(echo "$snap_pkgs_installed"))
     if [ "$snap_pkgs_not_installed" != "" ]; then
       # shellcheck disable=SC2086
       writeBlue Run custom installations with Snap: $snap_pkgs_not_installed

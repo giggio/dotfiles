@@ -11,27 +11,27 @@ SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --help|-h)
-    SHOW_HELP=true
-    break
-    ;;
+    --help | -h)
+      SHOW_HELP=true
+      break
+      ;;
     --verbose)
-    VERBOSE=true
-    shift
-    ;;
+      VERBOSE=true
+      shift
+      ;;
     *)
-    shift
-    ;;
+      shift
+      ;;
   esac
 done
 eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
-  cat <<EOF
+  cat << EOF
 Installs the dotfiles.
 
 Usage:
-  `readlink -f "$0"` [flags]
+  $(readlink -f "$0") [flags]
 
 Flags:
       --verbose            Show verbose output
@@ -41,7 +41,7 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS"
+  writeGreen "Running $(basename "$0") $ALL_ARGS"
 fi
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -65,7 +65,7 @@ apt autoremove --purge snapd
 rm -rf ~/snap
 rm -rf /home/"$SUDO_USER"/snap
 
-cat <<EOF > /etc/apt/preferences.d/nosnap.pref
+cat << EOF > /etc/apt/preferences.d/nosnap.pref
 Package: snapd
 Pin: release a=*
 Pin-Priority: -10

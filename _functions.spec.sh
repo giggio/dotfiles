@@ -5,7 +5,7 @@ setup() {
 
   load '_test-helpers.sh'
   rm -f "$BATS_TMPDIR"/bats-mock.*
-  curl_mock="`mock_create`"
+  curl_mock="$(mock_create)"
 
   source "$BATS_TEST_DIRNAME"/_functions.sh --curl "$curl_mock"
 }

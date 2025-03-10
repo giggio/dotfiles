@@ -12,31 +12,31 @@ SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --update|-u)
-    UPDATE=true
-    shift
-    ;;
-    --help|-h)
-    SHOW_HELP=true
-    break
-    ;;
+    --update | -u)
+      UPDATE=true
+      shift
+      ;;
+    --help | -h)
+      SHOW_HELP=true
+      break
+      ;;
     --verbose)
-    VERBOSE=true
-    shift
-    ;;
+      VERBOSE=true
+      shift
+      ;;
     *)
-    shift
-    ;;
+      shift
+      ;;
   esac
 done
 eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
-  cat <<EOF
+  cat << EOF
 Packages for the installation, setup basic tools for dotbot.
 
 Usage:
-  `readlink -f "$0"` [flags]
+  $(readlink -f "$0") [flags]
 
 Flags:
   -u, --update             Will download and install/reinstall even if the tools are already installed
@@ -47,12 +47,12 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS
+  writeGreen "Running $(basename "$0") $ALL_ARGS
   Update is $UPDATE"
 fi
 
 TIME_ZONE_FILE=/usr/share/zoneinfo/America/Sao_Paulo
-if { [ -L /etc/localtime ] && [ "`realpath /etc/localtime`" == "$TIME_ZONE_FILE" ] ; } || $RUNNING_IN_CONTAINER; then
+if { [ -L /etc/localtime ] && [ "$(realpath /etc/localtime)" == "$TIME_ZONE_FILE" ]; } || $RUNNING_IN_CONTAINER; then
   if $VERBOSE; then
     writeBlue "Not updating time zones."
   fi

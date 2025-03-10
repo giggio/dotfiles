@@ -13,35 +13,35 @@ SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --update|-u)
-    UPDATE=true
-    shift
-    ;;
+    --update | -u)
+      UPDATE=true
+      shift
+      ;;
     --quick)
-    QUICK=true
-    shift
-    ;;
-    --help|-h)
-    SHOW_HELP=true
-    break
-    ;;
+      QUICK=true
+      shift
+      ;;
+    --help | -h)
+      SHOW_HELP=true
+      break
+      ;;
     --verbose)
-    VERBOSE=true
-    shift
-    ;;
+      VERBOSE=true
+      shift
+      ;;
     *)
-    shift
-    ;;
+      shift
+      ;;
   esac
 done
 eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
-  cat <<EOF
+  cat << EOF
 Installs the dotfiles.
 
 Usage:
-  `readlink -f "$0"` [flags]
+  $(readlink -f "$0") [flags]
 
 Flags:
   -u, --update             Will download and install/reinstall even if the tools are already installed
@@ -53,7 +53,7 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS
+  writeGreen "Running $(basename "$0") $ALL_ARGS
   Update is $UPDATE"
 fi
 

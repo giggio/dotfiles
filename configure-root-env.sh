@@ -12,31 +12,31 @@ VERBOSE=false
 BASIC_SETUP=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --basic|-b)
-    BASIC_SETUP=true
-    shift
-    ;;
-    --help|-h)
-    SHOW_HELP=true
-    break
-    ;;
+    --basic | -b)
+      BASIC_SETUP=true
+      shift
+      ;;
+    --help | -h)
+      SHOW_HELP=true
+      break
+      ;;
     --verbose)
-    VERBOSE=true
-    shift
-    ;;
+      VERBOSE=true
+      shift
+      ;;
     *)
-    shift
-    ;;
+      shift
+      ;;
   esac
 done
 eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
-  cat <<EOF
+  cat << EOF
 Configures root environment.
 
 Usage:
-  `readlink -f "$0"` [flags]
+  $(readlink -f "$0") [flags]
 
 Flags:
   -b, --basic              Will only install basic packages to get Bash working
@@ -47,7 +47,7 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS
+  writeGreen "Running $(basename "$0") $ALL_ARGS
   Basic setup is $BASIC_SETUP"
 fi
 
@@ -56,7 +56,7 @@ if $VERBOSE; then
 fi
 echo "export BASIC_SETUP=$BASIC_SETUP" > /etc/profile.d/01-basic-setup.sh
 
-if ! [[ `locale -a` =~ en_US\.utf8 ]]; then
+if ! [[ $(locale -a) =~ en_US\.utf8 ]]; then
   writeBlue "Generate location."
   locale-gen en_US.UTF-8
 else
@@ -75,7 +75,7 @@ elif $VERBOSE; then
 fi
 
 if $WSL && ! $RUNNING_IN_CONTAINER; then
-  if hash wslview 2>/dev/null; then
+  if hash wslview 2> /dev/null; then
     setAlternative x-www-browser wslview
   else
     if $VERBOSE; then
@@ -143,12 +143,12 @@ else
     done
 
     # Move openrgb udev rules file to udev rules directory
-    openrgb_bin=`su - "$SUDO_USER" -c "which openrgb || true"`
+    openrgb_bin=$(su - "$SUDO_USER" -c "which openrgb || true")
     if [ -n "$openrgb_bin" ]; then
       openrgb_rules="$(realpath "$(dirname "$(readlink -f "$openrgb_bin")")"/../lib/udev/rules.d/60-openrgb.rules)"
       if [ -f "$openrgb_rules" ]; then
         destination_udev_rules=/usr/lib/udev/rules.d/60-openrgb.rules
-        if [ "`readlink -f /usr/lib/udev/rules.d/60-openrgb.rules`" = "$openrgb_rules" ]; then
+        if [ "$(readlink -f /usr/lib/udev/rules.d/60-openrgb.rules)" = "$openrgb_rules" ]; then
           if $VERBOSE; then
             writeBlue "OpenRGB udev rules are already linked."
           fi
@@ -168,10 +168,10 @@ else
   fi
 fi
 
-if hash sensors 2>/dev/null; then
-  if sensors -u 2>/dev/null | grep -q asusec-isa; then
+if hash sensors 2> /dev/null; then
+  if sensors -u 2> /dev/null | grep -q asusec-isa; then
     if ! [ -f /etc/sensors.d/disabling ]; then
-      cat <<EOF >/etc/sensors.d/disabling
+      cat << EOF > /etc/sensors.d/disabling
 chip "asusec-*"
   ignore temp1
   ignore temp2

@@ -8,41 +8,40 @@ if [ "$EUID" == "0" ]; then
 fi
 
 BASIC_SETUP=false
-CURL_GH_HEADERS=()
 UPDATE=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --basic|-b)
-    BASIC_SETUP=true
-    shift
-    ;;
-    --update|-u)
-    UPDATE=true
-    shift
-    ;;
-    --help|-h)
-    SHOW_HELP=true
-    break
-    ;;
+    --basic | -b)
+      BASIC_SETUP=true
+      shift
+      ;;
+    --update | -u)
+      UPDATE=true
+      shift
+      ;;
+    --help | -h)
+      SHOW_HELP=true
+      break
+      ;;
     --verbose)
-    VERBOSE=true
-    shift
-    ;;
+      VERBOSE=true
+      shift
+      ;;
     *)
-    shift
-    ;;
+      shift
+      ;;
   esac
 done
 eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
-  cat <<EOF
+  cat << EOF
 Installs user packages.
 
 Usage:
-  `readlink -f "$0"` [flags]
+  $(readlink -f "$0") [flags]
 
 Flags:
   -b, --basic              Will only install basic packages to get Bash working
@@ -54,25 +53,25 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS
+  writeGreen "Running $(basename "$0") $ALL_ARGS
   Update is $UPDATE
   Basic setup is $BASIC_SETUP"
 fi
 
-download_nixpkgs_cache_index () {
+download_nixpkgs_cache_index() {
   local filename
   filename="index-$(uname -m | sed 's/^arm64$/aarch64/')-$(uname | tr '[:upper:]' '[:lower:]')"
   mkdir -p ~/.cache/nix-index && cd ~/.cache/nix-index
   wget -q -N "https://github.com/Mic92/nix-index-database/releases/latest/download/$filename"
   ln -f "$filename" files
 }
-hm_switch () {
+hm_switch() {
   local verbose_flag=
   if $VERBOSE; then verbose_flag="--verbose"; fi
   "$BASEDIR"/home-manager/bin/hm switch --show-trace $verbose_flag "$@"
 }
-installHomeManagerUsingFlakes () {
-  if ! hash home-manager 2>/dev/null; then
+installHomeManagerUsingFlakes() {
+  if ! hash home-manager 2> /dev/null; then
     writeBlue "Install Nix home-manager."
     nix-channel --add https://nixos.org/channels/nixos-unstable nixpkgs
     nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
@@ -91,7 +90,7 @@ installHomeManagerUsingFlakes () {
   fi
 }
 
-if (return 0 2>/dev/null); then
+if (return 0 2> /dev/null); then
   # if sourced, remove the set -euo pipefail
   set +euo pipefail
 else

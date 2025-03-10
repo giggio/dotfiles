@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 ARG USER=user
 ARG PASSWORD=p
 RUN apt-get update

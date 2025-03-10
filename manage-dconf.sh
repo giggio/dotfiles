@@ -11,27 +11,27 @@ SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --help|-h)
-    SHOW_HELP=true
-    break
-    ;;
+    --help | -h)
+      SHOW_HELP=true
+      break
+      ;;
     --verbose)
-    VERBOSE=true
-    shift
-    ;;
+      VERBOSE=true
+      shift
+      ;;
     *)
-    shift
-    ;;
+      shift
+      ;;
   esac
 done
 eval set -- "$PARSED_ARGS"
 
 if $SHOW_HELP; then
-  cat <<EOF
+  cat << EOF
 Manages dconf config.
 
 Usage:
-  `readlink -f "$0"` [flags]
+  $(readlink -f "$0") [flags]
 
 Flags:
       --verbose                                      Show verbose output
@@ -41,7 +41,7 @@ EOF
 fi
 
 if $VERBOSE; then
-  writeGreen "Running `basename "$0"` $ALL_ARGS"
+  writeGreen "Running $(basename "$0") $ALL_ARGS"
 fi
 
 if ! hash dconf2nix 2> /dev/null; then
@@ -78,14 +78,14 @@ if $VERBOSE; then writeGreen "Will export to: $BASE_DATA_DIR"; fi
 dconfnixfile='{
   imports = ['
 for FULL_CONFIG in "${DCONF_CONFIGS[@]}"; do
-  CONFIG=`basename "$FULL_CONFIG"`
-  CONFIG_DIR=$BASE_DATA_DIR/`dirname "$FULL_CONFIG"`
+  CONFIG=$(basename "$FULL_CONFIG")
+  CONFIG_DIR=$BASE_DATA_DIR/$(dirname "$FULL_CONFIG")
   if ! [ -d "$CONFIG_DIR" ]; then
     if $VERBOSE; then writeGreen "Creating dir '$CONFIG_DIR'..."; fi
     mkdir -p "$CONFIG_DIR"
   fi
   CONFIG_FILE="$CONFIG_DIR/$CONFIG.nix"
-  dconfnixfile+=$'\n    './"`dirname "$FULL_CONFIG"`/$CONFIG.nix"
+  dconfnixfile+=$'\n    './"$(dirname "$FULL_CONFIG")/$CONFIG.nix"
   if $VERBOSE; then writeGreen "Creating config into file '$CONFIG_FILE'..."; fi
   dconf dump "/$FULL_CONFIG/" | dconf2nix --root "$FULL_CONFIG" > "$CONFIG_FILE"
 done

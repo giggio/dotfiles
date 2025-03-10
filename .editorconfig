@@ -15,7 +15,7 @@ binary_next_line = true
 # --case-indent
 switch_case_indent = true
 space_redirects = true
-keep_padding = true
+keep_padding = false
 # --func-next-line
 function_next_line = false
 

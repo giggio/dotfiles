@@ -2,7 +2,7 @@ FROM ubuntu:24.04
 ARG USER=user
 ARG PASSWORD=p
 RUN apt-get update
-RUN apt-get install -y git sudo whois vim
+RUN apt-get install -y git sudo whois vim python3
 RUN useradd -ms /bin/bash $USER -p `mkpasswd $PASSWORD` --home-dir /home/$USER && usermod -aG sudo $USER
 USER $USER
 # WORDIR is after USER to avoid permission issues

@@ -103,12 +103,17 @@ function install_apt_pkgs() {
   fi
 }
 install_apt_pkgs "$(echo "apt-file
+curl
+gpg
 gpgconf
 libnss3
+locales
 pipx
 scdaemon
 socat
-vim" | sort)" ''
+software-properties-common
+vim
+wget" | sort)" ''
 
 if ! $WSL; then
   # docker
@@ -133,42 +138,54 @@ if ! $WSL; then
   fi
   # howdy, from https://github.com/boltgolt/howdy
   if ! hash howdy 2> /dev/null; then
-    add-apt-repository -y ppa:boltgolt/howdy
-    apt_pkgs_to_install_not_wsl+=$'\n'howdy
+    if ! $RUNNING_IN_CONTAINER; then
+      add-apt-repository -y ppa:boltgolt/howdy
+      apt_pkgs_to_install_not_wsl+=$'\n'howdy
+    fi
   fi
 
   install_apt_pkgs "$apt_basic_pkgs_to_install_not_wsl" "$apt_pkgs_to_install_not_wsl" '(wsl)'
 
-  # patch /lib/security/howdy/pam.py to allow howdy to work with encrypted home and not try to detect face when home is encrypted
-  # See https://github.com/boltgolt/howdy/issues/199#issuecomment-2078573953
-  verbose_flag=
-  if $VERBOSE; then verbose_flag="--verbose"; fi
-  if ! grep 'Abort if user is not root' /lib/security/howdy/pam.py -q; then
-    patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$BASEDIR"/patches/pam.py.patch
-    patch --ignore-whitespace $verbose_flag -u /usr/lib/security/howdy/config.ini -i "$BASEDIR"/patches/howdy-config.patch
+  if ! $RUNNING_IN_CONTAINER; then
+    # patch /lib/security/howdy/pam.py to allow howdy to work with encrypted home and not try to detect face when home is encrypted
+    # See https://github.com/boltgolt/howdy/issues/199#issuecomment-2078573953
+    verbose_flag=
+    if $VERBOSE; then verbose_flag="--verbose"; fi
+    if ! grep 'Abort if user is not root' /lib/security/howdy/pam.py -q; then
+      patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$BASEDIR"/patches/pam.py.patch
+      patch --ignore-whitespace $verbose_flag -u /usr/lib/security/howdy/config.ini -i "$BASEDIR"/patches/howdy-config.patch
+    fi
   fi
 
   function install_flatpak_pkgs() {
     local flatpak_basic_pkgs_to_install=$1
     local flatpak_pkgs_to_install=$2
+    local flatpak_pkgs_to_install_if_not_container=''
+    if ! $RUNNING_IN_CONTAINER; then
+      flatpak_pkgs_to_install_if_not_container=$3
+    fi
+    writeBlue "Install Flatpak remote Flathub."
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     if $BASIC_SETUP; then
       flatpak_pkgs_to_install=$flatpak_basic_pkgs_to_install
     else
-      flatpak_pkgs_to_install=$(echo "$flatpak_basic_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install" | sort)
+      flatpak_pkgs_to_install=$(echo "$flatpak_basic_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install_if_not_container" | sort)
     fi
+    local flatpak_pkgs_installed
     flatpak_pkgs_installed=$(flatpak list --app --columns=application --system | tail -n+1 | sort -u)
+    local flatpak_pkgs_not_installed
     flatpak_pkgs_not_installed=$(comm -23 <(echo "$flatpak_pkgs_to_install") <(echo "$flatpak_pkgs_installed"))
     if [ "$flatpak_pkgs_not_installed" != "" ]; then
       # shellcheck disable=SC2086
       writeBlue Run custom installations with Flatpak: $flatpak_pkgs_not_installed
       # shellcheck disable=SC2086
-      apt-get install -y $flatpak_pkgs_not_installed
+      flatpak install -y $flatpak_pkgs_not_installed
     elif $VERBOSE; then
       writeBlue "Not installing packages with Flatpak, they are all already installed."
     fi
   }
-  install_flatpak_pkgs '' "$(echo "com.valvesoftware.Steam
-net.davidotek.pupgui2" | sort)" ''
+  install_flatpak_pkgs '' "net.davidotek.pupgui2" "com.microsoft.AzureStorageExplorer
+com.valvesoftware.Steam"
 
   function install_snap_pkgs() {
     local snap_basic_pkgs_to_install=$1
@@ -177,6 +194,10 @@ net.davidotek.pupgui2" | sort)" ''
       snap_pkgs_to_install=$snap_basic_pkgs_to_install
     else
       snap_pkgs_to_install=$(echo "$snap_basic_pkgs_to_install"$'\n'"$snap_pkgs_to_install" | sort)
+    fi
+    if ! hash snap 2> /dev/null; then
+      writeBlue "Install Snap."
+      apt-get install -y snapd
     fi
     snap_pkgs_installed=$(snap list | awk '{ print $1 }' | tail -n+2 | sort -u)
     snap_pkgs_not_installed=$(comm -23 <(echo "$snap_pkgs_to_install") <(echo "$snap_pkgs_installed"))
@@ -189,8 +210,8 @@ net.davidotek.pupgui2" | sort)" ''
       writeBlue "Not installing packages with Snap, they are all already installed."
     fi
   }
-  install_snap_pkgs '' ''
-
+  # commented as we are not using the snap store
+  # install_snap_pkgs '' ''
 fi
 
 # nix
@@ -206,7 +227,9 @@ if $UPDATE; then
   writeBlue "Upgrade with APT."
   apt-get upgrade -y
   flatpak update -y
-  snap refresh
+  if hash snap 2> /dev/null; then
+    snap refresh
+  fi
 else
   if $VERBOSE; then
     writeBlue "Not updating with APT."

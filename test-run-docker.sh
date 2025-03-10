@@ -16,7 +16,6 @@ V_ARGS=""
 for f in $ALL_FILES; do
   V_ARGS="$V_ARGS -v $DIR/$f:$DOTFILESDIR/$f"
 done
-echo "$V_ARGS"
 
 # shellcheck disable=SC2209
 CONTAINER_NAME=df

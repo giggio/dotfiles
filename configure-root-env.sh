@@ -114,7 +114,10 @@ else
       writeBlue "Setting KillUserProcesses=yes in /etc/systemd/logind.conf."
     fi
     sed -i 's/#KillUserProcesses=no/KillUserProcesses=yes/' /etc/systemd/logind.conf
-    systemctl reload systemd-logind
+    if ! $RUNNING_IN_CONTAINER; then
+      writeBlue "Reloading systemd-logind."
+      systemctl reload systemd-logind
+    fi
   else
     writeBlue "Logind configuration file does not exist."
   fi

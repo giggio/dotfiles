@@ -90,15 +90,19 @@ setAlternative editor /usr/bin/vim.basic
 # until then, make apparmor allow unprivileged user namespaces
 # This became a problem since Ubuntu 24.04
 # See: https://discourse.ubuntu.com/t/ubuntu-24-04-lts-noble-numbat-release-notes/39890#unprivileged-user-namespace-restrictions-15
-if [ -f /etc/sysctl.d/60-apparmor-namespace.conf ]; then
-  if $VERBOSE; then
-    writeBlue "Apparmor is already set to allow unprivileged user namespaces."
+if hash aa-status 2> /dev/null && aa-status &> /dev/null; then
+  if [ -f /etc/sysctl.d/60-apparmor-namespace.conf ]; then
+    if $VERBOSE; then
+      writeBlue "Apparmor is already set to allow unprivileged user namespaces."
+    fi
+  else
+    if $VERBOSE; then
+      writeBlue "Setting Apparmor to allow unprivileged user namespaces."
+    fi
+    echo 'kernel.apparmor_restrict_unprivileged_userns=0' > /etc/sysctl.d/60-apparmor-namespace.conf
   fi
 else
-  if $VERBOSE; then
-    writeBlue "Setting Apparmor to allow unprivileged user namespaces."
-  fi
-  echo 'kernel.apparmor_restrict_unprivileged_userns=0' > /etc/sysctl.d/60-apparmor-namespace.conf
+  writeBlue "Apparmor is not installed or is not running."
 fi
 
 if $WSL; then
@@ -124,9 +128,20 @@ else
 
   # patch /etc/pam.d/common-session-noninteractive, see: https://askubuntu.com/a/1052885/832580
   # this is to allow encrypted home to unmount on logout
-  verbose_flag=
-  if $VERBOSE; then verbose_flag="--verbose"; fi
-  patch --ignore-whitespace $verbose_flag -u /etc/pam.d/common-session-noninteractive -i "$BASEDIR"/patches/common-session-noninteractive.patch --merge
+  if [ -f /etc/pam.d/common-session-noninteractive ]; then
+    if grep pam_ecryptfs.so /etc/pam.d/common-session-noninteractive -q; then
+      writeBlue "Patching /etc/pam.d/common-session-noninteractive."
+      verbose_flag=
+      if $VERBOSE; then verbose_flag="--verbose"; fi
+      patch --ignore-whitespace $verbose_flag -u /etc/pam.d/common-session-noninteractive -i "$BASEDIR"/patches/common-session-noninteractive.patch --merge
+    else
+      if $VERBOSE; then
+        writeYellow "PAM configuration file /etc/pam.d/common-session-noninteractive does not contain pam_ecryptfs.so."
+      fi
+    fi
+  else
+    writeYellow "PAM configuration file /etc/pam.d/common-session-noninteractive does not exist."
+  fi
 
   if [ -v SUDO_USER ]; then
     groups_to_add=(docker i2c)

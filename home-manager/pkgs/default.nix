@@ -19,5 +19,6 @@ with pkgs;
   prettier-plugin-awk = callPackage ./nodejs/prettier-plugin-awk.nix { };
   chart-releaser = callPackage ./golang/chart-releaser.nix { };
   docker-show-context = callPackage ./golang/docker-show-context.nix { };
+  ketall = callPackage ./golang/ketall.nix { };
   kubectl-aliases = callPackage ./aliases/kubectl-aliases.nix { };
 }

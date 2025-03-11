@@ -22,8 +22,13 @@ if grep '[Mm]icrosoft' /proc/version -q &> /dev/null; then
 else
   export WSL=false
 fi
-if uname -a | grep android &> /dev/null; then
+if uname -o | grep Android &> /dev/null; then
   export ANDROID=true
 else
   export ANDROID=false
+fi
+if [ "aarch64" == "$(uname -m)" ]; then
+  export ARM=true
+else
+  export ARM=false
 fi

@@ -24,8 +24,8 @@ buildNpmPackage rec {
   NODE_OPTIONS = "";
 
   meta = with lib; {
-    description = "Bash Automated Testing System";
-    homepage = "https://bats-core.readthedocs.io/";
+    description = "Runs a load test on the selected HTTP or WebSockets URL";
+    homepage = "https://github.com/alexfernandez/loadtest/";
     license = licenses.mit;
     platforms = platforms.linux;
   };

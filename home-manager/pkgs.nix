@@ -158,6 +158,9 @@ let
     deno
     opentofu
     krew
+    kube-capacity # krew
+    kail # krew
+    ketall # krew
     ctop
     go
     gcc

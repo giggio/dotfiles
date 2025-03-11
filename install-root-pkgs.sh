@@ -9,17 +9,17 @@ fi
 
 BASIC_SETUP=false
 UPDATE=false
-CLEAN=false
+SERVER_SETUP=false
 SHOW_HELP=false
 VERBOSE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --basic | -b)
-      BASIC_SETUP=true
+    --server | -s)
+      SERVER_SETUP=true
       shift
       ;;
-    --clean | -c)
-      CLEAN=true
+    --basic | -b)
+      BASIC_SETUP=true
       shift
       ;;
     --update | -u)
@@ -51,7 +51,7 @@ Usage:
 Flags:
   -b, --basic              Will only install basic packages to get Bash working
       --gh <user:pw>       GitHub username and password
-  -c, --clean              Will clean installed packages.
+  -s, --server             Server installation, assumes basic, removes all desktop tools and some client tools.
   -u, --update             Will download and install/reinstall even if the tools are already installed
       --verbose            Show verbose output
   -h, --help               help
@@ -59,24 +59,30 @@ EOF
   exit 0
 fi
 
+if $ARM && ! $ANDROID; then
+  SERVER_SETUP=true
+fi
+
+if $SERVER_SETUP; then
+  BASIC_SETUP=true
+fi
+
 if $VERBOSE; then
   writeGreen "Running $(basename "$0") $ALL_ARGS
   Update is $UPDATE
+  WSL is $WSL
   Basic setup is $BASIC_SETUP
-  Clean is $CLEAN"
+  Server setup is $SERVER_SETUP"
 fi
 
-clean() {
-  if $CLEAN; then
-    writeBlue "Cleanning up packages."
-    apt-get autoremove -y
-  elif $VERBOSE; then
-    writeBlue "Not auto removing with APT."
+if [[ $(($(date +%s) - $(stat --format=%X /var/cache/apt/pkgcache.bin))) -gt $((12 * 60 * 60)) ]]; then
+  writeBlue "Update APT metadata."
+  apt-get update
+else
+  if $VERBOSE; then
+    writeBlue "Not updating APT metadata, it was updated less than 12 hours ago."
   fi
-}
-
-writeBlue "Update APT metadata."
-apt-get update
+fi
 
 function install_apt_pkgs() {
   local apt_basic_pkgs_to_install=$1
@@ -118,104 +124,111 @@ wget" | sort)" ''
 if ! $WSL; then
   # docker
   if ! hash docker 2> /dev/null; then
+    writeBlue "Install Docker."
     curl -fsSL https://get.docker.com | bash
   fi
 
   apt_basic_pkgs_to_install_not_wsl=
   apt_pkgs_to_install_not_wsl=
 
-  # onedriver
-  if ! hash onedriver 2> /dev/null; then
-    writeBlue "Install OneDriver."
-    echo 'deb http://download.opensuse.org/repositories/home:/jstaf/xUbuntu_23.10/ /' > /etc/apt/sources.list.d/home:jstaf.list
-    curl -fsSL https://download.opensuse.org/repositories/home:jstaf/xUbuntu_23.10/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/home_jstaf.gpg
-    apt-get update
-    apt_pkgs_to_install_not_wsl+=$'\n'onedriver
-  fi
-  # flatpak
-  if ! hash flatpak 2> /dev/null; then
-    apt_pkgs_to_install_not_wsl+=$'\n'flatpak
-  fi
-  # howdy, from https://github.com/boltgolt/howdy
-  if ! hash howdy 2> /dev/null; then
+  if ! $SERVER_SETUP; then
+    # onedriver
+    if ! hash onedriver 2> /dev/null; then
+      writeBlue "Install OneDriver."
+      echo 'deb http://download.opensuse.org/repositories/home:/jstaf/xUbuntu_23.10/ /' > /etc/apt/sources.list.d/home:jstaf.list
+      curl -fsSL https://download.opensuse.org/repositories/home:jstaf/xUbuntu_23.10/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/home_jstaf.gpg
+      apt-get update
+      apt_pkgs_to_install_not_wsl+=$'\n'onedriver
+    fi
+    # flatpak
+    if ! hash flatpak 2> /dev/null; then
+      apt_pkgs_to_install_not_wsl+=$'\n'flatpak
+    fi
+    # howdy, from https://github.com/boltgolt/howdy
+    if ! hash howdy 2> /dev/null; then
+      if ! $RUNNING_IN_CONTAINER; then
+        add-apt-repository -y ppa:boltgolt/howdy
+        apt_pkgs_to_install_not_wsl+=$'\n'howdy
+      fi
+    fi
+
+    install_apt_pkgs "$apt_basic_pkgs_to_install_not_wsl" "$apt_pkgs_to_install_not_wsl" '(wsl)'
+
     if ! $RUNNING_IN_CONTAINER; then
-      add-apt-repository -y ppa:boltgolt/howdy
-      apt_pkgs_to_install_not_wsl+=$'\n'howdy
+      # patch /lib/security/howdy/pam.py to allow howdy to work with encrypted home and not try to detect face when home is encrypted
+      # See https://github.com/boltgolt/howdy/issues/199#issuecomment-2078573953
+      verbose_flag=
+      if $VERBOSE; then verbose_flag="--verbose"; fi
+      if ! grep 'Abort if user is not root' /lib/security/howdy/pam.py -q; then
+        patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$BASEDIR"/patches/pam.py.patch
+        patch --ignore-whitespace $verbose_flag -u /usr/lib/security/howdy/config.ini -i "$BASEDIR"/patches/howdy-config.patch
+      fi
     fi
+
+    function install_flatpak_pkgs() {
+      local flatpak_basic_pkgs_to_install=$1
+      local flatpak_pkgs_to_install=$2
+      local flatpak_pkgs_to_install_if_not_container=''
+      if ! $RUNNING_IN_CONTAINER; then
+        flatpak_pkgs_to_install_if_not_container=$3
+      fi
+      if ! flatpak remotes --columns=name | grep -q flathub; then
+        writeBlue "Install Flatpak remote Flathub."
+        flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+      else
+        if $VERBOSE; then
+          writeBlue "Not adding Flatpak remote Flathub, it is already added."
+        fi
+      fi
+      if $BASIC_SETUP; then
+        flatpak_pkgs_to_install=$flatpak_basic_pkgs_to_install
+      else
+        flatpak_pkgs_to_install=$(echo "$flatpak_basic_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install_if_not_container" | sort)
+      fi
+      local flatpak_pkgs_installed
+      flatpak_pkgs_installed=$(flatpak list --app --columns=application --system | tail -n+1 | sort -u)
+      local flatpak_pkgs_not_installed
+      flatpak_pkgs_not_installed=$(comm -23 <(echo "$flatpak_pkgs_to_install") <(echo "$flatpak_pkgs_installed"))
+      if [ "$flatpak_pkgs_not_installed" != "" ]; then
+        # shellcheck disable=SC2086
+        writeBlue Run custom installations with Flatpak: $flatpak_pkgs_not_installed
+        # shellcheck disable=SC2086
+        flatpak install -y $flatpak_pkgs_not_installed
+      elif $VERBOSE; then
+        writeBlue "Not installing packages with Flatpak, they are all already installed."
+      fi
+    }
+    install_flatpak_pkgs '' "net.davidotek.pupgui2" "com.microsoft.AzureStorageExplorer"
+
+    function install_snap_pkgs() {
+      local snap_basic_pkgs_to_install=$1
+      local snap_pkgs_to_install=$2
+      if $BASIC_SETUP; then
+        snap_pkgs_to_install=$snap_basic_pkgs_to_install
+      else
+        snap_pkgs_to_install=$(echo "$snap_basic_pkgs_to_install"$'\n'"$snap_pkgs_to_install" | sort)
+      fi
+      if ! hash snap 2> /dev/null; then
+        writeBlue "Install Snap."
+        apt-get install -y snapd
+      fi
+      snap_pkgs_installed=$(snap list | awk '{ print $1 }' | tail -n+2 | sort -u)
+      snap_pkgs_not_installed=$(comm -23 <(echo "$snap_pkgs_to_install") <(echo "$snap_pkgs_installed"))
+      if [ "$snap_pkgs_not_installed" != "" ]; then
+        # shellcheck disable=SC2086
+        writeBlue Run custom installations with Snap: $snap_pkgs_not_installed
+        # shellcheck disable=SC2086
+        echo "$snap_pkgs_not_installed" | xargs -t -L1 snap install
+      elif $VERBOSE; then
+        writeBlue "Not installing packages with Snap, they are all already installed."
+      fi
+    }
+    install_snap_pkgs '' 'steam'
   fi
-
-  install_apt_pkgs "$apt_basic_pkgs_to_install_not_wsl" "$apt_pkgs_to_install_not_wsl" '(wsl)'
-
-  if ! $RUNNING_IN_CONTAINER; then
-    # patch /lib/security/howdy/pam.py to allow howdy to work with encrypted home and not try to detect face when home is encrypted
-    # See https://github.com/boltgolt/howdy/issues/199#issuecomment-2078573953
-    verbose_flag=
-    if $VERBOSE; then verbose_flag="--verbose"; fi
-    if ! grep 'Abort if user is not root' /lib/security/howdy/pam.py -q; then
-      patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$BASEDIR"/patches/pam.py.patch
-      patch --ignore-whitespace $verbose_flag -u /usr/lib/security/howdy/config.ini -i "$BASEDIR"/patches/howdy-config.patch
-    fi
-  fi
-
-  function install_flatpak_pkgs() {
-    local flatpak_basic_pkgs_to_install=$1
-    local flatpak_pkgs_to_install=$2
-    local flatpak_pkgs_to_install_if_not_container=''
-    if ! $RUNNING_IN_CONTAINER; then
-      flatpak_pkgs_to_install_if_not_container=$3
-    fi
-    writeBlue "Install Flatpak remote Flathub."
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-    if $BASIC_SETUP; then
-      flatpak_pkgs_to_install=$flatpak_basic_pkgs_to_install
-    else
-      flatpak_pkgs_to_install=$(echo "$flatpak_basic_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install"$'\n'"$flatpak_pkgs_to_install_if_not_container" | sort)
-    fi
-    local flatpak_pkgs_installed
-    flatpak_pkgs_installed=$(flatpak list --app --columns=application --system | tail -n+1 | sort -u)
-    local flatpak_pkgs_not_installed
-    flatpak_pkgs_not_installed=$(comm -23 <(echo "$flatpak_pkgs_to_install") <(echo "$flatpak_pkgs_installed"))
-    if [ "$flatpak_pkgs_not_installed" != "" ]; then
-      # shellcheck disable=SC2086
-      writeBlue Run custom installations with Flatpak: $flatpak_pkgs_not_installed
-      # shellcheck disable=SC2086
-      flatpak install -y $flatpak_pkgs_not_installed
-    elif $VERBOSE; then
-      writeBlue "Not installing packages with Flatpak, they are all already installed."
-    fi
-  }
-  install_flatpak_pkgs '' "net.davidotek.pupgui2" "com.microsoft.AzureStorageExplorer
-com.valvesoftware.Steam"
-
-  function install_snap_pkgs() {
-    local snap_basic_pkgs_to_install=$1
-    local snap_pkgs_to_install=$2
-    if $BASIC_SETUP; then
-      snap_pkgs_to_install=$snap_basic_pkgs_to_install
-    else
-      snap_pkgs_to_install=$(echo "$snap_basic_pkgs_to_install"$'\n'"$snap_pkgs_to_install" | sort)
-    fi
-    if ! hash snap 2> /dev/null; then
-      writeBlue "Install Snap."
-      apt-get install -y snapd
-    fi
-    snap_pkgs_installed=$(snap list | awk '{ print $1 }' | tail -n+2 | sort -u)
-    snap_pkgs_not_installed=$(comm -23 <(echo "$snap_pkgs_to_install") <(echo "$snap_pkgs_installed"))
-    if [ "$snap_pkgs_not_installed" != "" ]; then
-      # shellcheck disable=SC2086
-      writeBlue Run custom installations with Snap: $snap_pkgs_not_installed
-      # shellcheck disable=SC2086
-      echo "$snap_pkgs_not_installed" | xargs -t -L1 snap install
-    elif $VERBOSE; then
-      writeBlue "Not installing packages with Snap, they are all already installed."
-    fi
-  }
-  # commented as we are not using the snap store
-  # install_snap_pkgs '' ''
 fi
 
 # nix
-if ! [ -f /etc/bash.bashrc.backup-before-nix ]; then
+if ! [ -f /etc/bash.bashrc.backup-before-nix ] && ! [ -d /nix/ ]; then
   writeBlue "Install Nix."
   sh <(curl -L https://nixos.org/nix/install) --daemon --yes
 elif $VERBOSE; then
@@ -235,5 +248,3 @@ else
     writeBlue "Not updating with APT."
   fi
 fi
-
-clean

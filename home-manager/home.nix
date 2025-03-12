@@ -528,8 +528,20 @@ rec {
           pinentry-timeout 34560000
         '';
     };
+
     keybase.enable = !setup.wsl;
+
     kbfs.enable = !setup.wsl;
+
+    syncthing = {
+      enable = !setup.wsl;
+      overrideDevices = false;
+      overrideFolders = false;
+      tray = {
+        enable = !setup.wsl;
+      };
+    };
+
   };
 
   systemd = import ./systemd.nix { inherit setup; };

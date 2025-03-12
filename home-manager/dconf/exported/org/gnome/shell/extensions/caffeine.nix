@@ -6,12 +6,14 @@ with lib.hm.gvariant;
 {
   dconf.settings = {
     "org/gnome/shell/extensions/caffeine" = {
-      countdown-timer = 15;
+      countdown-timer = 1800;
       duration-timer = 2;
       enable-fullscreen = false;
-      indicator-position-max = 1;
+      indicator-position-max = 3;
       restore-state = false;
       screen-blank = "always";
+      toggle-state = false;
+      user-enabled = false;
     };
 
   };

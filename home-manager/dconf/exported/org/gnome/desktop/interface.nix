@@ -15,6 +15,7 @@ with lib.hm.gvariant;
       gtk-theme = "Adwaita";
       icon-theme = "Adwaita";
       locate-pointer = false;
+      toolkit-accessibility = true;
     };
 
   };

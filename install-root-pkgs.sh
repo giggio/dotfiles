@@ -160,7 +160,7 @@ if ! $WSL; then
       verbose_flag=
       if $VERBOSE; then verbose_flag="--verbose"; fi
       if ! grep 'Abort if user is not root' /lib/security/howdy/pam.py -q; then
-        patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$BASEDIR"/patches/pam.py.patch
+        patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$BASEDIR"/patches/howdy-pam.py.patch
         patch --ignore-whitespace $verbose_flag -u /usr/lib/security/howdy/config.ini -i "$BASEDIR"/patches/howdy-config.patch
       fi
     fi

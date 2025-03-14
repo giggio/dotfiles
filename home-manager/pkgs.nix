@@ -9,6 +9,13 @@ let
     extra-completions
     (callPackage ./cheats/default.nix { })
     starship
+    (blesh.overrideAttrs {
+      version = "nightly-20250209+4338bbf";
+      src = fetchzip {
+        url = "https://github.com/akinomyoga/ble.sh/releases/download/nightly/ble-nightly-20250209+4338bbf.tar.xz";
+        sha256 = "sha256-zkYAvxsmKb7Gb4qNQle4b/nS9VLwBBtHgINvIAKwWes=";
+      };
+    })
     dotnet-install
     dotnet-sdk
     dotnet-tools

@@ -207,7 +207,10 @@ rec {
           # auto complete all aliases
           complete -F _complete_alias "''${!BASH_ALIASES[@]}"
 
+          source "$(blesh-share)/ble.sh"
           # end of .bashrc
+
+          # beginning of configurations coming from other options, like gpg-agent, direnv and zoxide
         '';
       logoutExtra =
         ''
@@ -308,13 +311,25 @@ rec {
           };
         in
         lib.concatStringsSep "\n" (lib.concatLists [
-          [ "# Shell session variables:" ]
-          (lib.mapAttrsToList (k: v: "export ${k}=${v}") shellSessionVariables)
-          [ "# Bash session variables:" ]
-          (lib.mapAttrsToList (k: v: "export ${k}=${v}") bashSessionVariables)
           [
             ''
               # beginning of .bashrc
+
+              # Shell session variables:
+            ''
+          ]
+          (lib.mapAttrsToList (k: v: "export ${k}=${v}") shellSessionVariables)
+          [
+            ''
+
+              # Bash session variables:
+            ''
+          ]
+          (lib.mapAttrsToList (k: v: "export ${k}=${v}") bashSessionVariables)
+          [
+            ''
+
+              # beginning of .bashrc config
               unset MAILCHECK
               # If not running interactively, don't do anything
               [[ $- == *i* ]] || return
@@ -436,6 +451,15 @@ rec {
       "carapace/overlays".source = ./config/carapace/overlays;
       "carapace/specs".source = ./config/carapace/specs;
       "mimeapps.list".force = true; # overwrite the default file which keeps being recreated by Ubuntu
+      "blesh/init.sh".text =
+        ''
+          ble-import integration/fzf-completion
+          ble-import integration/fzf-key-bindings
+          ble-import integration/zoxide
+          ble-import integration/nix-completion.bash
+          ble-import vim-airline
+          bleopt vim_airline_theme=minimalist
+        '';
     };
     dataFile = { };
     mimeApps = {

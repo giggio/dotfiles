@@ -100,7 +100,6 @@ rec {
       XDG_CACHE_HOME = "\${XDG_CACHE_HOME:-$HOME/.cache}";
       NPM_CONFIG_PREFIX = "\${NPM_CONFIG_PREFIX:-$HOME/.local/share/npm}";
       BASIC_SETUP = "\${BASIC_SETUP:-false}";
-      _ZO_DOCTOR = "0"; # starship bash integration will cause zoxide to print a warning as it hides the zoxide call from $PROMPT_COMMAND behind a $STARSHIP_PROMPT_COMMAND variable. This config hides the warning.
     };
 
     file = {
@@ -157,7 +156,25 @@ rec {
           if [ -f "$HOME"/.cargo/env ]; then
             source "$HOME/.cargo/env"
           fi
-          export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+          if [[ $TERM != "dumb" ]]; then
+            eval "$(starship init bash)"
+          fi
+          if [[ $TERM == "xterm-kitty" ]]; then
+            # Setting kitty shell integration manually to avoid adding the _ksi script to PROMPT_COMMAND
+            # this happens if there is a running program when we create a new tab,
+            # but only if we use `history -a` in the PROMPT_COMMAND, we want to do.
+            # See: https://sw.kovidgoyal.net/kitty/shell-integration/#manual-shell-integration
+            if [ -v KITTY_INSTALLATION_DIR ]; then
+              if [[ "$PROMPT_COMMAND" != *'_ksi_'* ]]; then
+                export KITTY_SHELL_INTEGRATION="no-cursor"
+                # shellcheck disable=SC1091
+                source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"
+              fi
+            fi
+          fi
+          if [[ "$PROMPT_COMMAND" != *'history -a'* ]]; then
+            export PROMPT_COMMAND=''${PROMPT_COMMAND:+"$PROMPT_COMMAND;"}"history -a"
+          fi
           export RUSTC_WRAPPER="${pkgs.sccache}/bin/sccache"
           if [ -d "$HOME/.kube" ]; then
             KUBECONFIG=`find "$HOME"/.kube -maxdepth 1 -type f ! -name '*.bak' ! -name '*.backup' ! -name kubectx | sort | paste -sd ":" -`
@@ -342,9 +359,11 @@ rec {
         '';
     };
 
-    starship = {
-      enable = true;
-    };
+    # Ideally we'd be able to set where to initalize Starship, but by default it is added to the end of the .bashrc
+    # file. This causes it to run after `history -a`, and then Starship is not able to show the exit status of
+    # the last command. To fix this, we set the `PROMPT_COMMAND` variable to run `history -a` before Starship,
+    # which is started manually in the .bashrc file. See bellow
+    starship.enable = false;
 
     gpg = {
       enable = true;

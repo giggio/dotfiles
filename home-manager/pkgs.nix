@@ -8,6 +8,7 @@ let
     bash-completion
     extra-completions
     (callPackage ./cheats/default.nix { })
+    starship
     dotnet-install
     dotnet-sdk
     dotnet-tools

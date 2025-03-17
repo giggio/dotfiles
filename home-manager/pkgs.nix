@@ -230,7 +230,6 @@ let
     imagemagick
     kubectx
     lazydocker
-    # mqttx # todo: move from unstable when fixed: https://github.com/NixOS/nixpkgs/issues/390537
     (nixGLwrap ghostty)
     fabric-ai
     nixpkgs-review
@@ -252,6 +251,8 @@ let
     (nixGLwrap firefox)
     (nixGLwrap orca-slicer)
     (nixGLwrap fritzing)
+    # mqttx # todo: move from unstable when fixed: https://github.com/NixOS/nixpkgs/issues/390537
+    mqtt-explorer
   ]) ++ (if setup.isNixOS then [
     # NixOS non basic packages
     vscode-fhs

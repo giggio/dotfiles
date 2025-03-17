@@ -32,6 +32,7 @@ rec {
         "discord"
         "gh-copilot"
         "microsoft-edge-stable"
+        "mqtt-explorer"
         "obsidian"
         "slack"
         "terraform"

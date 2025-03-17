@@ -230,7 +230,7 @@ let
     imagemagick
     kubectx
     lazydocker
-    mqttx
+    # mqttx # todo: move from unstable when fixed: https://github.com/NixOS/nixpkgs/issues/390537
     (nixGLwrap ghostty)
     fabric-ai
     nixpkgs-review
@@ -280,6 +280,7 @@ let
   ]));
   stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs-stable; [
     # common non basic packages
+    mqttx # todo: move to unstable when fixed: https://github.com/NixOS/nixpkgs/issues/390537
   ] ++ (if setup.wsl then [
     # wsl non basic packages
   ] else [

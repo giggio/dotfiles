@@ -101,7 +101,7 @@ let
     android-tools
     (nixGLwrap bitwarden-desktop)
     blanket
-    # eartag # todo: move to unstable when fixed
+    eartag
     eyedropper
     forge-sparks
     gnome-contacts
@@ -114,7 +114,7 @@ let
     keybase-gui
     newsflash
     (nixGLwrap obsidian)
-    # (nixGLwrap onlyoffice-bin) # todo: move when fixed: https://github.com/NixOS/nixpkgs/issues/385406
+    (nixGLwrap onlyoffice-bin)
     (nixGLwrap openrgb-with-all-plugins)
     (nixGLwrap pinta)
     (nixGLwrap remmina)
@@ -271,8 +271,6 @@ let
     # wsl basic packages
   ] else [
     # non wsl basic packages
-    eartag # todo: move to unstable when fixed
-    (nixGLwrap onlyoffice-bin) # todo: move when fixed: https://github.com/NixOS/nixpkgs/issues/385406
   ]) ++ (if setup.isNixOS then [
     # NixOS basic packages
   ] else [

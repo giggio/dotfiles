@@ -128,7 +128,7 @@ if ! $WSL; then
     curl -fsSL https://get.docker.com | bash
   fi
 
-  apt_basic_pkgs_to_install_not_wsl=
+  apt_basic_pkgs_to_install_not_wsl=$'\n'kitty-terminfo
   apt_pkgs_to_install_not_wsl=
 
   if ! $SERVER_SETUP; then

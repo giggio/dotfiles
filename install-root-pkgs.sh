@@ -152,6 +152,16 @@ if ! $WSL; then
       fi
     fi
 
+    # liquidctl
+    if ! hash liquidctl 2> /dev/null; then
+      writeBlue "Install liquidctl."
+      pip install git+https://github.com/liquidctl/liquidctl#egg=liquidctl --break-system-packages
+    else
+      if $VERBOSE; then
+        writeBlue "Not installing liquidctl, it is already installed."
+      fi
+    fi
+
     install_apt_pkgs "$apt_basic_pkgs_to_install_not_wsl" "$apt_pkgs_to_install_not_wsl" '(wsl)'
 
     if ! $RUNNING_IN_CONTAINER; then

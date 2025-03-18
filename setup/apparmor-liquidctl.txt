@@ -1,0 +1,30 @@
+abi <abi/3.0>,
+include <tunables/global>
+/usr/local/bin/liquidctl {
+  include <abstractions/base>
+  include <abstractions/bash>
+  include <abstractions/evince>
+  include <abstractions/libvirt-qemu>
+  include <abstractions/python>
+  capability net_admin,
+  /dev/* rw,
+  /dev/bus/usb/ r,
+  /dev/bus/usb/** rw,
+  /etc/ r,
+  /etc/*.so.cache r,
+  /etc/apt/apt.conf.d/ r,
+  /etc/apt/apt.conf.d/* r,
+  /nix/store/ r,
+  /nix/store/** mrix,
+  /sys/bus/i2c/devices/ r,
+  /sys/class/hidraw/ r,
+  /sys/devices/ r,
+  /sys/devices/** r,
+  /usr/bin/dash ix,
+  /usr/bin/python3.12 ix,
+  /usr/bin/uname mrix,
+  /usr/local/bin/ r,
+  /usr/local/bin/liquidctl r,
+  /usr/sbin/ldconfig mrix,
+  /usr/sbin/ldconfig.real mrix,
+}

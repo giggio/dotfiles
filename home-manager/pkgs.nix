@@ -251,7 +251,7 @@ let
     (nixGLwrap firefox)
     (nixGLwrap orca-slicer)
     (nixGLwrap fritzing)
-    # mqttx # todo: move from unstable when fixed: https://github.com/NixOS/nixpkgs/issues/390537
+    mqttx
     mqtt-explorer
   ]) ++ (if setup.isNixOS then [
     # NixOS non basic packages
@@ -279,7 +279,6 @@ let
   ]));
   stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs-stable; [
     # common non basic packages
-    mqttx # todo: move to unstable when fixed: https://github.com/NixOS/nixpkgs/issues/390537
   ] ++ (if setup.wsl then [
     # wsl non basic packages
   ] else [

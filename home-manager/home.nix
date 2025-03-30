@@ -460,6 +460,10 @@ rec {
           ble-import integration/nix-completion.bash
           ble-import vim-airline
           bleopt vim_airline_theme=minimalist
+          bleopt vim_airline_section_c=
+          bleopt vim_airline_section_b=
+          bleopt vim_airline_section_x=
+          bleopt vim_airline_section_y=
           # ctrl+c to discard line
           ble-bind -m vi_imap -f 'C-c' discard-line
           ble-bind -m vi_nmap -f 'C-c' discard-line

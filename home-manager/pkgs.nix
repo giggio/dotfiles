@@ -238,7 +238,7 @@ let
   ] else [
     # non wsl non basic packages
     dconf2nix
-    (nixGLwrap whatsapp-for-linux)
+    # (nixGLwrap wasistlos) # ex whatsapp-for-linux, not working correctly, using snap for now
     slack
     discord
     (nixGLwrap obs-studio)

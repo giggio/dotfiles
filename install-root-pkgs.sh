@@ -233,7 +233,8 @@ if ! $WSL; then
         writeBlue "Not installing packages with Snap, they are all already installed."
       fi
     }
-    install_snap_pkgs '' 'steam'
+    install_snap_pkgs '' 'steam
+wasistlos'
   fi
 fi
 

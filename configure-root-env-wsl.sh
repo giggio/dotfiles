@@ -101,13 +101,6 @@ if not config.has_section('interop'):
 if not config.has_option('interop', 'appendWindowsPath') or config['interop']['appendWindowsPath'] != 'false':
   config['interop']['appendWindowsPath'] = 'false'
   config.write(open('$WSL_CONF', 'w'))
-
-if not config.has_section('wsl2'):
-  config.add_section('wsl2')
-if not config.has_option('wsl2', 'networkingMode') or config['wsl2']['networkingMode'] != 'mirrored':
-  config['wsl2']['networkingMode'] = 'mirrored'
-  config.write(open('$WSL_CONF', 'w'))
-
 EOF
 
 if [ "$EUID" != '0' ]; then

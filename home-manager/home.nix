@@ -293,6 +293,8 @@ rec {
             mg = "kitty +kitten hyperlinked_grep --smart-case";
             keys = "dconf dump /org/gnome/desktop/wm/keybindings/";
             cdr = "cd `git rev-parse --show-toplevel 2> /dev/null || echo '.'`";
+            update = "sudo apt update; apt list --upgradable";
+            upgrade = "apt list --upgradable; sudo apt upgrade -y; apt list --upgradable; [ -f /var/run/reboot-required ] && echo -e '\e[31mReboot required.\e[0m' || echo -e '\e[32mNo need to reboot.\e[0m'";
           };
         in
         nonWsl // wslOnly // common;

@@ -128,6 +128,7 @@ let
     xclip
     nerd-fonts.caskaydia-cove
     nerd-fonts.symbols-only
+    smile
   ] ++ (with gnomeExtensions; [
     # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
     blur-my-shell
@@ -142,6 +143,7 @@ let
     hibernate-status-button
     workspace-matrix
     smart-auto-move
+    smile-complementary-extension
   ])
   ) ++ (if setup.isNixOS then [
     # NixOS basic packages

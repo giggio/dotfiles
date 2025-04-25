@@ -19,6 +19,7 @@
           hibernate-status-button.extensionUuid
           workspace-matrix.extensionUuid
           smart-auto-move.extensionUuid
+          smile-complementary-extension.extensionUuid
         ];
       };
       "org/gnome/shell/extensions/burn-my-windows" = {

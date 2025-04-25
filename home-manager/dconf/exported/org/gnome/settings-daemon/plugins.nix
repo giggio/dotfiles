@@ -6,7 +6,14 @@ with lib.hm.gvariant;
 {
   dconf.settings = {
     "org/gnome/settings-daemon/plugins/media-keys" = {
+      custom-keybindings = [ "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/" ];
       home = [ "<Super>e" ];
+    };
+
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+      binding = "<Super>period";
+      command = "/home/giggio/.nix-profile/bin/smile";
+      name = "Smile emojis";
     };
 
     "org/gnome/settings-daemon/plugins/power" = {

@@ -572,7 +572,7 @@ rec {
       enableExtraSocket = true;
       enableScDaemon = true;
       enableSshSupport = true;
-      pinentryPackage = pkgs.pinentry-gnome3;
+      pinentry.package = pkgs.pinentry-gnome3;
       defaultCacheTtl = 34560000; # 400 days
       defaultCacheTtlSsh = 34560000;
       maxCacheTtl = 34560000;

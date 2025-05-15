@@ -295,6 +295,7 @@ rec {
             cdr = "cd `git rev-parse --show-toplevel 2> /dev/null || echo '.'`";
             update = "sudo apt update; apt list --upgradable";
             upgrade = "apt list --upgradable; sudo apt upgrade -y; apt list --upgradable; [ -f /var/run/reboot-required ] && echo -e '\e[31mReboot required.\e[0m' || echo -e '\e[32mNo need to reboot.\e[0m'";
+            kubectl = "kubecolor";
           };
         in
         nonWsl // wslOnly // common;
@@ -341,7 +342,7 @@ rec {
               bind '"jj":"\e"'
               tabs -4
               bind 'set completion-ignore-case on'
-              source ${pkgs.kubectl-aliases}/bin/kubecolor_aliases.bash
+              source ${pkgs.kubectl-aliases}/bin/kubectl_aliases.bash
               source ${pkgs.complete-alias}/bin/complete_alias
               source "$HOME/.dotfiles/bashscripts/.bashrc"
               # make less more friendly for non-text input files, see lesspipe(1)

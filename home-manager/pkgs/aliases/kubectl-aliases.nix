@@ -5,11 +5,10 @@ stdenv.mkDerivation {
   src = builtins.fetchGit {
     url = "https://github.com/giggio/kubectl-aliases.git";
     ref = "newstuff";
-    rev = "94277201c58670537e482c433bbb665eaaf19c53";
+    rev = "4f3b4afebdd74e32b284ce68a8f08cdfbc070e90";
   };
   installPhase = ''
     mkdir -p $out/bin
-    cp .kubecolor_aliases $out/bin/kubecolor_aliases.bash
-    cp .kubecolor_aliases.nu $out/bin/kubecolor_aliases.nu
+    cp .kubectl_aliases $out/bin/kubectl_aliases.bash
   '';
 }

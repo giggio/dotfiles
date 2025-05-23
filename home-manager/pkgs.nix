@@ -57,7 +57,7 @@ let
     zoxide
     navi
     ruby_3_2
-    fenix.complete.toolchain # or fenix.stable.defaultToolchain, or beta. Rust toolchains.
+    fenix.stable.toolchain # or fenix.complete.defaultToolchain, or beta. Rust toolchains.
     cargo-completions
     yq-go
     tzdata

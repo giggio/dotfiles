@@ -7,6 +7,7 @@ with lib.hm.gvariant;
   dconf.settings = {
     "org/gnome/shell/extensions/wsmatrix" = {
       num-columns = 2;
+      num-rows = 2;
       wraparound-mode = "none";
     };
 

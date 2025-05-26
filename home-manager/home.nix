@@ -452,7 +452,7 @@ rec {
       "navi/config.yaml".source = ./config/navi-config.yaml;
       "terminator/config".source = ./config/terminator-config;
       "starship.toml".source = ./config/starship.toml;
-      "git/attributes".source = ./config/git-attributes;
+      "git".source = ./config/git;
       "carapace/bridges.yaml".source = ./config/carapace/bridges.yaml;
       "carapace/overlays".source = ./config/carapace/overlays;
       "carapace/specs".source = ./config/carapace/specs;

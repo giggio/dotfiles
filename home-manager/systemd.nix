@@ -1,4 +1,4 @@
-{ setup, ... }:
+{ setup, pkgs, ... }:
 
 {
   user = {
@@ -43,6 +43,21 @@
         otherServices =
           if !setup.wsl then
             {
+              ulauncher = {
+                Unit = {
+                  Description = "Linux Application Launcher";
+                  Documentation = "https://ulauncher.io/";
+                };
+                Service = {
+                  Type = "simple";
+                  Restart = "always";
+                  RestartSec = 1;
+                  ExecStart = "env GDK_BACKEND=x11 ${pkgs.ulauncher}/bin/ulauncher --hide-window";
+                };
+                Install = {
+                  WantedBy = [ "graphical-session.target" ];
+                };
+              };
               mount-data = {
                 Unit = { Description = "Mount private and ecrypted directory"; };
                 Service = {

@@ -475,6 +475,23 @@ rec {
         '';
     };
     dataFile = { };
+    desktopEntries = if setup.wsl then { } else {
+      ulauncher = {
+        type = "Application";
+        name = "Ulauncher";
+        comment = "Application launcher for Linux";
+        icon = "ulauncher";
+        genericName = "Launcher";
+        categories = [ "GNOME" "GTK" "Utility" ];
+        terminal = false;
+        exec = "env GDK_BACKEND=x11 ulauncher --hide-window";
+        settings = {
+          SingleMainWindow = "true";
+          TryExec = "ulauncher";
+          X-GNOME-UsesNotifications = "true";
+        };
+      };
+    };
     mimeApps = {
       enable = true;
       associations = {
@@ -600,5 +617,5 @@ rec {
 
   };
 
-  systemd = import ./systemd.nix { inherit setup; };
+  systemd = import ./systemd.nix { inherit setup; inherit pkgs; };
 }

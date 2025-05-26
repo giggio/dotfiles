@@ -132,6 +132,7 @@ let
     nerd-fonts.caskaydia-cove
     nerd-fonts.symbols-only
     smile
+    ulauncher # Feature rich application Launcher for Linux https://github.com/Ulauncher/Ulauncher/
   ] ++ (with gnomeExtensions; [
     # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
     (gnome46Extensions.${blur-my-shell.extensionUuid})

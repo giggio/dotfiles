@@ -17,7 +17,7 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-      binding = "<Control>space";
+      binding = "<Alt>space";
       command = "ulauncher-toggle";
       name = "ulauncher";
     };

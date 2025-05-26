@@ -6,6 +6,7 @@ with lib.hm.gvariant;
 {
   dconf.settings = {
     "org/gnome/desktop/wm/keybindings" = {
+      activate-window-menu = [ ];
       maximize = [ "<Super>k" ];
       move-to-monitor-down = [ "<Shift><Super>j" ];
       move-to-monitor-left = [ "<Shift><Super>h" ];

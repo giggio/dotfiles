@@ -134,19 +134,19 @@ let
     smile
   ] ++ (with gnomeExtensions; [
     # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
-    blur-my-shell
-    burn-my-windows
-    caffeine
-    clipboard-history
-    compiz-alike-magic-lamp-effect
-    compiz-windows-effect
-    desktop-cube # not enabled
-    fly-pie
-    freon
-    hibernate-status-button
-    workspace-matrix
-    smart-auto-move
-    smile-complementary-extension
+    (gnome46Extensions.${blur-my-shell.extensionUuid})
+    (gnome46Extensions.${burn-my-windows.extensionUuid})
+    (gnome46Extensions.${caffeine.extensionUuid})
+    (gnome46Extensions.${clipboard-history.extensionUuid})
+    (gnome46Extensions.${compiz-alike-magic-lamp-effect.extensionUuid})
+    (gnome46Extensions.${compiz-windows-effect.extensionUuid})
+    (gnome46Extensions.${desktop-cube.extensionUuid}) # not enabled
+    (gnome46Extensions.${fly-pie.extensionUuid})
+    (gnome46Extensions.${freon.extensionUuid})
+    (gnome46Extensions.${hibernate-status-button.extensionUuid})
+    (gnome46Extensions.${workspace-matrix.extensionUuid})
+    (gnome46Extensions.${smart-auto-move.extensionUuid})
+    (gnome46Extensions.${smile-complementary-extension.extensionUuid})
   ])
   ) ++ (if setup.isNixOS then [
     # NixOS basic packages

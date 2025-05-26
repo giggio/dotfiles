@@ -22,7 +22,7 @@
 - link:
     ~/.config/kitty: config/kitty
     ~/.config/nix/nix.conf: config/nix/nix.conf
-    ~/.config/nvim: nvim
+    ~/.config/nvim: vimfiles
     ~/.config/powershell: poshfiles
     ~/.config/tabby/config.yaml: config/tabby/config.yaml
     ~/.config/zellij: config/zellij

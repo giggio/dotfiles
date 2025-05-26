@@ -10,9 +10,6 @@
 [submodule "vimfiles"]
 	path = vimfiles
 	url = ../vimfiles.git
-[submodule "nvim"]
-	path = nvim
-	url = ../nvimfiles.git
 [submodule "nuscripts"]
 	path = nuscripts
 	url = ../nuscripts.git

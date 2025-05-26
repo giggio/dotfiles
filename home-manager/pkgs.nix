@@ -68,7 +68,7 @@ let
     dust
     fd
     just
-    procs
+    procs # A modern replacement for ps written in Rust https://github.com/dalance/procs
     tealdeer
     githooks
     ranger

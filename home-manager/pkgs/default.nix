@@ -21,4 +21,7 @@ with pkgs;
   docker-show-context = callPackage ./golang/docker-show-context.nix { };
   ketall = callPackage ./golang/ketall.nix { };
   kubectl-aliases = callPackage ./aliases/kubectl-aliases.nix { };
+  code-lldb = callPackage ./code-lldb.nix {
+    vscode-lldb = vscode-extensions.vadimcn.vscode-lldb;
+  };
 }

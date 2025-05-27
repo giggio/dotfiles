@@ -105,6 +105,7 @@ let
     omnisharp-roslyn # C# language server https://github.com/OmniSharp/omnisharp-roslyn
     csharp-ls # C# language server https://github.com/razzmatazz/csharp-language-server
     lldb_20 # for lldb-dab, the debugger adapter protocol server for lldb, used in Rust
+    code-lldb # my custom package that extracts the binary
   ] ++ (if setup.wsl then [
     # wsl basic packages
     wslu

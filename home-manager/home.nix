@@ -136,7 +136,7 @@ rec {
           auto_image TRUE
         '';
       ".inputrc".text = "set bell-style none";
-      ".vimrc".text = "source ~/.vim/vimrc.vim";
+      ".vimrc".text = "source ~/.vim/init.vim";
     };
 
   };

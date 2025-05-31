@@ -116,6 +116,8 @@ let
       ps.tiktoken_core # An experimental port of OpenAI's Tokenizer to lua # used for Github Copilot chat nvim plugin # https://github.com/gptlang/lua-tiktoken
       # luacheck # A static analyzer and a linter for Lua
     ]))
+    emmet-language-server # Language server for emmet.io (Based on VSCode emmet ls) https://github.com/olrtg/emmet-language-server
+    vscode-langservers-extracted # vscode-langservers bin collection https://github.com/hrsh7th/vscode-langservers-extracted
   ] ++ (if setup.wsl then [
     # wsl basic packages
     wslu

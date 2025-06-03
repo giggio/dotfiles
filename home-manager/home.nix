@@ -141,6 +141,8 @@ rec {
 
   };
 
+  targets.genericLinux.enable = true;
+
   programs = {
     home-manager = {
       # Let Home Manager install and manage itself.

@@ -15,6 +15,7 @@ with pkgs;
   vault = callPackage ./unfree/vault.nix { };
   rust-toolchain = fenix.stable.withComponents [ "cargo" "clippy" "rust-src" "rustc" "rustfmt" ];
   cargo-completions = callPackage ./rust/cargo-completions.nix { };
+  cspell-lsp = callPackage ./nodejs/cspell-lsp.nix { };
   loadtest = callPackage ./nodejs/loadtest.nix { };
   prettier-plugin-awk = callPackage ./nodejs/prettier-plugin-awk.nix { };
   chart-releaser = callPackage ./golang/chart-releaser.nix { };

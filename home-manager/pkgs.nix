@@ -118,6 +118,7 @@ let
     ]))
     emmet-language-server # Language server for emmet.io (Based on VSCode emmet ls) https://github.com/olrtg/emmet-language-server
     vscode-langservers-extracted # vscode-langservers bin collection https://github.com/hrsh7th/vscode-langservers-extracted
+    cspell-lsp # A simple source code spell checker for helix (and NeoVim) https://github.com/vlabo/cspell-lsp
   ] ++ (if setup.wsl then [
     # wsl basic packages
     wslu

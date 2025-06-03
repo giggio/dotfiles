@@ -119,6 +119,7 @@ let
     emmet-language-server # Language server for emmet.io (Based on VSCode emmet ls) https://github.com/olrtg/emmet-language-server
     vscode-langservers-extracted # vscode-langservers bin collection https://github.com/hrsh7th/vscode-langservers-extracted
     cspell-lsp # A simple source code spell checker for helix (and NeoVim) https://github.com/vlabo/cspell-lsp
+    pv # Tool for monitoring the progress of data through a pipeline https://www.ivarch.com/programs/pv.shtml
   ] ++ (if setup.wsl then [
     # wsl basic packages
     wslu
@@ -286,6 +287,9 @@ let
     (nixGLwrap fritzing)
     mqttx
     mqtt-explorer
+    kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application
+    cdrtools # Highly portable CD/DVD/BluRay command line recording software
+    doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
   ]) ++ (if setup.isNixOS then [
     # NixOS non basic packages
     vscode-fhs

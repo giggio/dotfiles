@@ -31,7 +31,7 @@ let
     file
     gnupg
     pinentry-gnome3
-    vim_configurable
+    vim-full
     htop
     gitFull
     nix-index

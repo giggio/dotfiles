@@ -218,6 +218,8 @@ if [ "$EUID" == '0' ]; then
     if ! $RUNNING_IN_CONTAINER; then
       create_systemd_service_and_timer wsl-add-winhost
     fi
+  else
+    create_systemd_service_and_timer coolercontrol-restart
   fi
 else
   # use nix to create systemd services, sockets etc

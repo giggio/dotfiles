@@ -2,7 +2,7 @@
 
 let
   nixGLwrap = pkg: if setup.isNixOS then pkg else config.lib.nixGL.wrap pkg;
-  basic_pkgs = (with pkgs; [
+  basic_pkgs = (with pkgs; ([
     # common basic packages
     bash
     bash-completion
@@ -56,7 +56,9 @@ let
     fzf
     zoxide
     navi
-    ruby_3_2
+    bundix
+    (ruby_3_4.withPackages (ps: with ps; [ ]))
+    my_gems # bundling ruby-lsp and other gems (in the future)
     fenix.stable.toolchain # or fenix.complete.defaultToolchain, or beta. Rust toolchains.
     cargo-completions
     yq-go
@@ -122,8 +124,23 @@ let
     pv # Tool for monitoring the progress of data through a pipeline https://www.ivarch.com/programs/pv.shtml
     sqls # SQL language server written in Go https://github.com/sqls-server/sqls
     gopls # Official language server for the Go language https://github.com/golang/tools/tree/master/gopls
+    bash-language-server # A language server for Bash https://github.com/bash-lsp/bash-language-server
+    systemd-language-server # Language Server for Systemd unit files https://github.com/psacawa/systemd-language-server
+    yaml-language-server # Language Server for YAML Files https://github.com/redhat-developer/yaml-language-server
+    dockerfile-language-server-nodejs # Language server for Dockerfiles powered by Node.js, TypeScript, and VSCode technologies https://github.com/rcjsuen/dockerfile-language-server
+    roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp
+    fsautocomplete # FsAutoComplete project (FSAC) provides a backend service for rich editing or intellisense features for editors https://github.com/fsharp/FsAutoComplete
+    basedpyright # Type checker for the Python language (and lsp) https://github.com/detachhead/basedpyright
+    uv # Extremely fast Python package installer and resolver, written in Rust https://docs.astral.sh/uv/
+    powershell-editor-services # Common platform for PowerShell development support in any editor or application https://github.com/PowerShell/PowerShellEditorServices
+  ]) ++ (with llvmPackages_20; [
+    clang-tools # Standalone command line tools for C++ development https://clangd.llvm.org/
+    clangUseLLVM # C language family frontend for LLVM (wrapper script) https://clang.llvm.org/
+    clang-manpages # man page for Clang
+    vim-language-server # VImScript language server, LSP for vim script https://github.com/iamcco/vim-language-server
+    lua-language-server # Lua language server https://github.com/LuaLS/lua-language-server
     # end of common basic packages
-  ] ++ (if setup.wsl then [
+  ]) ++ (if setup.wsl then [
     # wsl basic packages
     wslu
     # end of wsl basic packages
@@ -208,7 +225,7 @@ let
     ketall # krew
     ctop
     go
-    gcc
+    (hiPrio gcc)
     docker-slim
     asciinema
     bison

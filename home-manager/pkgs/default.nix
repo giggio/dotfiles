@@ -25,4 +25,5 @@ with pkgs;
   code-lldb = callPackage ./code-lldb.nix {
     vscode-lldb = vscode-extensions.vadimcn.vscode-lldb;
   };
+  my_gems = callPackage ./ruby/gems.nix { };
 }

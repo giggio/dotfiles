@@ -120,6 +120,8 @@ let
     vscode-langservers-extracted # vscode-langservers bin collection https://github.com/hrsh7th/vscode-langservers-extracted
     cspell-lsp # A simple source code spell checker for helix (and NeoVim) https://github.com/vlabo/cspell-lsp
     pv # Tool for monitoring the progress of data through a pipeline https://www.ivarch.com/programs/pv.shtml
+    sqls # SQL language server written in Go https://github.com/sqls-server/sqls
+    gopls # Official language server for the Go language https://github.com/golang/tools/tree/master/gopls
     # end of common basic packages
   ] ++ (if setup.wsl then [
     # wsl basic packages

@@ -419,7 +419,7 @@ rec {
         search_mode = "skim";
         workspaces = true;
         inline_height = 0;
-        enter_accept = false;
+        enter_accept = true;
       };
     };
   };

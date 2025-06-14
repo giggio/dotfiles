@@ -183,8 +183,6 @@ rec {
             KUBECONFIG=`find "$HOME"/.kube -maxdepth 1 -type f ! -name '*.bak' ! -name '*.backup' ! -name kubectx | sort | paste -sd ":" -`
             export KUBECONFIG
           fi
-          source ${pkgs.fzf}/share/fzf/key-bindings.bash
-          source ${pkgs.fzf}/share/fzf/completion.bash
           function gitignore () {
             if [ -v 1 ]; then
               case "$1" in
@@ -424,6 +422,18 @@ rec {
         window-decoration = false;
       };
     };
+
+    atuin = {
+      enable = true;
+      daemon.enable = true;
+      settings = {
+        # https://docs.atuin.sh/configuration/config/
+        search_mode = "skim";
+        workspaces = true;
+        inline_height = 0;
+        enter_accept = false;
+      };
+    };
   };
 
   fonts.fontconfig.enable = !setup.wsl;
@@ -463,8 +473,6 @@ rec {
       "mimeapps.list".force = true; # overwrite the default file which keeps being recreated by Ubuntu
       "blesh/init.sh".text =
         ''
-          ble-import integration/fzf-completion
-          ble-import integration/fzf-key-bindings
           ble-import integration/zoxide
           ble-import integration/nix-completion.bash
           ble-import vim-airline

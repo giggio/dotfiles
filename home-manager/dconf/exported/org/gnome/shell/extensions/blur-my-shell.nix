@@ -15,7 +15,17 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/shell/extensions/blur-my-shell/applications" = {
-      blur = false;
+      blur = true;
+      blur-on-overview = true;
+      brightness = 0.94;
+      dynamic-opacity = false;
+      opacity = 219;
+      sigma = 8;
+      whitelist = [ "org.wezfurlong.wezterm" "kitty" "obsidian" ];
+    };
+
+    "org/gnome/shell/extensions/blur-my-shell/coverflow-alt-tab" = {
+      pipeline = "pipeline_default";
     };
 
     "org/gnome/shell/extensions/blur-my-shell/dash-to-dock" = {
@@ -37,8 +47,9 @@ with lib.hm.gvariant;
     };
 
     "org/gnome/shell/extensions/blur-my-shell/overview" = {
-      blur = false;
+      blur = true;
       pipeline = "pipeline_default";
+      style-components = 2;
     };
 
     "org/gnome/shell/extensions/blur-my-shell/panel" = {

@@ -292,6 +292,7 @@ let
     wiki-tui # Simple and easy to use Wikipedia Text User Interface
     lynx # text web browser https://lynx.invisible-island.net/
     fdupes # program for identifying or deleting duplicate files residing within specified directories https://github.com/adrianlopezroche/fdupes
+    wezterm # GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust
     # end of common non basic packages
   ] ++ (if setup.wsl then [
     # wsl non basic packages

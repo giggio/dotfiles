@@ -411,18 +411,6 @@ rec {
       enable = true;
     };
 
-    ghostty = {
-      enable = true;
-      package = (nixGLwrap pkgs.ghostty);
-      installVimSyntax = true;
-      settings = {
-        theme = "Ubuntu";
-        font-family = "CaskaydiaCove Nerd Font Mono";
-        font-size = 14;
-        window-decoration = false;
-      };
-    };
-
     atuin = {
       enable = true;
       daemon.enable = true;

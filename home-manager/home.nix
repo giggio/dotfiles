@@ -464,7 +464,7 @@ rec {
           ble-import integration/zoxide
           ble-import integration/nix-completion.bash
           ble-import vim-airline
-          bleopt vim_airline_theme=minimalist
+          bleopt vim_airline_theme=raven
           bleopt vim_airline_section_c=
           bleopt vim_airline_section_b=
           bleopt vim_airline_section_x=

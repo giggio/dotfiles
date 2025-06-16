@@ -108,11 +108,7 @@ rec {
       ".local/bin/dotnet-uninstall".source = ./bin/dotnet-uninstall;
       ".local/bin/hm".source = ./bin/hm;
       ".hushlogin".text = "";
-      ".XCompose".text =
-        ''
-          <dead_acute> <C> : "Ç" Ccedilla # LATIN CAPITAL LETTER C WITH CEDILLA
-          <dead_acute> <c> : "ç" ccedilla # LATIN SMALL LETTER C WITH CEDILLA
-        '';
+      ".XCompose".source = "${pkgs.custom-xcompose}/lib/.XCompose";
       ".tmux.conf".text =
         ''
           set -g default-terminal "screen-256color"

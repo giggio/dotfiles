@@ -26,4 +26,5 @@ with pkgs;
     vscode-lldb = vscode-extensions.vadimcn.vscode-lldb;
   };
   my_gems = callPackage ./ruby/gems.nix { };
+  custom-xcompose = callPackage ./xcompose.nix { };
 }

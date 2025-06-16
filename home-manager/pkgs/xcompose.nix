@@ -10,7 +10,6 @@ stdenv.mkDerivation {
   };
   installPhase = ''
     mkdir -p $out/lib/
-    ls -la
     cp .XCompose $out/lib/
   '';
 }

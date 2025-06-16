@@ -409,7 +409,7 @@ rec {
 
     atuin = {
       enable = true;
-      daemon.enable = true;
+      daemon.enable = false;
       settings = {
         # https://docs.atuin.sh/configuration/config/
         search_mode = "skim";

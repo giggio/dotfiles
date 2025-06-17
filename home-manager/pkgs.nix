@@ -141,8 +141,6 @@ let
     vim-language-server # VImScript language server, LSP for vim script https://github.com/iamcco/vim-language-server
     lua-language-server # Lua language server https://github.com/LuaLS/lua-language-server
     cspellls # Custom cspell language server made from the vscode extension
-    # cspell-tools # todo: remove, only to used to build dict
-    # cspell-dict-pt-br # Portuguese dictionary for cspell
     # end of common basic packages
   ]) ++ (if setup.wsl then [
     # wsl basic packages
@@ -298,7 +296,6 @@ let
     fdupes # program for identifying or deleting duplicate files residing within specified directories https://github.com/adrianlopezroche/fdupes
     wezterm # GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust
     sqlite # Self-contained, serverless, zero-configuration, transactional SQL database engine https://www.sqlite.org/
-    # nodePackages.cspell # A Spelling Checker for Code https://cspell.org/
     # end of common non basic packages
   ] ++ (if setup.wsl then [
     # wsl non basic packages

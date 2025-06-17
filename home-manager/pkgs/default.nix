@@ -30,6 +30,5 @@ with pkgs;
   cspellls = callPackage ./cspellls.nix {
     code-spell-checker = vscode-extensions.streetsidesoftware.code-spell-checker;
   };
-  cspell-tools = callPackage ./nodejs/cspell-tools.nix { };
   cspell-dict-pt-br = callPackage ./nodejs/cspell-dict-pt-br.nix { };
 }

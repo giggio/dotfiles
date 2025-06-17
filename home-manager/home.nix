@@ -469,6 +469,14 @@ rec {
           ble-bind -m vi_imap -f 'C-c' discard-line
           ble-bind -m vi_nmap -f 'C-c' discard-line
         '';
+      "cspell/cspell.json".text =
+        ''
+          {
+            "import": [
+              "${pkgs.cspell-dict-pt-br}/share/cspell-dict-pt-br/cspell-ext.json"
+            ]
+          }
+        '';
     };
     dataFile = { };
     desktopEntries = if setup.wsl then { } else {

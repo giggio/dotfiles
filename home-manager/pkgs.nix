@@ -120,7 +120,8 @@ let
     ]))
     emmet-language-server # Language server for emmet.io (Based on VSCode emmet ls) https://github.com/olrtg/emmet-language-server
     vscode-langservers-extracted # vscode-langservers bin collection https://github.com/hrsh7th/vscode-langservers-extracted
-    cspell-lsp # A simple source code spell checker for helix (and NeoVim) https://github.com/vlabo/cspell-lsp
+    # todo: revisit cspell-lsp when https://github.com/vlabo/cspell-lsp/issues/13 is fixed
+    # cspell-lsp # A simple source code spell checker for helix (and NeoVim) https://github.com/vlabo/cspell-lsp
     pv # Tool for monitoring the progress of data through a pipeline https://www.ivarch.com/programs/pv.shtml
     sqls # SQL language server written in Go https://github.com/sqls-server/sqls
     gopls # Official language server for the Go language https://github.com/golang/tools/tree/master/gopls
@@ -139,6 +140,9 @@ let
     clang-manpages # man page for Clang
     vim-language-server # VImScript language server, LSP for vim script https://github.com/iamcco/vim-language-server
     lua-language-server # Lua language server https://github.com/LuaLS/lua-language-server
+    cspellls # Custom cspell language server made from the vscode extension
+    # cspell-tools # todo: remove, only to used to build dict
+    # cspell-dict-pt-br # Portuguese dictionary for cspell
     # end of common basic packages
   ]) ++ (if setup.wsl then [
     # wsl basic packages
@@ -294,6 +298,7 @@ let
     fdupes # program for identifying or deleting duplicate files residing within specified directories https://github.com/adrianlopezroche/fdupes
     wezterm # GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust
     sqlite # Self-contained, serverless, zero-configuration, transactional SQL database engine https://www.sqlite.org/
+    # nodePackages.cspell # A Spelling Checker for Code https://cspell.org/
     # end of common non basic packages
   ] ++ (if setup.wsl then [
     # wsl non basic packages

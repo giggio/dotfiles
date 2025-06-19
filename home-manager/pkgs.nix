@@ -111,6 +111,7 @@ let
     typescript-language-server # TypeScript & JavaScript Language Server https://github.com/typescript-language-server/typescript-language-server
     tree-sitter # An incremental parsing system for programming tools https://github.com/tree-sitter/tree-sitter
     marksman # Write Markdown with code assist and intelligence in the comfort of your favourite editor https://github.com/artempyanykh/marksman/
+    markdownlint-cli2 # Fast, flexible, configuration-based command-line interface for linting Markdown/CommonMark files with the markdownlint library https://github.com/DavidAnson/markdownlint-cli2
     neovim
     (lua5_1.withPackages (ps: [
       # High-performance JIT compiler for Lua 5.1 https://luajit.org/

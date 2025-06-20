@@ -143,6 +143,7 @@ let
     vim-language-server # VImScript language server, LSP for vim script https://github.com/iamcco/vim-language-server
     lua-language-server # Lua language server https://github.com/LuaLS/lua-language-server
     cspellls # Custom cspell language server made from the vscode extension
+    hadolint # Dockerfile linter, validate inline bash https://github.com/hadolint/hadolint
     # end of common basic packages
   ]) ++ (if setup.wsl then [
     # wsl basic packages

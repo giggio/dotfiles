@@ -299,6 +299,7 @@ let
     fdupes # program for identifying or deleting duplicate files residing within specified directories https://github.com/adrianlopezroche/fdupes
     wezterm # GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust
     sqlite # Self-contained, serverless, zero-configuration, transactional SQL database engine https://www.sqlite.org/
+    ladybird # a truly independent web browser https://ladybird.org/
     # end of common non basic packages
   ] ++ (if setup.wsl then [
     # wsl non basic packages

@@ -70,23 +70,6 @@
                 };
               };
             } else {
-            # todo: remove. Necessary to run some wayland apps in WSL until https://github.com/microsoft/wslg/issues/1156#issuecomment-2094572691 gets fixed
-            wsl-symlink-wayland = {
-              Unit = { Description = "Symlink WSL wayland socket"; };
-              Service = {
-                ExecStart = [
-                  "ln -s /mnt/wslg/runtime-dir/wayland-0 %t/wayland-0"
-                  "ln -s /mnt/wslg/runtime-dir/wayland-0.lock %t/wayland-0.lock"
-                ];
-                ExecStartPre = [
-                  "rm -f %t/wayland-0 %t/wayland-0.lock"
-                ];
-                Type = "oneshot";
-              };
-              Install = {
-                WantedBy = [ "default.target" ];
-              };
-            };
             "wsl-forward-gpg-extra@" = {
               Unit = {
                 Description = "Forward gpg extra to Windows";

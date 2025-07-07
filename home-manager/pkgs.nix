@@ -222,7 +222,7 @@ let
     apparmor-utils
     chart-releaser
     docker-show-context
-    # deno # todo: not working on unstable, move back when it works
+    deno
     opentofu
     krew
     kube-capacity # krew
@@ -360,7 +360,6 @@ let
   ]));
   stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs-stable; [
     # common non basic packages (stable)
-    deno # todo: not working on unstable, move back when it works
     # end of common non basic packages (stable)
   ] ++ (if setup.wsl then [
     # wsl non basic packages (stable)

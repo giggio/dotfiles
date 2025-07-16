@@ -212,6 +212,49 @@ function mask_user_service {
   done
 }
 
+function create_systemd_script_hooks {
+  local NEEDS_RELOAD=false
+  if [ "$EUID" != '0' ]; then
+    die "Use nix to create systemd user services, sockets etc."
+  fi
+  local SOURCE_DIR="$BASEDIR"/systemd/hooks
+  local SYSTEMD_DIR=/lib/systemd/
+  for HOOK_DIR in "$SOURCE_DIR"/*; do
+    if ! [ -d "$HOOK_DIR" ]; then
+      continue
+    fi
+    local HOOK_NAME
+    HOOK_NAME=$(basename "$HOOK_DIR")
+    local DESTINATION_HOOK_DIR=$SYSTEMD_DIR/$HOOK_NAME
+    if ! [ -d "$DESTINATION_HOOK_DIR" ]; then
+      if $VERBOSE; then
+        writeBlue "Creating directory $DESTINATION_HOOK_DIR."
+      fi
+      mkdir -p "$DESTINATION_HOOK_DIR"
+      NEEDS_RELOAD=true
+    fi
+    for HOOK_FILE in "$HOOK_DIR"/*; do
+      if [ -f "$HOOK_FILE" ]; then
+        local DESTINATION_HOOK_FILE
+        DESTINATION_HOOK_FILE=$DESTINATION_HOOK_DIR/$(basename "$HOOK_FILE")
+        if ! [ -f "$DESTINATION_HOOK_FILE" ] || ! cmp --quiet "$HOOK_FILE" "$DESTINATION_HOOK_FILE"; then
+          if $VERBOSE; then
+            writeBlue "Copying $HOOK_FILE to $DESTINATION_HOOK_FILE."
+          fi
+          cp "$HOOK_FILE" "$DESTINATION_HOOK_FILE"
+          NEEDS_RELOAD=true
+        elif $VERBOSE; then
+          writeBlue "No need to copy $HOOK_FILE to $DESTINATION_HOOK_FILE, it already exists and is the same."
+        fi
+      fi
+    done
+  done
+  if $NEEDS_RELOAD; then
+    writeBlue "Reloading systemd."
+    systemctl daemon-reload
+  fi
+}
+
 if [ "$EUID" == '0' ]; then
   if $WSL; then
     create_systemd_service_and_timer wsl-clean-memory
@@ -221,6 +264,7 @@ if [ "$EUID" == '0' ]; then
   else
     create_systemd_service_and_timer coolercontrol-restart
   fi
+  create_systemd_script_hooks
 else
   # use nix to create systemd services, sockets etc
   # don't call create_systemd_service_and_timer, it will throw an error

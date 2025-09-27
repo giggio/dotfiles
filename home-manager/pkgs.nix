@@ -92,7 +92,7 @@ let
     cachix # install cache, for example, with: $HOME/.nix-profile/bin/cachix use nix-community
     (nixGLwrap kitty)
     dhcping
-    ipcalc
+    ipcalc # Simple IP network calculator (CIDR) https://gitlab.com/ipcalc/ipcalc
     arp-scan
     xh # httpie
     dua # disk usage analyzer
@@ -325,6 +325,7 @@ let
     kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application
     cdrtools # Highly portable CD/DVD/BluRay command line recording software
     doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
+    tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
     # end of non wsl non basic packages
   ]) ++ (if setup.isNixOS then [
     # NixOS non basic packages

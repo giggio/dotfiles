@@ -131,7 +131,7 @@ let
     systemd-language-server # Language Server for Systemd unit files https://github.com/psacawa/systemd-language-server
     yaml-language-server # Language Server for YAML Files https://github.com/redhat-developer/yaml-language-server
     dockerfile-language-server-nodejs # Language server for Dockerfiles powered by Node.js, TypeScript, and VSCode technologies https://github.com/rcjsuen/dockerfile-language-server
-    roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp
+    # roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp # todo: broken, waiting for https://github.com/NixOS/nixpkgs/pull/439459 to reach unstable
     fsautocomplete # FsAutoComplete project (FSAC) provides a backend service for rich editing or intellisense features for editors https://github.com/fsharp/FsAutoComplete
     basedpyright # Type checker for the Python language (and lsp) https://github.com/detachhead/basedpyright
     uv # Extremely fast Python package installer and resolver, written in Rust https://docs.astral.sh/uv/
@@ -313,7 +313,7 @@ let
     (nixGLwrap obs-studio)
     (nixGLwrap kdePackages.kdenlive)
     (nixGLwrap glaxnimate)
-    (nixGLwrap openshot-qt)
+    # (nixGLwrap openshot-qt) # Free, open-source video editor http://openshot.org/ # todo: depending on qtwebengine, which is insecure, try to add it back later
     (nixGLwrap wireshark)
     (nixGLwrap brave)
     # (nixGLwrap librewolf-bin) # review if librewolf is better sometime in the future https://bsky.app/profile/giggio.net/post/3li63msr5r226

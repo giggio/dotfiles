@@ -61,7 +61,7 @@
               mount-data = {
                 Unit = { Description = "Mount private and ecrypted directory"; };
                 Service = {
-                  ExecStart = [ ./systemd/mount-data ];
+                  ExecStart = [ "${./systemd/mount-data}" ];
                   StandardOutput = "journal";
                   Type = "simple";
                 };

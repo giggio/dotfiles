@@ -326,6 +326,7 @@ let
     cdrtools # Highly portable CD/DVD/BluRay command line recording software
     doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
     tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
+    tesseract # OCR engine https://github.com/tesseract-ocr/tesseract
     # end of non wsl non basic packages
   ]) ++ (if setup.isNixOS then [
     # NixOS non basic packages

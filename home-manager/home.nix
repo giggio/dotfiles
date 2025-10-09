@@ -27,6 +27,7 @@ rec {
 
   nixpkgs = {
     config = {
+      rocmSupport = true; # used by ollama and maybe others
       allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
         "code"
         "discord"
@@ -250,7 +251,9 @@ rec {
           common = {
             start = "xdg-open";
             trash = "trash-put";
-            "??" = "gh-copilot suggest -t shell";
+            "??" = "ollama run --keepalive=-1s linus"; # see https://github.com/giggio/ollama_models
+            "?rs" = "ollama run --keepalive=-1s furry"; # see https://github.com/giggio/ollama_models
+            "?bash" = "gh-copilot suggest -t shell";
             "?gh" = "gh-copilot suggest -t gh";
             "?git" = "gh-copilot suggest -t git";
             ls = "ls --color=auto --hyperlink=always";
@@ -617,6 +620,13 @@ rec {
       tray = {
         enable = !setup.wsl;
       };
+    };
+
+    ollama = {
+      # Get up and running with large language models locally, using ROCm for AMD GPU acceleration https://ollama.com/
+      enable = !setup.wsl;
+      package = pkgs.ollama-rocm;
+      # acceleration= "rocm"; # checking from nixpkgs.config.rocmSupport
     };
 
   };

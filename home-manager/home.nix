@@ -159,22 +159,6 @@ rec {
           if [[ $TERM != "dumb" ]]; then
             eval "$(starship init bash)"
           fi
-          if [[ $TERM == "xterm-kitty" ]]; then
-            # Setting kitty shell integration manually to avoid adding the _ksi script to PROMPT_COMMAND
-            # this happens if there is a running program when we create a new tab,
-            # but only if we use `history -a` in the PROMPT_COMMAND, we want to do.
-            # See: https://sw.kovidgoyal.net/kitty/shell-integration/#manual-shell-integration
-            if [ -v KITTY_INSTALLATION_DIR ]; then
-              if [[ "$PROMPT_COMMAND" != *'_ksi_'* ]]; then
-                export KITTY_SHELL_INTEGRATION="no-cursor"
-                # shellcheck disable=SC1091
-                source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"
-              fi
-            fi
-          fi
-          if [[ "$PROMPT_COMMAND" != *'history -a'* ]]; then
-            export PROMPT_COMMAND=''${PROMPT_COMMAND:+"$PROMPT_COMMAND;"}"history -a"
-          fi
           export RUSTC_WRAPPER="${pkgs.sccache}/bin/sccache"
           if [ -d "$HOME/.kube" ]; then
             KUBECONFIG=`find "$HOME"/.kube -maxdepth 1 -type f ! -name '*.bak' ! -name '*.backup' ! -name kubectx | sort | paste -sd ":" -`
@@ -433,7 +417,8 @@ rec {
       };
       "autostart/kitty.desktop" = {
         enable = !setup.wsl;
-        source = "${pkgs.kitty}/share/applications/kitty.desktop";
+        text = builtins.replaceStrings [ "\nExec=kitty" ] [ "\nExec=kitty --title main" ]
+          (builtins.readFile "${pkgs.kitty}/share/applications/kitty.desktop");
       };
       "autostart/forge-sparks.desktop".text =
         ''

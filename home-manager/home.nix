@@ -189,6 +189,8 @@ rec {
           # auto complete all aliases
           complete -F _complete_alias "''${!BASH_ALIASES[@]}"
 
+          [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path bash)"
+
           source "$(blesh-share)/ble.sh"
           # end of .bashrc
 

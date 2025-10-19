@@ -237,7 +237,7 @@ let
     cowsay
     figlet
     fontforge
-    ghostscript
+    # ghostscript # PostScript interpreter https://www.ghostscript.com/ # cups (for printing) depends on it on Ubuntu, so I'll keep it installed there and not on Nix
     gzip
     inotify-tools
     nmap
@@ -260,7 +260,7 @@ let
     gh
     gh-copilot
     k9s
-    awscli2
+    # awscli2 # todo: taking forever to build and failing tests, readd later
     k3d
     act
     kn
@@ -300,6 +300,9 @@ let
     wezterm # GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust
     sqlite # Self-contained, serverless, zero-configuration, transactional SQL database engine https://www.sqlite.org/
     ladybird # a truly independent web browser https://ladybird.org/
+    ffmpeg # the leading multimedia framework https://www.ffmpeg.org/
+    fsarchiver # File system archiver for linux https://www.fsarchiver.org/
+    stress # Simple workload generator for POSIX systems. https://people.seas.harvard.edu/~apw/stress/
     # end of common non basic packages
   ] ++ (if setup.wsl then [
     # wsl non basic packages
@@ -319,7 +322,7 @@ let
     # (nixGLwrap librewolf-bin) # review if librewolf is better sometime in the future https://bsky.app/profile/giggio.net/post/3li63msr5r226
     (nixGLwrap firefox)
     (nixGLwrap orca-slicer)
-    (nixGLwrap fritzing)
+    # (nixGLwrap fritzing) # todo: broken because of Clipper, see https://github.com/NixOS/nixpkgs/issues/450757
     mqttx
     mqtt-explorer
     kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application
@@ -327,6 +330,12 @@ let
     doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
     tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
     tesseract # OCR engine https://github.com/tesseract-ocr/tesseract
+    calibre # Comprehensive e-book software https://calibre-ebook.com/
+    # fontconfig # Library for font customization and configuration http://fontconfig.org/ # doesn't make sense to uninstall from Ubuntu as it has a lot of dependencies
+    gparted # Graphical disk partitioning tool https://gparted.org/
+    terminator # Terminal emulator with support for tiling and tabs https://gnome-terminator.org/
+    transmission_4-gtk # Fast, easy and free BitTorrent client https://www.transmissionbt.com/
+    transmission-remote-gtk # GTK remote control for the Transmission BitTorrent client https://github.com/transmission-remote-gtk/transmission-remote-gtk
     # end of non wsl non basic packages
   ]) ++ (if setup.isNixOS then [
     # NixOS non basic packages

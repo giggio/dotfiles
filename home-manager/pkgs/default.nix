@@ -13,8 +13,9 @@ with pkgs;
   extra-completions = callPackage ./completions.nix { };
   terraform = callPackage ./unfree/terraform.nix { };
   vault = callPackage ./unfree/vault.nix { };
-  rust-toolchain = fenix.stable.withComponents [ "cargo" "clippy" "rust-src" "rustc" "rustfmt" ];
+  rust-toolchain-fenix = fenix.stable.withComponents [ "cargo" "clippy" "rust-src" "rustc" "rustfmt" ]; # or fenix.complete.defaultToolchain, or beta. Rust toolchains.
   cargo-completions = callPackage ./rust/cargo-completions.nix { };
+  bacon-ls = callPackage ./rust/bacon-ls.nix { };
   cspell-lsp = callPackage ./nodejs/cspell-lsp.nix { };
   loadtest = callPackage ./nodejs/loadtest.nix { };
   prettier-plugin-awk = callPackage ./nodejs/prettier-plugin-awk.nix { };

@@ -144,6 +144,7 @@ let
     lua-language-server # Lua language server https://github.com/LuaLS/lua-language-server
     cspellls # Custom cspell language server made from the vscode extension
     hadolint # Dockerfile linter, validate inline bash https://github.com/hadolint/hadolint
+    # pkg-config # do not install pkg-config to avoid conflicts with Ubuntu's pkg-config
     # end of common basic packages
   ]) ++ (if setup.wsl then [
     # wsl basic packages

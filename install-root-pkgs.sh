@@ -115,6 +115,7 @@ gpgconf
 libnss3
 locales
 pipx
+pkg-config
 scdaemon
 socat
 software-properties-common

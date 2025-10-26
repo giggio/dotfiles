@@ -100,7 +100,7 @@ let
     kondo # A command-line tool to clean up your code
     universal-ctags # Maintained ctags implementation https://ctags.io/
     nixd # Nix language server https://github.com/nix-community/nixd/tree/main
-    dockerfile-language-server-nodejs # A language server for Dockerfiles powered by Node.js https://github.com/rcjsuen/dockerfile-language-server
+    dockerfile-language-server # A language server for Dockerfiles powered by Node.js https://github.com/rcjsuen/dockerfile-language-server
     docker-compose-language-service # Language service for Docker Compose documents https://github.com/microsoft/compose-language-service
     systemd-language-server # Systemd language server https://github.com/psacawa/systemd-language-server
     omnisharp-roslyn # C# language server https://github.com/OmniSharp/omnisharp-roslyn
@@ -124,7 +124,6 @@ let
     bash-language-server # A language server for Bash https://github.com/bash-lsp/bash-language-server
     systemd-language-server # Language Server for Systemd unit files https://github.com/psacawa/systemd-language-server
     yaml-language-server # Language Server for YAML Files https://github.com/redhat-developer/yaml-language-server
-    dockerfile-language-server-nodejs # Language server for Dockerfiles powered by Node.js, TypeScript, and VSCode technologies https://github.com/rcjsuen/dockerfile-language-server
     # roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp # todo: broken, waiting for https://github.com/NixOS/nixpkgs/pull/439459 to reach unstable
     fsautocomplete # FsAutoComplete project (FSAC) provides a backend service for rich editing or intellisense features for editors https://github.com/fsharp/FsAutoComplete
     basedpyright # Type checker for the Python language (and lsp) https://github.com/detachhead/basedpyright
@@ -299,6 +298,7 @@ let
     ffmpeg # the leading multimedia framework https://www.ffmpeg.org/
     fsarchiver # File system archiver for linux https://www.fsarchiver.org/
     stress # Simple workload generator for POSIX systems. https://people.seas.harvard.edu/~apw/stress/
+    graphviz # Graph visualization tools https://graphviz.org/
     # end of common non basic packages
   ] ++ (if setup.wsl then [
     # wsl non basic packages

@@ -7,6 +7,14 @@ with pkgs;
       sdk_8_0
       sdk_9_0
     ];
+  mylua = (lua5_1.withPackages (ps: with ps; [
+    luarocks # A package manager for Lua modules https://luarocks.org/
+    tiktoken_core # An experimental port of OpenAI's Tokenizer to lua # used for Github Copilot chat nvim plugin # https://github.com/gptlang/lua-tiktoken
+    # luacheck # A static analyzer and a linter for Lua
+    inspect # Human-readable representation of Lua tables https://github.com/kikito/inspect.lua
+    busted # Elegant Lua unit testing # https://lunarmodules.github.io/busted/
+    luasystem # Platform independent system calls for Lua https://github.com/lunarmodules/luasystem
+  ]));
   dotnet-runtime = dotnetCorePackages.sdk_9_0;
   dotnet-tools = callPackage ./dotnet/dotnet-tools.nix { inherit dotnet-sdk; inherit dotnet-runtime; };
   dotnet-install = callPackage ./dotnet/dotnet-install.nix { };

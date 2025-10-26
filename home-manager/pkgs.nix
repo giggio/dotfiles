@@ -113,13 +113,7 @@ let
     marksman # Write Markdown with code assist and intelligence in the comfort of your favourite editor https://github.com/artempyanykh/marksman/
     markdownlint-cli2 # Fast, flexible, configuration-based command-line interface for linting Markdown/CommonMark files with the markdownlint library https://github.com/DavidAnson/markdownlint-cli2
     neovim
-    (lua5_1.withPackages (ps: [
-      # High-performance JIT compiler for Lua 5.1 https://luajit.org/
-      ps.luarocks # A package manager for Lua modules https://luarocks.org/
-      ps.tiktoken_core # An experimental port of OpenAI's Tokenizer to lua # used for Github Copilot chat nvim plugin # https://github.com/gptlang/lua-tiktoken
-      # luacheck # A static analyzer and a linter for Lua
-      ps.inspect # Human-readable representation of Lua tables https://github.com/kikito/inspect.lua
-    ]))
+    mylua # see ./pkgs/default.nix
     emmet-language-server # Language server for emmet.io (Based on VSCode emmet ls) https://github.com/olrtg/emmet-language-server
     vscode-langservers-extracted # vscode-langservers bin collection https://github.com/hrsh7th/vscode-langservers-extracted
     # todo: revisit cspell-lsp when https://github.com/vlabo/cspell-lsp/issues/13 is fixed

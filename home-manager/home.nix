@@ -300,6 +300,8 @@ rec {
             # environment variables to add only to .bashrc
             PATH = "$HOME/.local/bin:$PATH"; # this is here so it is added before the other paths
             NAVI_PATH = "${config.home.profileDirectory}/share/navi/cheats/common/:${config.home.profileDirectory}/share/navi/cheats/bash/:${config.home.profileDirectory}/share/navi/cheats/linux/common/:${config.home.profileDirectory}/share/navi/cheats/linux/bash/";
+            LUA_PATH = "\"${pkgs.mylua}/share/lua/5.1/?.lua;${pkgs.mylua}/share/lua/5.1/?/init.lua;$HOME/.luarocks/share/lua/5.1/?.lua;$HOME/.luarocks/share/lua/5.1/?/init.lua;$LUA_PATH;;\"";
+            LUA_CPATH = "\"${pkgs.mylua}/lib/lua/5.1/?.so;$HOME/.luarocks/lib/lua/5.1/?.so;$LUA_CPATH;;\"";
           };
         in
         lib.concatStringsSep "\n" (lib.concatLists [
@@ -333,6 +335,9 @@ rec {
               source ${pkgs.kubectl-aliases}/bin/kubectl_aliases.bash
               source ${pkgs.complete-alias}/bin/complete_alias
               source "$HOME/.dotfiles/bashscripts/.bashrc"
+              if [ -d ~/.luarocks/bin ]; then
+                export PATH="$PATH:$HOME/.luarocks/bin"
+              fi
               # make less more friendly for non-text input files, see lesspipe(1)
               [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
               eval "$(navi widget bash)"

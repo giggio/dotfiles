@@ -124,7 +124,7 @@ let
     bash-language-server # A language server for Bash https://github.com/bash-lsp/bash-language-server
     systemd-language-server # Language Server for Systemd unit files https://github.com/psacawa/systemd-language-server
     yaml-language-server # Language Server for YAML Files https://github.com/redhat-developer/yaml-language-server
-    # roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp # todo: broken, waiting for https://github.com/NixOS/nixpkgs/pull/439459 to reach unstable
+    roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp
     fsautocomplete # FsAutoComplete project (FSAC) provides a backend service for rich editing or intellisense features for editors https://github.com/fsharp/FsAutoComplete
     basedpyright # Type checker for the Python language (and lsp) https://github.com/detachhead/basedpyright
     uv # Extremely fast Python package installer and resolver, written in Rust https://docs.astral.sh/uv/
@@ -254,7 +254,7 @@ let
     gh
     gh-copilot
     k9s
-    # awscli2 # todo: taking forever to build and failing tests, readd later
+    awscli2
     k3d
     act
     kn
@@ -315,10 +315,10 @@ let
     # (nixGLwrap openshot-qt) # Free, open-source video editor http://openshot.org/ # todo: depending on qtwebengine, which is insecure, try to add it back later
     (nixGLwrap wireshark)
     (nixGLwrap brave)
-    # (nixGLwrap librewolf-bin) # review if librewolf is better sometime in the future https://bsky.app/profile/giggio.net/post/3li63msr5r226
+    (nixGLwrap librewolf-bin) # todo: review if librewolf is better sometime in the future https://bsky.app/profile/giggio.net/post/3li63msr5r226
     (nixGLwrap firefox)
     (nixGLwrap orca-slicer)
-    # (nixGLwrap fritzing) # todo: broken because of Clipper, see https://github.com/NixOS/nixpkgs/issues/450757
+    (nixGLwrap fritzing)
     mqttx
     mqtt-explorer
     kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application

@@ -415,13 +415,18 @@ rec {
 
     librewolf = {
       # todo: review if librewolf is better sometime in the future https://bsky.app/profile/giggio.net/post/3li63msr5r226
-      enable = true;
+      enable = !setup.wsl;
       package = (nixGLwrap pkgs.librewolf-bin);
       languagePacks = [ "en-US" "pt-BR" ];
       nativeMessagingHosts = [
         pkgs.gnome-browser-connector
         pkgs.bitwarden-desktop
       ];
+    };
+
+    zapzap = {
+      enable = !setup.wsl;
+      package = (nixGLwrap pkgs.zapzap);
     };
   };
 

@@ -412,6 +412,17 @@ rec {
         enter_accept = true;
       };
     };
+
+    librewolf = {
+      # todo: review if librewolf is better sometime in the future https://bsky.app/profile/giggio.net/post/3li63msr5r226
+      enable = true;
+      package = (nixGLwrap pkgs.librewolf-bin);
+      languagePacks = [ "en-US" "pt-BR" ];
+      nativeMessagingHosts = [
+        pkgs.gnome-browser-connector
+        pkgs.bitwarden-desktop
+      ];
+    };
   };
 
   fonts.fontconfig.enable = !setup.wsl;
@@ -577,14 +588,14 @@ rec {
           "text/docxf" = [ "onlyoffice-desktopeditors.desktop" ];
           "text/oform;" = [ "onlyoffice-desktopeditors.desktop" ];
           # browser:
-          "text/html" = [ "brave-browser.desktop" ];
-          "x-scheme-handler/http" = [ "brave-browser.desktop" ];
-          "x-scheme-handler/https" = [ "brave-browser.desktop" ];
-          "x-scheme-handler/about" = [ "brave-browser.desktop" ];
-          "x-scheme-handler/unknown" = [ "brave-browser.desktop" ];
-          "application/pdf" = [ "brave-browser.desktop" ];
-          "x-scheme-handler/mailto" = [ "brave-browser.desktop" ];
-          "application/xhtml+xml" = [ "brave-browser.desktop" ];
+          "text/html" = [ "librewolf.desktop" ];
+          "x-scheme-handler/http" = [ "librewolf.desktop" ];
+          "x-scheme-handler/https" = [ "librewolf.desktop" ];
+          "x-scheme-handler/about" = [ "librewolf.desktop" ];
+          "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+          "application/pdf" = [ "librewolf.desktop" ];
+          "x-scheme-handler/mailto" = [ "librewolf.desktop" ];
+          "application/xhtml+xml" = [ "librewolf.desktop" ];
           # telegram:
           "x-scheme-handler/tg" = [ "org.telegram.desktop.desktop" ];
         };

@@ -146,7 +146,7 @@ let
   ] else [
     # non wsl basic packages
     android-tools
-    (nixGLwrap bitwarden-desktop)
+    bitwarden-desktop
     blanket
     eartag
     eyedropper
@@ -317,7 +317,6 @@ let
     # (nixGLwrap openshot-qt) # Free, open-source video editor http://openshot.org/ # todo: depending on qtwebengine, which is insecure, try to add it back later
     (nixGLwrap wireshark)
     (nixGLwrap brave)
-    (nixGLwrap librewolf-bin) # todo: review if librewolf is better sometime in the future https://bsky.app/profile/giggio.net/post/3li63msr5r226
     (nixGLwrap firefox)
     (nixGLwrap orca-slicer)
     (nixGLwrap fritzing)

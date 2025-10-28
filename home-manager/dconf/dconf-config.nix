@@ -20,6 +20,7 @@
           workspace-matrix.extensionUuid
           smart-auto-move.extensionUuid
           smile-complementary-extension.extensionUuid
+          focused-window-d-bus.extensionUuid
         ];
       };
       "org/gnome/shell/extensions/burn-my-windows" = {

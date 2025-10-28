@@ -427,16 +427,23 @@ rec {
         text = builtins.replaceStrings [ "\nExec=kitty" ] [ "\nExec=kitty --title main" ]
           (builtins.readFile "${pkgs.kitty}/share/applications/kitty.desktop");
       };
-      "autostart/forge-sparks.desktop".text =
-        ''
-          [Desktop Entry]
-          Name=Forge Sparks
-          Exec=forge-sparks --hidden
-          Type=Application
-          StartupNotify=true
-          Terminal=false
-          Icon=com.mardojai.ForgeSparks
-        '';
+      "autostart/activitywatch.desktop" = {
+        enable = !setup.wsl;
+        source = "${pkgs.activitywatch}/share/applications/aw-qt.desktop";
+      };
+      "autostart/forge-sparks.desktop" = {
+        enable = !setup.wsl;
+        text =
+          ''
+            [Desktop Entry]
+            Name=Forge Sparks
+            Exec=forge-sparks --hidden
+            Type=Application
+            StartupNotify=true
+            Terminal=false
+            Icon=com.mardojai.ForgeSparks
+          '';
+      };
       "burn-my-windows/profiles/close.conf".source = ./dconf/cfg/burn-close.conf;
       "burn-my-windows/profiles/burn-app-edge.conf".source = ./dconf/cfg/burn-app-edge.conf;
       "burn-my-windows/profiles/open.conf".source = ./dconf/cfg/burn-open.conf;
@@ -619,6 +626,24 @@ rec {
       enable = !setup.wsl;
       package = pkgs.ollama-rocm;
       # acceleration= "rocm"; # checking from nixpkgs.config.rocmSupport
+    };
+
+    activitywatch = {
+      # Best free and open-source automated time tracker https://activitywatch.net/
+      enable = !setup.wsl;
+      settings = {
+        custom_static = {
+          aw-watcher-media-player = "${pkgs.aw-watcher-media-player}/share/aw-watcher-media-player/visualization";
+        };
+      };
+      watchers = {
+        awatcher = {
+          package = pkgs.awatcher;
+        };
+        aw-watcher-media-player = {
+          package = pkgs.aw-watcher-media-player;
+        };
+      };
     };
 
   };

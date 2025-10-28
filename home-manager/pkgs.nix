@@ -192,6 +192,7 @@ let
     (gnome46Extensions.${workspace-matrix.extensionUuid})
     (gnome46Extensions.${smart-auto-move.extensionUuid})
     (gnome46Extensions.${smile-complementary-extension.extensionUuid})
+    (gnome46Extensions.${focused-window-d-bus.extensionUuid})
   ])
     # end of non wsl basic packages
   ) ++ (if setup.isNixOS then [
@@ -299,6 +300,7 @@ let
     fsarchiver # File system archiver for linux https://www.fsarchiver.org/
     stress # Simple workload generator for POSIX systems. https://people.seas.harvard.edu/~apw/stress/
     graphviz # Graph visualization tools https://graphviz.org/
+    aw-watcher-media-player # [Custom package] Watcher of system's currently playing media for ActivityWatch
     # end of common non basic packages
   ] ++ (if setup.wsl then [
     # wsl non basic packages

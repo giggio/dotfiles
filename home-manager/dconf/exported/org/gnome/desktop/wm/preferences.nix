@@ -5,9 +5,9 @@ with lib.hm.gvariant;
 
 {
   dconf.settings = {
-    "desktop/ibus/panel/emoji" = {
-      favorites = [ "🎃" ];
-      unicode-hotkey = [ "<Control><Super><Shift>u" ];
+    "org/gnome/desktop/wm/preferences" = {
+      button-layout = "appmenu:minimize,maximize,close";
+      num-workspaces = 4;
     };
 
   };

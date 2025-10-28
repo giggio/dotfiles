@@ -56,6 +56,7 @@ DCONF_CONFIGS=(
   "org/gnome/desktop/input-sources"
   "org/gnome/desktop/peripherals/mouse"
   "org/gnome/desktop/wm/keybindings"
+  "org/gnome/desktop/wm/preferences"
   "org/gnome/shell/extensions/blur-my-shell"
   "org/gnome/shell/extensions/burn-my-windows"
   "org/gnome/shell/extensions/caffeine"

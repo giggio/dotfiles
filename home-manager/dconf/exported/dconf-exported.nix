@@ -7,6 +7,7 @@
     ./org/gnome/desktop/input-sources.nix
     ./org/gnome/desktop/peripherals/mouse.nix
     ./org/gnome/desktop/wm/keybindings.nix
+    ./org/gnome/desktop/wm/preferences.nix
     ./org/gnome/shell/extensions/blur-my-shell.nix
     ./org/gnome/shell/extensions/burn-my-windows.nix
     ./org/gnome/shell/extensions/caffeine.nix

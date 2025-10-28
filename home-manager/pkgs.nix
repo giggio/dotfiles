@@ -84,6 +84,7 @@ let
     prettier-plugin-awk
     node2nix
     nodePackages.prettier
+    prettierd # prettier, as a daemon, for improved formatting speed https://github.com/fsouza/prettierd
     nodePackages.eslint
     nodePackages.bash-language-server
     (bats.withLibraries (p: [ p.bats-support p.bats-assert ]))
@@ -138,6 +139,8 @@ let
     cspellls # Custom cspell language server made from the vscode extension
     hadolint # Dockerfile linter, validate inline bash https://github.com/hadolint/hadolint
     # pkg-config # do not install pkg-config to avoid conflicts with Ubuntu's pkg-config
+    stylua # A Lua code formatter https://github.com/JohnnyMorganz/StyLua
+    yamlfmt #  An extensible command line tool or library to format yaml files https://github.com/google/yamlfmt
     # end of common basic packages
   ]) ++ (if setup.wsl then [
     # wsl basic packages

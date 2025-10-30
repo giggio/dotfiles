@@ -304,6 +304,7 @@ let
     stress # Simple workload generator for POSIX systems. https://people.seas.harvard.edu/~apw/stress/
     graphviz # Graph visualization tools https://graphviz.org/
     aw-watcher-media-player # [Custom package] Watcher of system's currently playing media for ActivityWatch
+    opencode # AI coding agent built for the terminal https://opencode.ai/ https://github.com/sst/opencode
     # end of common non basic packages
   ] ++ (if setup.wsl then [
     # wsl non basic packages

@@ -284,6 +284,7 @@ rec {
             http = "xh";
             vim = "nvim";
             vi = "nvim";
+            cl = "tput clear";
           };
         in
         nonWsl // wslOnly // common;

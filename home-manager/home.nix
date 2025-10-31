@@ -132,7 +132,12 @@ rec {
           inline_img_protocol 4
           auto_image TRUE
         '';
-      ".inputrc".text = "set bell-style none";
+      ".inputrc".text =
+        ''
+          set bell-style none
+          # reset the screen with Ctrl+L, normal CTRL+L in Kitty will not clear the scrollback
+          "\C-l":"\C-k \C-utput reset\n"
+        '';
       ".vimrc".text = "source ~/.vim/init.vim";
     };
 

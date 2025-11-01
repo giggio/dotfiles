@@ -305,6 +305,7 @@ let
     graphviz # Graph visualization tools https://graphviz.org/
     aw-watcher-media-player # [Custom package] Watcher of system's currently playing media for ActivityWatch
     opencode # AI coding agent built for the terminal https://opencode.ai/ https://github.com/sst/opencode
+    audacity # Sound editor with graphical UI https://www.audacityteam.org/
     # end of common non basic packages
   ] ++ (if setup.wsl then [
     # wsl non basic packages

@@ -635,11 +635,11 @@ rec {
     kbfs.enable = !setup.wsl;
 
     syncthing = {
-      enable = !setup.wsl;
+      enable = false; # !setup.wsl; # todo: not using it for now. remove?
       overrideDevices = false;
       overrideFolders = false;
       tray = {
-        enable = !setup.wsl;
+        enable = false; # !setup.wsl; # todo: not using it for now. remove?
       };
     };
 

@@ -1,6 +1,7 @@
-{ bash, coreutils, system }:
+{ stdenv, bash, coreutils }:
 
 derivation {
+  inherit (stdenv.hostPlatform) system;
   name = "dotnet-install";
   builder = "${bash}/bin/bash";
   args =
@@ -19,5 +20,4 @@ derivation {
         chmod +x $out/bin/dotnet-install
       ''
     ];
-  inherit system;
 }

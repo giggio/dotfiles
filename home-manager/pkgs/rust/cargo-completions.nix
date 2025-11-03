@@ -1,6 +1,7 @@
-{ bash, rust-toolchain-fenix, coreutils, system }:
+{ bash, rust-toolchain-fenix, coreutils, stdenv }:
 
 derivation {
+  inherit (stdenv.hostPlatform) system;
   name = "cargo-completions";
   builder = "${bash}/bin/bash";
   args = [
@@ -11,5 +12,4 @@ derivation {
       cp "${rust-toolchain-fenix}/etc/bash_completion.d/cargo" "$out/share/bash-completion/completions/cargo"
     ''
   ];
-  inherit system;
 }

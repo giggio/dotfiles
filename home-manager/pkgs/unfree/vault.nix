@@ -1,4 +1,4 @@
-{ stdenv, system, fetchzip, lib }:
+{ stdenv, fetchzip, lib }:
 
 # see urls and details at: https://developer.hashicorp.com/vault/install
 stdenv.mkDerivation rec {
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
         "armv6-linux" = "arm";
         "armv7-linux" = "arm";
         "armv8-linux" = "arm";
-      }."${system}";
+      }."${stdenv.hostPlatform.system}";
     in
     fetchzip {
       url = "https://releases.hashicorp.com/vault/${version}/vault_${version}_linux_${arch}.zip";

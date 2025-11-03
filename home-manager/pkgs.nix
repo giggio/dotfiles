@@ -228,7 +228,7 @@ let
     ketall # Like kubectl get all, but get really all resources https://github.com/corneliusweig/ketall
     ctop # Top-like interface for container metrics https://github.com/bcicen/ctop
     go # Go Programming Language https://go.dev/
-    (hiPrio gcc) # GNU Compiler Collection https://gcc.gnu.org/
+    (lib.hiPrio gcc) # GNU Compiler Collection https://gcc.gnu.org/
     docker-slim # Minify and secure Docker containers https://github.com/slimtoolkit/slim
     asciinema # Terminal session recorder https://asciinema.org/
     bison # Yacc-compatible parser generator https://www.gnu.org/software/bison/

@@ -9,7 +9,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixGL = {
-      url = "github:nix-community/nixGL/310f8e49a149e4c9ea52f1adf70cdc768ec53f8a";
+      url = "github:nix-community/nixGL/b6105297e6f0cd041670c3e8628394d4ee247ed5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     fenix = {

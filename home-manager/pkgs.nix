@@ -164,7 +164,7 @@ let
     keybase-gui # Keybase desktop client https://keybase.io/
     newsflash # Modern feed reader designed for the GNOME desktop https://gitlab.com/news-flash/news_flash_gtk
     (nixGLwrap obsidian) # Powerful knowledge base on top of a local folder of plain text Markdown files https://obsidian.md
-    (nixGLwrap onlyoffice-bin) # Office suite that combines text, spreadsheet and presentation editors https://www.onlyoffice.com/
+    (nixGLwrap onlyoffice-desktopeditors) # Office suite that combines text, spreadsheet and presentation editors https://www.onlyoffice.com/
     (nixGLwrap openrgb-with-all-plugins) # Open source RGB lighting control https://openrgb.org/
     (nixGLwrap pinta) # Drawing/editing program modeled after Paint.NET https://www.pinta-project.com/
     (nixGLwrap remmina) # Remote desktop client written in GTK https://remmina.org/
@@ -322,7 +322,6 @@ let
     # (nixGLwrap openshot-qt) # Free, open-source video editor http://openshot.org/ # todo: depending on qtwebengine, which is insecure, try to add it back later
     (nixGLwrap wireshark) # Network protocol analyzer https://www.wireshark.org/
     (nixGLwrap brave) # Privacy-oriented browser https://brave.com/
-    (nixGLwrap firefox) # Web browser https://www.mozilla.org/en-US/firefox/
     (nixGLwrap orca-slicer) # G-code generator for 3D printers https://github.com/SoftFever/OrcaSlicer
     (nixGLwrap fritzing) # Electronic design automation software https://fritzing.org/
     mqttx # MQTT 5.0 client desktop application https://mqttx.app/

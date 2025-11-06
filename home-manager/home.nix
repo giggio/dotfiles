@@ -420,7 +420,6 @@ rec {
     };
 
     librewolf = {
-      # todo: review if librewolf is better sometime in the future https://bsky.app/profile/giggio.net/post/3li63msr5r226
       enable = !setup.wsl;
       package = (nixGLwrap pkgs.librewolf-bin);
       languagePacks = [ "en-US" "pt-BR" ];

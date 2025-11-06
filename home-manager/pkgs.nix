@@ -328,6 +328,8 @@ let
     mqtt-explorer # MQTT client https://mqtt-explorer.com/
     kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application
     cdrtools # Highly portable CD/DVD/BluRay command line recording software
+    dvdauthor # Tools for generating DVD files to be played on standalone DVD players https://dvdauthor.sourceforge.net/
+    dvdstyler # DVD authoring software https://www.dvdstyler.org/
     doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
     tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
     tesseract # OCR engine https://github.com/tesseract-ocr/tesseract

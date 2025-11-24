@@ -108,6 +108,7 @@ rec {
       ".cargo/.keep".text = "";
       ".local/bin/dotnet-uninstall".source = ./bin/dotnet-uninstall;
       ".local/bin/hm".source = ./bin/hm;
+      ".local/bin/updatedb_local".source = ./bin/updatedb_local;
       ".hushlogin".text = "";
       ".XCompose".source = "${pkgs.custom-xcompose}/lib/.XCompose";
       ".tmux.conf".text =
@@ -195,6 +196,8 @@ rec {
           complete -F _complete_alias "''${!BASH_ALIASES[@]}"
 
           [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path bash)"
+
+          export LOCATE_PATH=$XDG_CACHE_HOME/mlocate.db
 
           source "$(blesh-share)/ble.sh"
           # end of .bashrc

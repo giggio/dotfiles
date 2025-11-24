@@ -246,7 +246,7 @@ let
     silver-searcher # Code searching tool similar to Ack, but faster https://github.com/ggreer/the_silver_searcher
     w3m # Text-based web browser https://github.com/tats/w3m
     (nixGLwrap chromium) # Open source web browser from Google https://www.chromium.org/
-    temurin-bin-23 # Eclipse Temurin, Java Development Kit https://adoptium.net/
+    temurin-bin-25 # Eclipse Temurin, Java Development Kit https://adoptium.net/
     maven # Build automation tool for Java https://maven.apache.org/
     (azure-cli.withExtensions [ azure-cli.extensions.containerapp ]) # Microsoft Azure command-line interface https://github.com/Azure/azure-cli
     kubectl # Kubernetes CLI https://kubernetes.io/
@@ -258,7 +258,7 @@ let
     gh # GitHub CLI tool https://cli.github.com/
     gh-copilot # GitHub Copilot on the command line https://github.com/github/gh-copilot
     k9s # Kubernetes CLI to manage your clusters in style https://k9scli.io/
-    awscli2 # Unified tool to manage AWS services https://aws.amazon.com/cli/
+    #awscli2 # Unified tool to manage AWS services https://aws.amazon.com/cli/ # todo: build failing, retry later
     k3d # Helper to run k3s in Docker https://k3d.io/
     act # Run your GitHub Actions locally https://github.com/nektos/act
     kn # Knative command-line interface https://knative.dev/
@@ -329,7 +329,7 @@ let
     kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application
     cdrtools # Highly portable CD/DVD/BluRay command line recording software
     dvdauthor # Tools for generating DVD files to be played on standalone DVD players https://dvdauthor.sourceforge.net/
-    dvdstyler # DVD authoring software https://www.dvdstyler.org/
+    # dvdstyler # DVD authoring software https://www.dvdstyler.org/ # todo: build breaking, retry later
     doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
     tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
     tesseract # OCR engine https://github.com/tesseract-ocr/tesseract

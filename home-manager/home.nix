@@ -19,12 +19,6 @@ rec {
     ./virtualbox.nix
   ]);
 
-  nixGL = {
-    packages = inputs.nixGL.packages;
-    defaultWrapper = "mesa";
-    installScripts = [ "mesa" ];
-  };
-
   nixpkgs = {
     config = {
       rocmSupport = true; # used by ollama and maybe others
@@ -144,7 +138,14 @@ rec {
 
   };
 
-  targets.genericLinux.enable = true;
+  targets.genericLinux = {
+    enable = true;
+    nixGL = {
+      packages = inputs.nixGL.packages;
+      defaultWrapper = "mesa";
+      installScripts = [ "mesa" ];
+    };
+  };
 
   programs = {
     home-manager = {

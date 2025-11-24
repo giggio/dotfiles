@@ -170,7 +170,7 @@ let
     (nixGLwrap remmina) # Remote desktop client written in GTK https://remmina.org/
     shortwave # Find and listen to internet radio stations https://gitlab.gnome.org/World/Shortwave
     switcheroo # Image converter and manipulator https://gitlab.com/adhami3310/Switcheroo
-    (nixGLwrap telegram-desktop) # Telegram Desktop messaging app https://desktop.telegram.org/
+    (nixGLwrap telegram-desktop-wrapped) # Telegram Desktop messaging app https://desktop.telegram.org/
     textpieces # Swiss knife of text processing https://github.com/liferooter/textpieces
     (nixGLwrap vlc) # Cross-platform media player and streaming server https://www.videolan.org/vlc/
     (nixGLwrap warp) # Fast and secure file transfer https://apps.gnome.org/Warp/

@@ -41,4 +41,5 @@ with pkgs;
     code-spell-checker = vscode-extensions.streetsidesoftware.code-spell-checker;
   };
   cspell-dict-pt-br = callPackage ./nodejs/cspell-dict-pt-br.nix { };
+  telegram-desktop-wrapped = callPackage ./wrappers/telegram-desktop.nix { };
 }

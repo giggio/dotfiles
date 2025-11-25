@@ -258,7 +258,7 @@ let
     gh # GitHub CLI tool https://cli.github.com/
     gh-copilot # GitHub Copilot on the command line https://github.com/github/gh-copilot
     k9s # Kubernetes CLI to manage your clusters in style https://k9scli.io/
-    #awscli2 # Unified tool to manage AWS services https://aws.amazon.com/cli/ # todo: build failing, retry later
+    awscli2 # Unified tool to manage AWS services https://aws.amazon.com/cli/
     k3d # Helper to run k3s in Docker https://k3d.io/
     act # Run your GitHub Actions locally https://github.com/nektos/act
     kn # Knative command-line interface https://knative.dev/
@@ -323,7 +323,7 @@ let
     (nixGLwrap wireshark) # Network protocol analyzer https://www.wireshark.org/
     (nixGLwrap brave) # Privacy-oriented browser https://brave.com/
     (nixGLwrap orca-slicer) # G-code generator for 3D printers https://github.com/SoftFever/OrcaSlicer
-    (nixGLwrap fritzing) # Electronic design automation software https://fritzing.org/
+    # (nixGLwrap fritzing) # Electronic design automation software https://fritzing.org/ # todo: broken, retry later - it seems related to Clipper
     mqttx # MQTT 5.0 client desktop application https://mqttx.app/
     mqtt-explorer # MQTT client https://mqtt-explorer.com/
     kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application

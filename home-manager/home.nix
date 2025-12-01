@@ -200,6 +200,8 @@ rec {
 
           export LOCATE_PATH=$XDG_CACHE_HOME/mlocate.db
 
+          source "${ ./bash/aliases-and-functions.bash }"
+
           source "$(blesh-share)/ble.sh"
           # end of .bashrc
 

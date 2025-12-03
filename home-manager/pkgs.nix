@@ -273,7 +273,6 @@ let
     cargo-expand # Subcommand to show result of macro expansion https://github.com/dtolnay/cargo-expand
     cargo-outdated # Cargo subcommand for displaying outdated dependencies https://github.com/kbknapp/cargo-outdated
     cargo-watch # Watches over your Cargo project's source https://github.com/watchexec/cargo-watch
-    cargo-cross # Zero setup cross compilation https://github.com/cross-rs/cross
     cargo-binstall # Install Rust binaries instead of building from source https://github.com/cargo-bins/cargo-binstall
     gping # Ping, but with a graph https://github.com/orf/gping
     grex # Command-line tool for generating regular expressions https://github.com/pemistahl/grex

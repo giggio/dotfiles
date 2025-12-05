@@ -97,6 +97,9 @@ rec {
       NPM_CONFIG_PREFIX = "\${NPM_CONFIG_PREFIX:-$HOME/.local/share/npm}";
       BASIC_SETUP = "\${BASIC_SETUP:-false}";
     };
+    sessionVariablesExtra = lib.mkOrder 2000 ''
+      # this is from sessionVariablesExtra, and is loaded at the very end hm-session-vars.sh
+    '';
 
     file = {
       ".cargo/.keep".text = "";
@@ -155,7 +158,7 @@ rec {
 
     bash = {
       enable = true;
-      initExtra =
+      initExtra = lib.mkMerge [
         ''
           # end of nix configuration
 
@@ -206,7 +209,13 @@ rec {
           # end of .bashrc
 
           # beginning of configurations coming from other options, like gpg-agent, direnv and zoxide
-        '';
+        ''
+        (lib.mkOrder 10000
+          ''
+            # very end of .bashrc
+            export PATH="$(printf '%s\n' "$HOME/.local/bin:$PATH" | tr ':' '\n' | awk '!seen[$0]++' | paste -sd: -)"
+          '')
+      ];
       logoutExtra =
         ''
           # when leaving the console clear the screen to increase privacy
@@ -275,7 +284,7 @@ rec {
             fixup = "git fixup";
             dif = "git diff";
             pushsync = "git push --set-upstream origin `git rev-parse --abbrev-ref HEAD`";
-            git = "hub";
+            # git = "hub"; # now using a function, see ./bash/aliases-and-functions.bash
             istio = "istioctl";
             tf = "terraform";
             "cd-" = "cd -";

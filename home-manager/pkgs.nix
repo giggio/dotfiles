@@ -141,6 +141,7 @@ let
     # pkg-config # do not install pkg-config to avoid conflicts with Ubuntu's pkg-config
     stylua # A Lua code formatter https://github.com/JohnnyMorganz/StyLua
     yamlfmt #  An extensible command line tool or library to format yaml files https://github.com/google/yamlfmt
+    openssh # Implementation of the SSH protocol https://www.openssh.com/
     # end of common basic packages
   ]) ++ (if setup.wsl then [
     # wsl basic packages

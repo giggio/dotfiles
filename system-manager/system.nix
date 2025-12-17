@@ -8,20 +8,19 @@
     environment = {
       systemPackages = with pkgs; [
         gnupg # todo: remove, testing only
+        lm_sensors # Tools for reading hardware sensors - maintained fork https://github.com/hramrach/lm-sensors https://archive.kernel.org/oldwiki/hwmon.wiki.kernel.org/lm_sensors.html
       ];
 
       # Add directories and files to `/etc` and set their permissions
-      etc = {
-        "systemd/logind.conf".source = ./etc/systemd/logind.conf;
-        # with_ownership = {
-        #   text = ''
-        #     This is just a test!
-        #   '';
-        #   mode = "0755";
-        #   uid = 5;
-        #   gid = 6;
-        # };
-      };
+      etc = let
+        all = {
+          "systemd/logind.conf".source = ./etc/systemd/logind.conf;
+        };
+        rog2 = {
+          "sensors.d/disabling".source = ./etc/sensors.d/disabling;
+        };
+      in
+        all // rog2;
     };
 
     systemd = {

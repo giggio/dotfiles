@@ -1,0 +1,6 @@
+chip "asusec-*"
+  ignore temp1
+  ignore temp2
+  ignore temp3
+  ignore temp5
+  ignore temp6

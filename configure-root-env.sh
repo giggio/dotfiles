@@ -195,28 +195,3 @@ else
     fi
   fi
 fi
-
-if hash sensors 2> /dev/null; then
-  if sensors -u 2> /dev/null | grep -q asusec-isa; then
-    if ! [ -f /etc/sensors.d/disabling ]; then
-      cat << EOF > /etc/sensors.d/disabling
-chip "asusec-*"
-  ignore temp1
-  ignore temp2
-  ignore temp3
-  ignore temp5
-  ignore temp6
-EOF
-    else
-      if $VERBOSE; then
-        writeBlue "asusec-isa is already disabled."
-      fi
-    fi
-  else
-    if $VERBOSE; then
-      writeBlue "asusec-isa is not available."
-    fi
-  fi
-else
-  writeBlue "sensors is not installed."
-fi

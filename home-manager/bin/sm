@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+
+# todo: move this file to the system-manager directory when https://github.com/numtide/system-manager/issues/297 is fixed
+if (return 0 2>/dev/null); then
+  >&2 echo -e "\e[31mThis script should not be sourced.\e[0m"
+  return 1
+fi
+set -euo pipefail
+
+get_generic_profile() {
+  if grep '[Mm]icrosoft' /proc/version -q &>/dev/null; then
+    local wsl=true
+  else
+    local wsl=false
+  fi
+  if [ "$(grep ^ID= /etc/os-release | cut -d'=' -f2)" == nixos ]; then
+    >&2 echo -e "\e[31mDo not use system-manager on nixos.\e[0m"
+    exit 1
+  fi
+  if ! [ -v BASIC_SETUP ]; then
+    local basic_setup=false
+  else
+    if [ "$BASIC_SETUP" == 'true' ]; then
+      local basic_setup=true
+    else
+      local basic_setup=false
+    fi
+  fi
+  local product_name
+  if [ -f /sys/devices/virtual/dmi/id/product_name ]; then
+    local product_name
+    product_name=$(cat /sys/devices/virtual/dmi/id/product_name)
+    if [ "$product_name" == "VirtualBox" ]; then
+      local is_virtualbox=true
+    else
+      local is_virtualbox=false
+    fi
+  else
+    local is_virtualbox=false
+  fi
+  # available profiles: default, rog2, giggio, giggio_wsl, giggio_virtualbox, giggio_basic, giggio_wsl_basic, giggio_virtualbox_basic
+  # default is used if no profile is specified
+  # rog2 is machine specific
+  local profile=giggio
+  if $wsl; then
+    profile+=_wsl
+  else
+    if $is_virtualbox; then
+      profile+=_virtualbox
+    fi
+  fi
+  if $basic_setup; then profile+='_basic'; fi
+  echo $profile
+}
+
+_sm() {
+  local get_profile=false
+  local verbose=false
+  local switch=false
+  local first_run=false
+  local profile
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --verbose)
+      verbose=true
+      shift
+      ;;
+    --get-profile)
+      get_profile=true
+      shift
+      ;;
+    switch)
+      switch=true
+      shift
+      ;;
+    --first-run)
+      first_run=true
+      shift
+      ;;
+    *)
+      shift
+      ;;
+    esac
+  done
+  case $(hostname) in
+  rog2)
+    profile=rog2
+    ;;
+  *)
+    echo -e "\e[33mThis host does not have a specific profile, so it will run using the generic profile rules.\e[0m"
+    profile=$(get_generic_profile)
+    ;;
+  esac
+  if $get_profile; then
+    echo "$profile"
+    return
+  fi
+  local nix_extra_args=" --accept-flake-config "
+  if $first_run; then
+    nix_extra_args+=" --extra-experimental-features nix-command --extra-experimental-features flakes "
+  fi
+  if $switch; then
+    if $verbose; then
+      echo -e "\e[32mRunning:\e[0m \e[34msudo env PATH=$PATH nix run $nix_extra_args 'github:numtide/system-manager' -- switch $* --flake $HOME/.dotfiles/system-manager?submodules=1#$profile"
+    fi
+    # shellcheck disable=SC2086
+    sudo env PATH="$PATH" nix run $nix_extra_args 'github:numtide/system-manager' -- switch "$@" --flake "$HOME/.dotfiles/system-manager?submodules=1#$profile"
+  else
+    if $verbose; then
+      echo -e "\e[32mRunning:\e[0m \e[34msudo env PATH=$PATH nix run $nix_extra_args 'github:numtide/system-manager' -- $*"
+    fi
+    # shellcheck disable=SC2086
+    sudo env PATH="$PATH" nix run $nix_extra_args 'github:numtide/system-manager' -- "$@"
+  fi
+}
+
+_sm "$@"

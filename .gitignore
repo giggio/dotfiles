@@ -4,3 +4,4 @@ config/git/gitk
 kitty-wsl.conf
 *.rej
 *.orig
+result

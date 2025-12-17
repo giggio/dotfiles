@@ -105,6 +105,7 @@ rec {
       ".cargo/.keep".text = "";
       ".local/bin/dotnet-uninstall".source = ./bin/dotnet-uninstall;
       ".local/bin/hm".source = ./bin/hm;
+      ".local/bin/sm".source = ./bin/sm;
       ".local/bin/updatedb_local".source = ./bin/updatedb_local;
       ".hushlogin".text = "";
       ".XCompose".source = "${pkgs.custom-xcompose}/lib/.XCompose";

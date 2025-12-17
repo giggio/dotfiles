@@ -70,12 +70,44 @@ hm_switch() {
   if $VERBOSE; then verbose_flag="--verbose"; fi
   "$BASEDIR"/home-manager/bin/hm switch --show-trace $verbose_flag "$@"
 }
-installHomeManagerUsingFlakes() {
-  if ! hash home-manager 2> /dev/null; then
-    writeBlue "Install Nix home-manager."
+setup_nix_channels() {
+  writeBlue "Setting up Nix channels."
+  local channel_added=false
+  if nix-channel --list | grep -q nixpkgs; then
+    if $VERBOSE; then
+      writeBlue "Nix channel nixpkgs already exists."
+    fi
+  else
     nix-channel --add https://nixos.org/channels/nixos-unstable nixpkgs
+    channel_added=true
+  fi
+  if nix-channel --list | grep -q home-manager; then
+    if $VERBOSE; then
+      writeBlue "Nix channel home-manager already exists."
+    fi
+  else
     nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+    channel_added=true
+  fi
+  if $channel_added; then
+    if $VERBOSE; then
+      writeBlue "Update Nix channels."
+    fi
     nix-channel --update
+  else
+    writeBlue "No nix channels to update, they were already added."
+  fi
+}
+
+install_system_manager() {
+  sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.backup
+  "$BASEDIR"/system-manager/bin/sm switch --first-run
+}
+
+install_home_manager() {
+  if ! hash home-manager 2> /dev/null; then
+    setup_nix_channels
+    writeBlue "Install Nix home-manager."
     nix run home-manager/master -- init --show-trace --flake "$BASEDIR"/home-manager?submodules=1
     hm_switch
     download_nixpkgs_cache_index
@@ -95,5 +127,6 @@ if (return 0 2> /dev/null); then
   set +euo pipefail
 else
   # if not sourced, run the installation
-  installHomeManagerUsingFlakes
+  install_system_manager
+  install_home_manager
 fi

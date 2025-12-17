@@ -56,4 +56,4 @@ sudo su --login root -c "'$BASEDIR/configure-root-env.sh' $*"
 if hash systemd-notify 2> /dev/null && systemd-notify --booted; then
   sudo su --login root -c "'$BASEDIR/configure-systemd.sh' $*"
 fi
-sudo su --login "$USER" -c "'$BASEDIR/install-home-manager.sh' $*"
+sudo su --login "$USER" -c "'$BASEDIR/install-nix-managers.sh' $*"

@@ -63,8 +63,8 @@
             wsl = if setup.wsl then { } else { };
             rog2 = if setup.hostname != "rog2" then { } else {
               "coolercontrold.service" = {
-                # todo: because of a bug it is not being enabled, needs to run `systemctl enable coolercontrold`, see: https://github.com/numtide/system-manager/issues/298
                 enable = true;
+                wantedBy = [ "system-manager.target" ];
                 text = builtins.readFile "${pkgs.coolercontrol.coolercontrold}/lib/systemd/system/coolercontrold.service";
               };
             };

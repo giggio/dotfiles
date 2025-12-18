@@ -10,7 +10,6 @@ let
     FZF_DEFAULT_OPTS = "--ansi";
     FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
   };
-  nixGLwrap = pkg: if setup.isNixOS then pkg else config.lib.nixGL.wrap pkg;
 in
 rec {
   imports = (if setup.wsl then [
@@ -38,7 +37,6 @@ rec {
     };
     overlays = [
       inputs.fenix.overlays.default # rust toolchain
-      inputs.nixGL.overlay
       (final: prev: (import ./pkgs/default.nix { pkgs = prev; }))
       # todo: remove patch when https://github.com/nix-community/dconf2nix/pull/95 is released and gets merged into nixpkgs
       # check if https://github.com/nix-community/dconf2nix/releases/latest is > 0.1.1
@@ -144,10 +142,8 @@ rec {
 
   targets.genericLinux = {
     enable = true;
-    nixGL = {
-      packages = inputs.nixGL.packages;
-      defaultWrapper = "mesa";
-      installScripts = [ "mesa" ];
+    gpu = {
+      enable = true;
     };
   };
 
@@ -437,7 +433,7 @@ rec {
 
     librewolf = {
       enable = !setup.wsl;
-      package = (nixGLwrap pkgs.librewolf-bin);
+      package = pkgs.librewolf-bin;
       languagePacks = [ "en-US" "pt-BR" ];
       nativeMessagingHosts = [
         pkgs.gnome-browser-connector
@@ -447,7 +443,7 @@ rec {
 
     zapzap = {
       enable = !setup.wsl;
-      package = (nixGLwrap pkgs.zapzap);
+      package = pkgs.zapzap;
     };
   };
 

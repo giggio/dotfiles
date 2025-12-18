@@ -1,7 +1,6 @@
 { config, pkgs, pkgs-stable, lib, setup, ... }:
 
 let
-  nixGLwrap = pkg: if setup.isNixOS then pkg else config.lib.nixGL.wrap pkg;
   basic_pkgs = (with pkgs; ([
     # common basic packages
     bash # GNU Bourne Again shell https://www.gnu.org/software/bash/
@@ -91,7 +90,7 @@ let
     git-ignore # Interactive CLI to generate .gitignore files https://github.com/sondr3/git-ignore
     http-server # Simple zero-configuration command-line HTTP server https://github.com/http-party/http-server
     cachix # install cache, for example, with: $HOME/.nix-profile/bin/cachix use nix-community
-    (nixGLwrap kitty) # Modern, hackable, featureful, OpenGL based terminal emulator https://sw.kovidgoyal.net/kitty/
+    kitty # Modern, hackable, featureful, OpenGL based terminal emulator https://sw.kovidgoyal.net/kitty/
     dhcping # Send DHCP request to DHCP server for monitoring purposes https://www.mavetju.org/unix/general.php
     ipcalc # Simple IP network calculator (CIDR) https://gitlab.com/ipcalc/ipcalc
     arp-scan # ARP scanning and fingerprinting tool https://github.com/royhills/arp-scan
@@ -164,18 +163,18 @@ let
     hwloc # Portable abstraction of hierarchical architectures for high-performance computing https://www.open-mpi.org/projects/hwloc/
     keybase-gui # Keybase desktop client https://keybase.io/
     newsflash # Modern feed reader designed for the GNOME desktop https://gitlab.com/news-flash/news_flash_gtk
-    (nixGLwrap obsidian) # Powerful knowledge base on top of a local folder of plain text Markdown files https://obsidian.md
-    (nixGLwrap onlyoffice-desktopeditors) # Office suite that combines text, spreadsheet and presentation editors https://www.onlyoffice.com/
-    (nixGLwrap openrgb-with-all-plugins) # Open source RGB lighting control https://openrgb.org/
-    (nixGLwrap pinta) # Drawing/editing program modeled after Paint.NET https://www.pinta-project.com/
-    (nixGLwrap remmina) # Remote desktop client written in GTK https://remmina.org/
+    obsidian # Powerful knowledge base on top of a local folder of plain text Markdown files https://obsidian.md
+    onlyoffice-desktopeditors # Office suite that combines text, spreadsheet and presentation editors https://www.onlyoffice.com/
+    openrgb-with-all-plugins # Open source RGB lighting control https://openrgb.org/
+    pinta # Drawing/editing program modeled after Paint.NET https://www.pinta-project.com/
+    remmina # Remote desktop client written in GTK https://remmina.org/
     shortwave # Find and listen to internet radio stations https://gitlab.gnome.org/World/Shortwave
     switcheroo # Image converter and manipulator https://gitlab.com/adhami3310/Switcheroo
-    (nixGLwrap telegram-desktop-wrapped) # Telegram Desktop messaging app https://desktop.telegram.org/
+    telegram-desktop-wrapped # Telegram Desktop messaging app https://desktop.telegram.org/
     textpieces # Swiss knife of text processing https://github.com/liferooter/textpieces
-    (nixGLwrap vlc) # Cross-platform media player and streaming server https://www.videolan.org/vlc/
-    (nixGLwrap warp) # Fast and secure file transfer https://apps.gnome.org/Warp/
-    (nixGLwrap youtube-music) # YouTube Music Desktop App https://github.com/th-ch/youtube-music
+    vlc # Cross-platform media player and streaming server https://www.videolan.org/vlc/
+    warp # Fast and secure file transfer https://apps.gnome.org/Warp/
+    youtube-music # YouTube Music Desktop App https://github.com/th-ch/youtube-music
     xclip # Tool to access the X clipboard from a console https://github.com/astrand/xclip
     nerd-fonts.caskaydia-cove # Nerd Fonts patched version of Cascadia Code
     nerd-fonts.symbols-only # Just the Nerd Font Icons
@@ -204,7 +203,6 @@ let
     # end of NixOS basic packages
   ] else [
     # non NixOS basic packages
-    pkgs.nixgl.nixGLIntel # Wrapper to use OpenGL on non-NixOS systems https://github.com/nix-community/nixGL
     # end of non NixOS basic packages
   ]));
   non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (with pkgs; [
@@ -215,7 +213,7 @@ let
     presenterm # Terminal slideshow tool https://github.com/mfontanini/presenterm
     hugo # Fast and flexible static site generator https://gohugo.io
     pagefind # Static search library https://pagefind.app/
-    (nixGLwrap element-desktop) # Feature-rich client for Matrix https://element.io/
+    element-desktop # Feature-rich client for Matrix https://element.io/
     ccd2iso # Converts CCD/IMG CloneCD images to ISO format https://sourceforge.net/projects/ccd2iso/
     iat # ISO9660 analyzer tool https://sourceforge.net/projects/iat.berlios/
     apparmor-utils # Userspace utilities for AppArmor https://gitlab.com/apparmor/apparmor
@@ -246,7 +244,7 @@ let
     shellcheck # Shell script analysis tool https://www.shellcheck.net/
     silver-searcher # Code searching tool similar to Ack, but faster https://github.com/ggreer/the_silver_searcher
     w3m # Text-based web browser https://github.com/tats/w3m
-    (nixGLwrap chromium) # Open source web browser from Google https://www.chromium.org/
+    chromium # Open source web browser from Google https://www.chromium.org/
     temurin-bin-25 # Eclipse Temurin, Java Development Kit https://adoptium.net/
     maven # Build automation tool for Java https://maven.apache.org/
     (azure-cli.withExtensions [ azure-cli.extensions.containerapp ]) # Microsoft Azure command-line interface https://github.com/Azure/azure-cli
@@ -286,7 +284,7 @@ let
     imagemagick # Software suite to create, edit, compose, or convert bitmap images https://imagemagick.org/
     kubectx # Faster way to switch between clusters and namespaces in kubectl https://github.com/ahmetb/kubectx
     lazydocker # Simple terminal UI for docker and docker-compose https://github.com/jesseduffield/lazydocker
-    (nixGLwrap ghostty) # Fast, feature-rich, and cross-platform terminal emulator https://ghostty.org/
+    ghostty # Fast, feature-rich, and cross-platform terminal emulator https://ghostty.org/
     fabric-ai # Open-source framework for augmenting humans using AI https://github.com/danielmiessler/fabric
     nixpkgs-review # Review pull requests on nixpkgs https://github.com/Mic92/nixpkgs-review
     bacon # Rust background code checker
@@ -314,27 +312,26 @@ let
   ] else [
     # non wsl non basic packages
     dconf2nix # Convert dconf files to Nix expressions https://github.com/gvolpe/dconf2nix
-    # (nixGLwrap wasistlos) # ex whatsapp-for-linux, not working correctly, using snap for now
     slack # Desktop client for Slack https://slack.com/
     discord # All-in-one voice and text chat for gamers https://discord.com/
-    (nixGLwrap obs-studio) # Free and open source software for video recording and live streaming https://obsproject.com/
-    (nixGLwrap kdePackages.kdenlive) # Video editor by KDE https://kdenlive.org/
-    (nixGLwrap glaxnimate) # Simple vector animation program https://glaxnimate.mattbas.org/
-    # (nixGLwrap openshot-qt) # Free, open-source video editor http://openshot.org/ # todo: depending on qtwebengine, which is insecure, try to add it back later
-    (nixGLwrap wireshark) # Network protocol analyzer https://www.wireshark.org/
-    (nixGLwrap brave) # Privacy-oriented browser https://brave.com/
-    (nixGLwrap orca-slicer) # G-code generator for 3D printers https://github.com/SoftFever/OrcaSlicer
-    # (nixGLwrap fritzing) # Electronic design automation software https://fritzing.org/ # todo: broken, retry later - it seems related to Clipper
+    obs-studio # Free and open source software for video recording and live streaming https://obsproject.com/
+    kdePackages.kdenlive # Video editor by KDE https://kdenlive.org/
+    glaxnimate # Simple vector animation program https://glaxnimate.mattbas.org/
+    # openshot-qt # Free, open-source video editor http://openshot.org/ # todo: depending on qtwebengine, which is insecure, try to add it back later
+    wireshark # Network protocol analyzer https://www.wireshark.org/
+    brave # Privacy-oriented browser https://brave.com/
+    orca-slicer # G-code generator for 3D printers https://github.com/SoftFever/OrcaSlicer
+    fritzing # Electronic design automation software https://fritzing.org/
     mqttx # MQTT 5.0 client desktop application https://mqttx.app/
     mqtt-explorer # MQTT client https://mqtt-explorer.com/
     kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application
     cdrtools # Highly portable CD/DVD/BluRay command line recording software
     dvdauthor # Tools for generating DVD files to be played on standalone DVD players https://dvdauthor.sourceforge.net/
-    # dvdstyler # DVD authoring software https://www.dvdstyler.org/ # todo: build breaking, retry later
+    dvdstyler # DVD authoring software https://www.dvdstyler.org/
     doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
     tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
     tesseract # OCR engine https://github.com/tesseract-ocr/tesseract
-    (nixGLwrap calibre) # Comprehensive e-book software https://calibre-ebook.com/
+    calibre # Comprehensive e-book software https://calibre-ebook.com/
     # fontconfig # Library for font customization and configuration http://fontconfig.org/ # doesn't make sense to uninstall from Ubuntu as it has a lot of dependencies
     gparted # Graphical disk partitioning tool https://gparted.org/
     terminator # Terminal emulator with support for tiling and tabs https://gnome-terminator.org/
@@ -353,7 +350,7 @@ let
       # end of non NixOS wsl non basic packages
     ] else [
       # non NixOS non wsl non basic packages
-      (nixGLwrap vscode) # Visual Studio Code https://code.visualstudio.com/
+      vscode # Visual Studio Code https://code.visualstudio.com/
       # end of non NixOS non wsl non basic packages
     ])
   ));

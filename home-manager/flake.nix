@@ -8,10 +8,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixGL = {
-      url = "github:nix-community/nixGL/b6105297e6f0cd041670c3e8628394d4ee247ed5";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";

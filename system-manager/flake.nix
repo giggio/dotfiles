@@ -19,6 +19,7 @@
         ];
         extraSpecialArgs = {
           inherit inputs;
+          inherit system;
           pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
         } // extraSpecialArgs;
         # Optionally specify overlays
@@ -35,13 +36,14 @@
             hostname = "";
           };
         in
-          {
+        {
           # available profiles: default, rog2, giggio, giggio_wsl, giggio_virtualbox, giggio_basic, giggio_wsl_basic, giggio_virtualbox_basic
           default = mkSystemManagerConfiguration {
             extraSpecialArgs = { inherit setup; };
           };
           x86_64-linux = {
-            rog2 = mkSystemManagerConfiguration { # machine specific
+            rog2 = mkSystemManagerConfiguration {
+              # machine specific
               extraSpecialArgs = { setup = setup // { hostname = "rog2"; }; };
             };
             giggio = mkSystemManagerConfiguration {

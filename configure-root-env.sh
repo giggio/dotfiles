@@ -169,29 +169,5 @@ else
     else
       writeBlue "OpenRGB is not installed."
     fi
-
-    # liquidctl configuration
-    # todo: keep this here until liquidctl is updated to run with my water cooler
-    if ! [ -f /usr/lib/udev/rules.d/71-liquidctl.rules ]; then
-      writeBlue "Installing liquidctl udev rules."
-      curl -fsSL --output /usr/lib/udev/rules.d/71-liquidctl.rules https://raw.githubusercontent.com/liquidctl/liquidctl/refs/heads/main/extra/linux/71-liquidctl.rules
-      udevadm control --reload
-      udevadm trigger
-    else
-      if $VERBOSE; then
-        writeBlue "liquidctl udev rules already exist."
-      fi
-    fi
-    if hash aa-status 2> /dev/null && aa-status --enabled; then
-      if ! [ -f /etc/apparmor.d/usr.local.bin.liquidctl ]; then
-        writeBlue "Copying apparmor profile for liquidctl."
-        cp "$BASEDIR"/setup/apparmor-liquidctl.txt /etc/apparmor.d/usr.local.bin.liquidctl
-        apparmor_parser -r /etc/apparmor.d/usr.local.bin.liquidctl
-      else
-        if $VERBOSE; then
-          writeBlue "Apparmor profile for liquidctl already exists."
-        fi
-      fi
-    fi
   fi
 fi

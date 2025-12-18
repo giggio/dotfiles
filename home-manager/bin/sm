@@ -58,6 +58,7 @@ _sm() {
   local verbose=false
   local switch=false
   local first_run=false
+  local forward_args=()
   local profile
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -78,10 +79,12 @@ _sm() {
       shift
       ;;
     *)
+      forward_args+=("$1")
       shift
       ;;
     esac
   done
+  set -- "${forward_args[@]}" # reset arguments
   case $(hostname) in
   rog2)
     profile=rog2
@@ -95,22 +98,31 @@ _sm() {
     echo "$profile"
     return
   fi
-  local nix_extra_args=" --accept-flake-config "
-  if $first_run; then
-    nix_extra_args+=" --extra-experimental-features nix-command --extra-experimental-features flakes "
+  local env_extra_args=""
+  if $verbose; then
+    env_extra_args+="env RUST_LOG=trace "
   fi
   if $switch; then
-    if $verbose; then
-      echo -e "\e[32mRunning:\e[0m \e[34msudo env PATH=$PATH nix run $nix_extra_args 'github:numtide/system-manager' -- switch $* --flake $HOME/.dotfiles/system-manager?submodules=1#$profile"
+    if $first_run; then
+      local nix_extra_args="--accept-flake-config --extra-experimental-features nix-command --extra-experimental-features flakes"
+      if $verbose; then
+        echo -e "\e[32mRunning:\e[0m \e[34m${env_extra_args}nix run $nix_extra_args 'github:numtide/system-manager' -- switch $* --sudo --flake $HOME/.dotfiles/system-manager?submodules=1#$profile"
+      fi
+      # shellcheck disable=SC2086
+      ${env_extra_args}nix run $nix_extra_args 'github:numtide/system-manager' -- switch "$@" --sudo --flake "$HOME/.dotfiles/system-manager?submodules=1#$profile"
+    else
+      if $verbose; then
+        echo -e "\e[32mRunning:\e[0m \e[34m${env_extra_args}system-manager switch $* --sudo --flake $HOME/.dotfiles/system-manager?submodules=1#$profile"
+      fi
+      # shellcheck disable=SC2086
+      ${env_extra_args}system-manager switch "$@" --sudo --flake "$HOME/.dotfiles/system-manager?submodules=1#$profile"
     fi
-    # shellcheck disable=SC2086
-    sudo env PATH="$PATH" nix run $nix_extra_args 'github:numtide/system-manager' -- switch "$@" --flake "$HOME/.dotfiles/system-manager?submodules=1#$profile"
   else
     if $verbose; then
-      echo -e "\e[32mRunning:\e[0m \e[34msudo env PATH=$PATH nix run $nix_extra_args 'github:numtide/system-manager' -- $*"
+      echo -e "\e[32mRunning:\e[0m \e[34m${env_extra_args}system-manager $*"
     fi
     # shellcheck disable=SC2086
-    sudo env PATH="$PATH" nix run $nix_extra_args 'github:numtide/system-manager' -- "$@"
+    ${env_extra_args}system-manager "$@"
   fi
 }
 

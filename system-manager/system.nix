@@ -30,9 +30,7 @@
             };
             rog2 = if setup.hostname != "rog2" then { } else {
               # todo: keep this here until liquidctl is updated to run with my water cooler
-              # todo: needs to run after: "udevadm control --reload; udevadm trigger", see: https://github.com/numtide/system-manager/issues/221
               "udev/rules.d/71-liquidctl.rules".source = "${pkgs.liquidctl}/lib/udev/rules.d/71-liquidctl.rules";
-              # todo: needs to run after: apparmor_parser -r /etc/apparmor.d/usr.local.bin.liquidctl, see: https://github.com/numtide/system-manager/issues/221
               "apparmor.d/usr.local.bin.liquidctl".source = ./etc/apparmor.d/usr.local.bin.liquidctl;
               "sensors.d/disabling".source = ./etc/sensors.d/disabling;
             };
@@ -43,6 +41,38 @@
       systemd = {
         services =
           let
+            all =
+              {
+                # todo: Use activation scripts when ready? See: https://github.com/numtide/system-manager/issues/221
+                system-manager-activate = {
+                  description = "System-manager activation scripts";
+                  enable = true;
+                  wantedBy = [ "system-manager.target" ];
+                  serviceConfig = {
+                    Type = "oneshot";
+                    RemainAfterExit = true;
+                  };
+                  script =
+                    let
+                      all =
+                        ''
+                        '';
+                      wsl = if setup.wsl then "" else
+                      ''
+                      '';
+                      rog2 = if setup.hostname != "rog2" then "" else
+                      ''
+                        echo "Reloading udev rules..."
+                        udevadm control --reload
+                        echo "Triggering udev rules..."
+                        udevadm trigger
+                        echo "Reloading apparmor rules..."
+                        ${lib.getBin pkgs.apparmor-parser}/bin/apparmor_parser -r /etc/apparmor.d/usr.local.bin.liquidctl
+                      '';
+                    in
+                    all + wsl + rog2;
+                };
+              };
             wsl = if setup.wsl then { } else { };
             rog2 = if setup.hostname != "rog2" then { } else {
               coolercontrol-restart = {
@@ -57,7 +87,7 @@
               };
             };
           in
-          rog2 // wsl;
+          all // rog2 // wsl;
         units =
           let
             wsl = if setup.wsl then { } else { };

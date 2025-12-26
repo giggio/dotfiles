@@ -143,7 +143,7 @@ rec {
   targets.genericLinux = {
     enable = true;
     gpu = {
-      enable = true;
+      enable = !setup.wsl;
     };
   };
 

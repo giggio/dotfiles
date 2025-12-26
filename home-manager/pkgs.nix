@@ -7,7 +7,6 @@ let
     bash-completion # Programmable completion for the bash shell https://github.com/scop/bash-completion
     extra-completions # More completions for bash and zsh
     (callPackage ./cheats/default.nix { }) # custom cheats package
-    starship # Fast cross-shell prompt written in Rust https://starship.rs
     (blesh.overrideAttrs {
       version = "nightly-20250209+4338bbf";
       src = fetchzip {

@@ -163,9 +163,6 @@ rec {
           if [ -f "$HOME"/.cargo/env ]; then
             source "$HOME/.cargo/env"
           fi
-          if [[ $TERM != "dumb" ]]; then
-            eval "$(starship init bash)"
-          fi
           export RUSTC_WRAPPER="${pkgs.sccache}/bin/sccache"
           if [ -d "$HOME/.kube" ]; then
             KUBECONFIG=`find "$HOME"/.kube -maxdepth 1 -type f ! -name '*.bak' ! -name '*.backup' ! -name kubectx | sort | paste -sd ":" -`
@@ -389,11 +386,7 @@ rec {
         '';
     };
 
-    # Ideally we'd be able to set where to initalize Starship, but by default it is added to the end of the .bashrc
-    # file. This causes it to run after `history -a`, and then Starship is not able to show the exit status of
-    # the last command. To fix this, we set the `PROMPT_COMMAND` variable to run `history -a` before Starship,
-    # which is started manually in the .bashrc file. See bellow
-    starship.enable = false;
+    starship.enable = true;
 
     gpg = {
       enable = true;

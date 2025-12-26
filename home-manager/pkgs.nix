@@ -337,6 +337,7 @@ let
     terminator # Terminal emulator with support for tiling and tabs https://gnome-terminator.org/
     transmission_4-gtk # Fast, easy and free BitTorrent client https://www.transmissionbt.com/
     transmission-remote-gtk # GTK remote control for the Transmission BitTorrent client https://github.com/transmission-remote-gtk/transmission-remote-gtk
+    onedriver #  A native Linux filesystem for Microsoft OneDrive https://github.com/jstaf/onedriver
     # end of non wsl non basic packages
   ]) ++ (if setup.isNixOS then [
     # NixOS non basic packages

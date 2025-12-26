@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # todo: remove when fixed: https://github.com/jstaf/onedriver/issues/293
+# todo: move to system-manager when this is fixed: https://github.com/numtide/system-manager/issues/301
 
 my_user=giggio
 my_uid=$(id -u $my_user)

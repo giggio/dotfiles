@@ -512,6 +512,10 @@ rec {
             ]
           }
         '';
+      "systemd/user/onedriver@.service" = {
+        enable = !setup.wsl;
+        source = "${pkgs.onedriver}/share/systemd/user/onedriver@.service";
+      };
     };
     dataFile = { };
     desktopEntries = if setup.wsl then { } else {

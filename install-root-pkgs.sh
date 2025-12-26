@@ -133,14 +133,6 @@ if ! $WSL; then
   apt_pkgs_to_install_not_wsl=
 
   if ! $SERVER_SETUP; then
-    # onedriver
-    if ! hash onedriver 2> /dev/null; then
-      writeBlue "Install OneDriver."
-      echo 'deb http://download.opensuse.org/repositories/home:/jstaf/xUbuntu_23.10/ /' > /etc/apt/sources.list.d/home:jstaf.list
-      curl -fsSL https://download.opensuse.org/repositories/home:jstaf/xUbuntu_23.10/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/home_jstaf.gpg
-      apt-get update
-      apt_pkgs_to_install_not_wsl+=$'\n'onedriver
-    fi
     # flatpak
     if ! hash flatpak 2> /dev/null; then
       apt_pkgs_to_install_not_wsl+=$'\n'flatpak

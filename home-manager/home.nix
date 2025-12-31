@@ -426,7 +426,7 @@ rec {
 
     librewolf = {
       enable = !setup.wsl;
-      package = pkgs.librewolf-bin;
+      package = pkgs.librewolf;
       languagePacks = [ "en-US" "pt-BR" ];
       nativeMessagingHosts = [
         pkgs.gnome-browser-connector

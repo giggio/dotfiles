@@ -33,6 +33,7 @@
               "udev/rules.d/71-liquidctl.rules".source = "${pkgs.liquidctl}/lib/udev/rules.d/71-liquidctl.rules";
               "apparmor.d/usr.local.bin.liquidctl".source = ./etc/apparmor.d/usr.local.bin.liquidctl;
               "sensors.d/disabling".source = ./etc/sensors.d/disabling;
+              "systemd/timesyncd.conf.d/local_network.conf".source = ./etc/systemd/timesyncd.conf.d/local_network.conf; # Ubuntu is not picking up DHCP configuration for NTP (option 42)
             };
           in
           all // rog2;

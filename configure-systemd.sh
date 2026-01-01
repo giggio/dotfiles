@@ -273,9 +273,9 @@ if [ "$EUID" == '0' ]; then
     if ! $RUNNING_IN_CONTAINER; then
       create_systemd_service_and_timer wsl-add-winhost
     fi
-  else
-    mask_service systemd-networkd.service
-  #   create_systemd_service_and_timer others
+    # else
+    # mask_service systemd-networkd.service # can't mask systemd-networkd.service, it will break networking, `netplan apply` won't work
+    # create_systemd_service_and_timer others
   fi
   create_systemd_script_hooks
 else

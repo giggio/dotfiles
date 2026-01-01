@@ -200,6 +200,18 @@ function create_systemd_service_and_timer {
   fi
 }
 
+function mask_service {
+  for SERVICE in "$@"; do
+    if systemctl cat "$SERVICE" &> /dev/null; then
+      for ACTION in stop mask; do
+        writeBlue "Running systemctl $ACTION $SERVICE..."
+        systemctl --user $ACTION "$SERVICE"
+        writeBlue "Runned systemctl $ACTION $SERVICE."
+      done
+    fi
+  done
+}
+
 function mask_user_service {
   for SERVICE in "$@"; do
     if systemctl --user cat "$SERVICE" &> /dev/null; then
@@ -261,7 +273,8 @@ if [ "$EUID" == '0' ]; then
     if ! $RUNNING_IN_CONTAINER; then
       create_systemd_service_and_timer wsl-add-winhost
     fi
-  # else
+  else
+    mask_service systemd-networkd.service
   #   create_systemd_service_and_timer others
   fi
   create_systemd_script_hooks

@@ -130,7 +130,7 @@ if ! $WSL; then
   fi
 
   apt_basic_pkgs_to_install_not_wsl=$'\n'kitty-terminfo
-  apt_pkgs_to_install_not_wsl=
+  apt_pkgs_to_install_not_wsl=$'\n'systemd-timesyncd
 
   if ! $SERVER_SETUP; then
     # flatpak

@@ -173,7 +173,7 @@ let
     textpieces # Swiss knife of text processing https://github.com/liferooter/textpieces
     vlc # Cross-platform media player and streaming server https://www.videolan.org/vlc/
     warp # Fast and secure file transfer https://apps.gnome.org/Warp/
-    youtube-music # YouTube Music Desktop App https://github.com/th-ch/youtube-music
+    pear-desktop # YouTube Music Desktop App https://github.com/pear-devs/pear-desktop
     xclip # Tool to access the X clipboard from a console https://github.com/astrand/xclip
     nerd-fonts.caskaydia-cove # Nerd Fonts patched version of Cascadia Code
     nerd-fonts.symbols-only # Just the Nerd Font Icons

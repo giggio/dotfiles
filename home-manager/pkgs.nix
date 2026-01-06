@@ -36,6 +36,7 @@ let
     xdg-utils # Set of command line tools that assist applications with desktop integration tasks https://www.freedesktop.org/wiki/Software/xdg-utils/
     nil # Language server for Nix https://github.com/oxalica/nil
     nixpkgs-fmt # Nix code formatter for nixpkgs https://github.com/nix-community/nixpkgs-fmt
+    nixfmt-rfc-style #  The official formatter for Nix code https://github.com/NixOS/nixfmt
     bat # Cat clone with syntax highlighting and Git integration https://github.com/sharkdp/bat
     iperf # Tool to measure IP bandwidth using UDP or TCP https://sourceforge.net/projects/iperf2/
     inetutils # Collection of common network programs https://www.gnu.org/software/inetutils/

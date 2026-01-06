@@ -1,4 +1,8 @@
-{ stdenv, fetchzip, lib }:
+{
+  stdenv,
+  fetchzip,
+  lib,
+}:
 
 # see urls and details at: https://developer.hashicorp.com/terraform/install
 stdenv.mkDerivation rec {
@@ -6,13 +10,15 @@ stdenv.mkDerivation rec {
   version = "1.9.8";
   src =
     let
-      arch = {
-        "x86_64-linux" = "amd64";
-        "aarch64-linux" = "arm64";
-        "armv6-linux" = "arm";
-        "armv7-linux" = "arm";
-        "armv8-linux" = "arm";
-      }."${stdenv.hostPlatform.system}";
+      arch =
+        {
+          "x86_64-linux" = "amd64";
+          "aarch64-linux" = "arm64";
+          "armv6-linux" = "arm";
+          "armv7-linux" = "arm";
+          "armv8-linux" = "arm";
+        }
+        ."${stdenv.hostPlatform.system}";
     in
     fetchzip {
       url = "https://releases.hashicorp.com/terraform/${version}/terraform_${version}_linux_${arch}.zip";

@@ -1,4 +1,8 @@
-{ stdenv, vscode-lldb, emptyDirectory }:
+{
+  stdenv,
+  vscode-lldb,
+  emptyDirectory,
+}:
 
 stdenv.mkDerivation {
   name = "code-lldb";

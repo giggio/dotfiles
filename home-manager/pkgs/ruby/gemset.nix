@@ -41,7 +41,12 @@
     version = "3.9.4";
   };
   ruby-lsp = {
-    dependencies = [ "language_server-protocol" "prism" "rbs" "sorbet-runtime" ];
+    dependencies = [
+      "language_server-protocol"
+      "prism"
+      "rbs"
+      "sorbet-runtime"
+    ];
     groups = [ "default" ];
     platforms = [ ];
     source = {

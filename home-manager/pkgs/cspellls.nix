@@ -1,4 +1,9 @@
-{ stdenv, fetchFromGitHub, emptyDirectory, code-spell-checker }:
+{
+  stdenv,
+  fetchFromGitHub,
+  emptyDirectory,
+  code-spell-checker,
+}:
 
 stdenv.mkDerivation {
   name = "cspellls";
@@ -13,4 +18,3 @@ stdenv.mkDerivation {
     chmod +x "$out/bin/cspellls"
   '';
 }
-

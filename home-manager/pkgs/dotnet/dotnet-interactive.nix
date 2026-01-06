@@ -1,4 +1,9 @@
-{ lib, buildDotnetGlobalTool, dotnet-sdk, dotnet-runtime }:
+{
+  lib,
+  buildDotnetGlobalTool,
+  dotnet-sdk,
+  dotnet-runtime,
+}:
 
 buildDotnetGlobalTool {
   pname = "dotnet-interactive";

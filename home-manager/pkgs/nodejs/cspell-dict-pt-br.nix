@@ -1,4 +1,11 @@
-{ buildNpmPackage, fetchFromGitHub, lib, stdenv, nodejs, pnpm_9 }:
+{
+  buildNpmPackage,
+  fetchFromGitHub,
+  lib,
+  stdenv,
+  nodejs,
+  pnpm_9,
+}:
 
 let
   pnpm = pnpm_9;

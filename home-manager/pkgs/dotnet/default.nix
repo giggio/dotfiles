@@ -5,5 +5,8 @@ let
   dotnet-runtime = pkgs.dotnetCorePackages.sdk_9_0;
 in
 {
-  dotnet-tools = pkgs.callPackage ./dotnet-tools.nix { inherit dotnet-sdk; inherit dotnet-runtime; };
+  dotnet-tools = pkgs.callPackage ./dotnet-tools.nix {
+    inherit dotnet-sdk;
+    inherit dotnet-runtime;
+  };
 }

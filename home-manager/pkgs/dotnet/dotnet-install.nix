@@ -1,4 +1,8 @@
-{ stdenv, bash, coreutils }:
+{
+  stdenv,
+  bash,
+  coreutils,
+}:
 
 derivation {
   inherit (stdenv.hostPlatform) system;

@@ -1,4 +1,11 @@
-{ writeTextFile, stdenv, gcc, makeWrapper, telegram-desktop, ... }:
+{
+  writeTextFile,
+  stdenv,
+  gcc,
+  makeWrapper,
+  telegram-desktop,
+  ...
+}:
 
 # this is only needed because of ecryptfs which does not implement some syscalls
 
@@ -73,7 +80,10 @@ let
       '';
     };
 
-    nativeBuildInputs = [ gcc makeWrapper ];
+    nativeBuildInputs = [
+      gcc
+      makeWrapper
+    ];
 
     unpackPhase = "true"; # Prevent Nix from trying to untar anything
     buildPhase = ''

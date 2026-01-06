@@ -9,24 +9,32 @@
   };
 
   outputs =
-    { self, nixpkgs, system-manager, ... }@inputs:
+    {
+      self,
+      nixpkgs,
+      system-manager,
+      ...
+    }@inputs:
     let
       system = "x86_64-linux";
-      mkSystemManagerConfiguration = { extraSpecialArgs, ... }: system-manager.lib.makeSystemConfig ({
-        modules = [
-          ./configuration.nix
-          ./system.nix
-        ];
-        extraSpecialArgs = {
-          inherit inputs;
-          inherit system;
-          pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
-        } // extraSpecialArgs;
-        # Optionally specify overlays
-      });
+      mkSystemManagerConfiguration =
+        { extraSpecialArgs, ... }:
+        system-manager.lib.makeSystemConfig ({
+          modules = [
+            ./configuration.nix
+            ./system.nix
+          ];
+          extraSpecialArgs = {
+            inherit inputs;
+            inherit system;
+            pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
+          }
+          // extraSpecialArgs;
+          # Optionally specify overlays
+        });
     in
     {
-      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
       systemConfigs =
         let
           setup = {
@@ -44,34 +52,51 @@
           x86_64-linux = {
             rog2 = mkSystemManagerConfiguration {
               # machine specific
-              extraSpecialArgs = { setup = setup // { hostname = "rog2"; }; };
+              extraSpecialArgs = {
+                setup = setup // {
+                  hostname = "rog2";
+                };
+              };
             };
             giggio = mkSystemManagerConfiguration {
               extraSpecialArgs = { inherit setup; };
             };
             giggio_wsl = mkSystemManagerConfiguration {
               extraSpecialArgs = {
-                setup = setup // { wsl = true; };
+                setup = setup // {
+                  wsl = true;
+                };
               };
             };
             giggio_virtualbox = mkSystemManagerConfiguration {
               extraSpecialArgs = {
-                setup = setup // { isVirtualBox = true; isNixOS = true; };
+                setup = setup // {
+                  isVirtualBox = true;
+                  isNixOS = true;
+                };
               };
             };
             giggio_basic = mkSystemManagerConfiguration {
               extraSpecialArgs = {
-                setup = setup // { basicSetup = true; };
+                setup = setup // {
+                  basicSetup = true;
+                };
               };
             };
             giggio_wsl_basic = mkSystemManagerConfiguration {
               extraSpecialArgs = {
-                setup = setup // { wsl = true; basicSetup = true; };
+                setup = setup // {
+                  wsl = true;
+                  basicSetup = true;
+                };
               };
             };
             giggio_virtualbox_basic = mkSystemManagerConfiguration {
               extraSpecialArgs = {
-                setup = setup // { isVirtualBox = true; basicSetup = true; };
+                setup = setup // {
+                  isVirtualBox = true;
+                  basicSetup = true;
+                };
               };
             };
           };

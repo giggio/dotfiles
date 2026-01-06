@@ -1,4 +1,8 @@
-{ buildGoModule, fetchFromGitHub, lib }:
+{
+  buildGoModule,
+  fetchFromGitHub,
+  lib,
+}:
 
 buildGoModule rec {
   pname = "ketall"; # krew get-all
@@ -25,4 +29,3 @@ buildGoModule rec {
   '';
 
 }
-

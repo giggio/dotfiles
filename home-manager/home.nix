@@ -1,4 +1,12 @@
-{ config, pkgs, pkgs-stable, lib, inputs, setup, ... }:
+{
+  config,
+  pkgs,
+  pkgs-stable,
+  lib,
+  inputs,
+  setup,
+  ...
+}:
 
 let
   # todo: move shellSessionVariables somewhere else when https://github.com/nix-community/home-manager/issues/5474 is fixed
@@ -12,28 +20,35 @@ let
   };
 in
 rec {
-  imports = (if setup.wsl then [
-  ] else [
-    ./dconf/dconf.nix
-    ./virtualbox.nix
-  ]);
+  imports = (
+    if setup.wsl then
+      [
+      ]
+    else
+      [
+        ./dconf/dconf.nix
+        ./virtualbox.nix
+      ]
+  );
 
   nixpkgs = {
     config = {
       rocmSupport = true; # used by ollama and maybe others
-      allowUnfreePredicate = pkg: builtins.elem (lib.strings.getName pkg) [
-        "code"
-        "discord"
-        "gh-copilot"
-        "microsoft-edge-stable"
-        "mqtt-explorer"
-        "obsidian"
-        "slack"
-        "terraform"
-        "vault"
-        "vscode"
-        "ookla-speedtest"
-      ];
+      allowUnfreePredicate =
+        pkg:
+        builtins.elem (lib.strings.getName pkg) [
+          "code"
+          "discord"
+          "gh-copilot"
+          "microsoft-edge-stable"
+          "mqtt-explorer"
+          "obsidian"
+          "slack"
+          "terraform"
+          "vault"
+          "vscode"
+          "ookla-speedtest"
+        ];
     };
     overlays = [
       inputs.fenix.overlays.default # rust toolchain
@@ -41,17 +56,16 @@ rec {
       # todo: remove patch when https://github.com/nix-community/dconf2nix/pull/95 is released and gets merged into nixpkgs
       # check if https://github.com/nix-community/dconf2nix/releases/latest is > 0.1.1
       # and https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/development/tools/haskell/dconf2nix/dconf2nix.nix
-      (final: prev:
-        {
-          dconf2nix = prev.dconf2nix.overrideAttrs (old: {
-            patches = (old.patches or [ ]) ++ [
-              (builtins.fetchurl {
-                url = "https://github.com/nix-community/dconf2nix/compare/2fc3b0dfbbce9f1ea2ee89f3689a7cb95b33b63f...e7e5187d4a738ad1b551f97de3fa9766b7d92167.patch";
-                sha256 = "sha256:0f1jn8xff6vk1w7x3l7lr5w18ki0az3rn2ihchgzzn0yszkk5g4d";
-              })
-            ];
-          });
-        })
+      (final: prev: {
+        dconf2nix = prev.dconf2nix.overrideAttrs (old: {
+          patches = (old.patches or [ ]) ++ [
+            (builtins.fetchurl {
+              url = "https://github.com/nix-community/dconf2nix/compare/2fc3b0dfbbce9f1ea2ee89f3689a7cb95b33b63f...e7e5187d4a738ad1b551f97de3fa9766b7d92167.patch";
+              sha256 = "sha256:0f1jn8xff6vk1w7x3l7lr5w18ki0az3rn2ihchgzzn0yszkk5g4d";
+            })
+          ];
+        });
+      })
     ];
   };
 
@@ -66,7 +80,13 @@ rec {
       name = "Adwaita";
       size = 22;
     };
-    packages = import ./pkgs.nix { inherit config; inherit pkgs; inherit pkgs-stable; inherit lib; inherit setup; };
+    packages = import ./pkgs.nix {
+      inherit config;
+      inherit pkgs;
+      inherit pkgs-stable;
+      inherit lib;
+      inherit setup;
+    };
 
     shell = {
       enableBashIntegration = true;
@@ -107,34 +127,31 @@ rec {
       ".local/bin/updatedb_local".source = ./bin/updatedb_local;
       ".hushlogin".text = "";
       ".XCompose".source = "${pkgs.custom-xcompose}/lib/.XCompose";
-      ".tmux.conf".text =
-        ''
-          set -g default-terminal "screen-256color"
-          set-option -g default-shell /bin/bash
-          set -g history-limit 10000
-          source "$HOME/.nix-profile/share/tmux/powerline.conf"
-          set -g status-bg colour233
-          set-option -g status-position top
-          set -g mouse
+      ".tmux.conf".text = ''
+        set -g default-terminal "screen-256color"
+        set-option -g default-shell /bin/bash
+        set -g history-limit 10000
+        source "$HOME/.nix-profile/share/tmux/powerline.conf"
+        set -g status-bg colour233
+        set-option -g status-position top
+        set -g mouse
 
-          # Smart pane switching with awareness of vim splits
-          bind -n C-h run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-h) || tmux select-pane -L"
-          bind -n C-j run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-j) || tmux select-pane -D"
-          bind -n C-k run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-k) || tmux select-pane -U"
-          bind -n C-l run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-l) || tmux select-pane -R"
-          # bind -n C-\ run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys 'C-\\') || tmux select-pane -l"
-        '';
-      ".w3m/config".text =
-        ''
-          inline_img_protocol 4
-          auto_image TRUE
-        '';
-      ".inputrc".text =
-        ''
-          set bell-style none
-          # reset the screen with Ctrl+L, normal CTRL+L in Kitty will not clear the scrollback
-          "\C-l":"\C-k \C-utput reset\n"
-        '';
+        # Smart pane switching with awareness of vim splits
+        bind -n C-h run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-h) || tmux select-pane -L"
+        bind -n C-j run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-j) || tmux select-pane -D"
+        bind -n C-k run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-k) || tmux select-pane -U"
+        bind -n C-l run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys C-l) || tmux select-pane -R"
+        # bind -n C-\ run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)g?(view|vim?)(diff)?$' && tmux send-keys 'C-\\') || tmux select-pane -l"
+      '';
+      ".w3m/config".text = ''
+        inline_img_protocol 4
+        auto_image TRUE
+      '';
+      ".inputrc".text = ''
+        set bell-style none
+        # reset the screen with Ctrl+L, normal CTRL+L in Kitty will not clear the scrollback
+        "\C-l":"\C-k \C-utput reset\n"
+      '';
       ".vimrc".text = "source ~/.vim/init.vim";
     };
 
@@ -188,7 +205,7 @@ rec {
             export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gnupg/ssh.sock"
           else
             # deal with ssh socket forwarding to gpg or using ssh-agent
-            source "${ ./bash/ssh-socket.bash }"
+            source "${./bash/ssh-socket.bash}"
           fi
           # auto complete all aliases
           complete -F _complete_alias "''${!BASH_ALIASES[@]}"
@@ -197,40 +214,37 @@ rec {
 
           export LOCATE_PATH=$XDG_CACHE_HOME/mlocate.db
 
-          source "${ ./bash/aliases-and-functions.bash }"
+          source "${./bash/aliases-and-functions.bash}"
 
           source "$(blesh-share)/ble.sh"
           # end of .bashrc
 
           # beginning of configurations coming from other options, like gpg-agent, direnv and zoxide
         ''
-        (lib.mkOrder 10000
-          ''
-            # very end of .bashrc
-            export PATH="$(printf '%s\n' "$HOME/.local/bin:$PATH" | tr ':' '\n' | awk '!seen[$0]++' | paste -sd: -)"
-          '')
+        (lib.mkOrder 10000 ''
+          # very end of .bashrc
+          export PATH="$(printf '%s\n' "$HOME/.local/bin:$PATH" | tr ':' '\n' | awk '!seen[$0]++' | paste -sd: -)"
+        '')
       ];
-      logoutExtra =
-        ''
-          # when leaving the console clear the screen to increase privacy
-          if [ "$SHLVL" = 1 ]; then
-            [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
+      logoutExtra = ''
+        # when leaving the console clear the screen to increase privacy
+        if [ "$SHLVL" = 1 ]; then
+          [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
+        fi
+      '';
+      profileExtra = ''
+        # beginning of .profile
+        umask 022
+        if ! [ -v XDG_RUNTIME_DIR ]; then
+          XDG_RUNTIME_DIR=/run/user/`id -u`/
+          export XDG_RUNTIME_DIR
+          if ! [ -d "$XDG_RUNTIME_DIR" ]; then
+            mkdir -p "$XDG_RUNTIME_DIR"
+            chmod 755 "$XDG_RUNTIME_DIR"
           fi
-        '';
-      profileExtra =
-        ''
-          # beginning of .profile
-          umask 022
-          if ! [ -v XDG_RUNTIME_DIR ]; then
-            XDG_RUNTIME_DIR=/run/user/`id -u`/
-            export XDG_RUNTIME_DIR
-            if ! [ -d "$XDG_RUNTIME_DIR" ]; then
-              mkdir -p "$XDG_RUNTIME_DIR"
-              chmod 755 "$XDG_RUNTIME_DIR"
-            fi
-          fi
-          # ending of .profile
-        '';
+        fi
+        # ending of .profile
+      '';
       historySize = -1;
       historyFileSize = -1;
       historyFile = "$HOME/.bash_history2";
@@ -244,9 +258,13 @@ rec {
       };
       shellAliases =
         let
-          nonWsl = if setup.wsl then { } else {
-            clip = "xclip -selection clipboard";
-          };
+          nonWsl =
+            if setup.wsl then
+              { }
+            else
+              {
+                clip = "xclip -selection clipboard";
+              };
           wslOnly = if setup.wsl then { } else { };
           common = {
             start = "xdg-open";
@@ -319,71 +337,71 @@ rec {
             LUA_CPATH = "\"${pkgs.mylua}/lib/lua/5.1/?.so;$HOME/.luarocks/lib/lua/5.1/?.so;$LUA_CPATH;;\"";
           };
         in
-        lib.concatStringsSep "\n" (lib.concatLists [
-          [
-            ''
-              # beginning of .bashrc
+        lib.concatStringsSep "\n" (
+          lib.concatLists [
+            [
+              ''
+                # beginning of .bashrc
 
-              # Shell session variables:
-            ''
+                # Shell session variables:
+              ''
+            ]
+            (lib.mapAttrsToList (k: v: "export ${k}=${v}") shellSessionVariables)
+            [
+              ''
+
+                # Bash session variables:
+              ''
+            ]
+            (lib.mapAttrsToList (k: v: "export ${k}=${v}") bashSessionVariables)
+            [
+              ''
+
+                # beginning of .bashrc config
+                unset MAILCHECK
+                # If not running interactively, don't do anything
+                [[ $- == *i* ]] || return
+                # configure vi mode
+                set -o vi
+                bind '"jj":"\e"'
+                tabs -4
+                bind 'set completion-ignore-case on'
+                source ${pkgs.kubectl-aliases}/bin/kubectl_aliases.bash
+                source ${pkgs.complete-alias}/bin/complete_alias
+                source "$HOME/.dotfiles/bashscripts/.bashrc"
+                if [ -d ~/.luarocks/bin ]; then
+                  export PATH="$PATH:$HOME/.luarocks/bin"
+                fi
+                # make less more friendly for non-text input files, see lesspipe(1)
+                [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+                eval "$(navi widget bash)"
+
+                # beginning of nix configuration
+              ''
+            ]
           ]
-          (lib.mapAttrsToList (k: v: "export ${k}=${v}") shellSessionVariables)
-          [
-            ''
-
-              # Bash session variables:
-            ''
-          ]
-          (lib.mapAttrsToList (k: v: "export ${k}=${v}") bashSessionVariables)
-          [
-            ''
-
-              # beginning of .bashrc config
-              unset MAILCHECK
-              # If not running interactively, don't do anything
-              [[ $- == *i* ]] || return
-              # configure vi mode
-              set -o vi
-              bind '"jj":"\e"'
-              tabs -4
-              bind 'set completion-ignore-case on'
-              source ${pkgs.kubectl-aliases}/bin/kubectl_aliases.bash
-              source ${pkgs.complete-alias}/bin/complete_alias
-              source "$HOME/.dotfiles/bashscripts/.bashrc"
-              if [ -d ~/.luarocks/bin ]; then
-                export PATH="$PATH:$HOME/.luarocks/bin"
-              fi
-              # make less more friendly for non-text input files, see lesspipe(1)
-              [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-              eval "$(navi widget bash)"
-
-              # beginning of nix configuration
-            ''
-          ]
-        ]
         );
     };
 
     nushell = {
       enable = true;
-      extraConfig =
-        ''
-          # beginning of extra nushell configuration
-          source ${home.homeDirectory}/.dotfiles/nuscripts/config.nu
-          # end of extra nushell configuration
-        '';
-      extraEnv =
-        ''
-          # beginning of extra nushell environment
-          source ${home.homeDirectory}/.dotfiles/nuscripts/env.nu
-          # end of extra nushell environment
-        '';
-      extraLogin =
-        ''
-          # beginning of extra nushell login
-          ${lib.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "$env.${k} = \"${v}\"") shellSessionVariables)}
-          # end of extra nushell login
-        '';
+      extraConfig = ''
+        # beginning of extra nushell configuration
+        source ${home.homeDirectory}/.dotfiles/nuscripts/config.nu
+        # end of extra nushell configuration
+      '';
+      extraEnv = ''
+        # beginning of extra nushell environment
+        source ${home.homeDirectory}/.dotfiles/nuscripts/env.nu
+        # end of extra nushell environment
+      '';
+      extraLogin = ''
+        # beginning of extra nushell login
+        ${lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (k: v: "$env.${k} = \"${v}\"") shellSessionVariables
+        )}
+        # end of extra nushell login
+      '';
     };
 
     starship.enable = true;
@@ -427,7 +445,10 @@ rec {
     librewolf = {
       enable = !setup.wsl;
       package = pkgs.librewolf;
-      languagePacks = [ "en-US" "pt-BR" ];
+      languagePacks = [
+        "en-US"
+        "pt-BR"
+      ];
       nativeMessagingHosts = [
         pkgs.gnome-browser-connector
         pkgs.bitwarden-desktop
@@ -450,8 +471,9 @@ rec {
       };
       "autostart/kitty.desktop" = {
         enable = !setup.wsl;
-        text = builtins.replaceStrings [ "\nExec=kitty" ] [ "\nExec=kitty --title main" ]
-          (builtins.readFile "${pkgs.kitty}/share/applications/kitty.desktop");
+        text = builtins.replaceStrings [ "\nExec=kitty" ] [ "\nExec=kitty --title main" ] (
+          builtins.readFile "${pkgs.kitty}/share/applications/kitty.desktop"
+        );
       };
       "autostart/activitywatch.desktop" = {
         enable = !setup.wsl;
@@ -459,16 +481,15 @@ rec {
       };
       "autostart/forge-sparks.desktop" = {
         enable = !setup.wsl;
-        text =
-          ''
-            [Desktop Entry]
-            Name=Forge Sparks
-            Exec=forge-sparks --hidden
-            Type=Application
-            StartupNotify=true
-            Terminal=false
-            Icon=com.mardojai.ForgeSparks
-          '';
+        text = ''
+          [Desktop Entry]
+          Name=Forge Sparks
+          Exec=forge-sparks --hidden
+          Type=Application
+          StartupNotify=true
+          Terminal=false
+          Icon=com.mardojai.ForgeSparks
+        '';
       };
       "burn-my-windows/profiles/close.conf".source = ./dconf/cfg/burn-close.conf;
       "burn-my-windows/profiles/burn-app-edge.conf".source = ./dconf/cfg/burn-app-edge.conf;
@@ -483,141 +504,173 @@ rec {
       "carapace/overlays".source = ./config/carapace/overlays;
       "carapace/specs".source = ./config/carapace/specs;
       "mimeapps.list".force = true; # overwrite the default file which keeps being recreated by Ubuntu
-      "blesh/init.sh".text =
-        ''
-          ble-import integration/zoxide
-          ble-import integration/nix-completion.bash
-          ble-import vim-airline
-          bleopt vim_airline_theme=raven
-          bleopt vim_airline_section_c=
-          bleopt vim_airline_section_b=
-          bleopt vim_airline_section_x=
-          bleopt vim_airline_section_y=
-          # ctrl+c to discard line
-          ble-bind -m vi_imap -f 'C-c' discard-line
-          ble-bind -m vi_nmap -f 'C-c' discard-line
-        '';
-      "cspell/cspell.json".text =
-        ''
-          {
-            "import": [
-              "${pkgs.cspell-dict-pt-br}/share/cspell-dict-pt-br/cspell-ext.json"
-            ]
-          }
-        '';
+      "blesh/init.sh".text = ''
+        ble-import integration/zoxide
+        ble-import integration/nix-completion.bash
+        ble-import vim-airline
+        bleopt vim_airline_theme=raven
+        bleopt vim_airline_section_c=
+        bleopt vim_airline_section_b=
+        bleopt vim_airline_section_x=
+        bleopt vim_airline_section_y=
+        # ctrl+c to discard line
+        ble-bind -m vi_imap -f 'C-c' discard-line
+        ble-bind -m vi_nmap -f 'C-c' discard-line
+      '';
+      "cspell/cspell.json".text = ''
+        {
+          "import": [
+            "${pkgs.cspell-dict-pt-br}/share/cspell-dict-pt-br/cspell-ext.json"
+          ]
+        }
+      '';
       "systemd/user/onedriver@.service" = {
         enable = !setup.wsl;
         source = "${pkgs.onedriver}/share/systemd/user/onedriver@.service";
       };
     };
     dataFile = { };
-    desktopEntries = if setup.wsl then { } else {
-      ulauncher = {
-        type = "Application";
-        name = "Ulauncher";
-        comment = "Application launcher for Linux";
-        icon = "ulauncher";
-        genericName = "Launcher";
-        categories = [ "GNOME" "GTK" "Utility" ];
-        terminal = false;
-        exec = "env GDK_BACKEND=x11 ulauncher --hide-window";
-        settings = {
-          SingleMainWindow = "true";
-          TryExec = "ulauncher";
-          X-GNOME-UsesNotifications = "true";
+    desktopEntries =
+      if setup.wsl then
+        { }
+      else
+        {
+          ulauncher = {
+            type = "Application";
+            name = "Ulauncher";
+            comment = "Application launcher for Linux";
+            icon = "ulauncher";
+            genericName = "Launcher";
+            categories = [
+              "GNOME"
+              "GTK"
+              "Utility"
+            ];
+            terminal = false;
+            exec = "env GDK_BACKEND=x11 ulauncher --hide-window";
+            settings = {
+              SingleMainWindow = "true";
+              TryExec = "ulauncher";
+              X-GNOME-UsesNotifications = "true";
+            };
+          };
         };
-      };
-    };
     mimeApps = {
       enable = true;
       associations = {
         added =
-          if setup.wsl then { } else {
-            "x-scheme-handler/sms" = "org.gnome.Shell.Extensions.GSConnect.desktop";
-            "x-scheme-handler/tel" = "org.gnome.Shell.Extensions.GSConnect.desktop";
-          };
+          if setup.wsl then
+            { }
+          else
+            {
+              "x-scheme-handler/sms" = "org.gnome.Shell.Extensions.GSConnect.desktop";
+              "x-scheme-handler/tel" = "org.gnome.Shell.Extensions.GSConnect.desktop";
+            };
       };
       defaultApplications =
-        if setup.wsl then {
-          # browser:
-          "text/html" = [ "wslview.desktop" ];
-          "x-scheme-handler/http" = [ "wslview.desktop" ];
-          "x-scheme-handler/https" = [ "wslview.desktop" ];
-          "x-scheme-handler/about" = [ "wslview.desktop" ];
-          "x-scheme-handler/unknown" = [ "wslview.desktop" ];
-          "application/pdf" = [ "wslview.desktop" ];
-          "x-scheme-handler/mailto" = [ "wslview.desktop" ];
-          "application/xhtml+xml" = [ "wslview.desktop" ];
-        } else {
-          # onlyoffice:
-          "application/vnd.oasis.opendocument.text" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.oasis.opendocument.text-template" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.oasis.opendocument.text-web" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.oasis.opendocument.text-master" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.sun.xml.writer" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.sun.xml.writer.template" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.sun.xml.writer.global" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/msword" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-word" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/x-doc" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/rtf" = [ "onlyoffice-desktopeditors.desktop" ];
-          "text/rtf" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.wordperfect" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/wordperfect" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-word.document.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.template" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-word.template.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.oasis.opendocument.spreadsheet" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.oasis.opendocument.spreadsheet-template" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.sun.xml.calc" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.sun.xml.calc.template" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/msexcel" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-excel" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-excel.sheet.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.template" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-excel.template.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-excel.sheet.binary.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
-          "text/csv" = [ "onlyoffice-desktopeditors.desktop" ];
-          "text/spreadsheet" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/csv" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/excel" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/x-excel" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/x-msexcel" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/x-ms-excel" = [ "onlyoffice-desktopeditors.desktop" ];
-          "text/comma-separated-values" = [ "onlyoffice-desktopeditors.desktop" ];
-          "text/tab-separated-values" = [ "onlyoffice-desktopeditors.desktop" ];
-          "text/x-comma-separated-values" = [ "onlyoffice-desktopeditors.desktop" ];
-          "text/x-csv" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.oasis.opendocument.presentation" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.oasis.opendocument.presentation-template" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.sun.xml.impress" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.sun.xml.impress.template" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/mspowerpoint" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-powerpoint" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-powerpoint.presentation.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.presentationml.template" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-powerpoint.template.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.presentationml.slide" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.openxmlformats-officedocument.presentationml.slideshow" = [ "onlyoffice-desktopeditors.desktop" ];
-          "application/vnd.ms-powerpoint.slideshow.macroEnabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
-          "x-scheme-handler/oo-office" = [ "onlyoffice-desktopeditors.desktop" ];
-          "text/docxf" = [ "onlyoffice-desktopeditors.desktop" ];
-          "text/oform;" = [ "onlyoffice-desktopeditors.desktop" ];
-          # browser:
-          "text/html" = [ "librewolf.desktop" ];
-          "x-scheme-handler/http" = [ "librewolf.desktop" ];
-          "x-scheme-handler/https" = [ "librewolf.desktop" ];
-          "x-scheme-handler/about" = [ "librewolf.desktop" ];
-          "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
-          "application/pdf" = [ "librewolf.desktop" ];
-          "x-scheme-handler/mailto" = [ "librewolf.desktop" ];
-          "application/xhtml+xml" = [ "librewolf.desktop" ];
-          # telegram:
-          "x-scheme-handler/tg" = [ "org.telegram.desktop.desktop" ];
-        };
+        if setup.wsl then
+          {
+            # browser:
+            "text/html" = [ "wslview.desktop" ];
+            "x-scheme-handler/http" = [ "wslview.desktop" ];
+            "x-scheme-handler/https" = [ "wslview.desktop" ];
+            "x-scheme-handler/about" = [ "wslview.desktop" ];
+            "x-scheme-handler/unknown" = [ "wslview.desktop" ];
+            "application/pdf" = [ "wslview.desktop" ];
+            "x-scheme-handler/mailto" = [ "wslview.desktop" ];
+            "application/xhtml+xml" = [ "wslview.desktop" ];
+          }
+        else
+          {
+            # onlyoffice:
+            "application/vnd.oasis.opendocument.text" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.oasis.opendocument.text-template" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.oasis.opendocument.text-web" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.oasis.opendocument.text-master" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.sun.xml.writer" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.sun.xml.writer.template" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.sun.xml.writer.global" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/msword" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.ms-word" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/x-doc" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/rtf" = [ "onlyoffice-desktopeditors.desktop" ];
+            "text/rtf" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.wordperfect" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/wordperfect" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.ms-word.document.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.template" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.ms-word.template.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.oasis.opendocument.spreadsheet" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.oasis.opendocument.spreadsheet-template" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.sun.xml.calc" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.sun.xml.calc.template" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/msexcel" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.ms-excel" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.ms-excel.sheet.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.template" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.ms-excel.template.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.ms-excel.sheet.binary.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+            "text/csv" = [ "onlyoffice-desktopeditors.desktop" ];
+            "text/spreadsheet" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/csv" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/excel" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/x-excel" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/x-msexcel" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/x-ms-excel" = [ "onlyoffice-desktopeditors.desktop" ];
+            "text/comma-separated-values" = [ "onlyoffice-desktopeditors.desktop" ];
+            "text/tab-separated-values" = [ "onlyoffice-desktopeditors.desktop" ];
+            "text/x-comma-separated-values" = [ "onlyoffice-desktopeditors.desktop" ];
+            "text/x-csv" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.oasis.opendocument.presentation" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.oasis.opendocument.presentation-template" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.sun.xml.impress" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.sun.xml.impress.template" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/mspowerpoint" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.ms-powerpoint" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.ms-powerpoint.presentation.macroenabled.12" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.openxmlformats-officedocument.presentationml.template" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.ms-powerpoint.template.macroenabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+            "application/vnd.openxmlformats-officedocument.presentationml.slide" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.openxmlformats-officedocument.presentationml.slideshow" = [
+              "onlyoffice-desktopeditors.desktop"
+            ];
+            "application/vnd.ms-powerpoint.slideshow.macroEnabled.12" = [ "onlyoffice-desktopeditors.desktop" ];
+            "x-scheme-handler/oo-office" = [ "onlyoffice-desktopeditors.desktop" ];
+            "text/docxf" = [ "onlyoffice-desktopeditors.desktop" ];
+            "text/oform;" = [ "onlyoffice-desktopeditors.desktop" ];
+            # browser:
+            "text/html" = [ "librewolf.desktop" ];
+            "x-scheme-handler/http" = [ "librewolf.desktop" ];
+            "x-scheme-handler/https" = [ "librewolf.desktop" ];
+            "x-scheme-handler/about" = [ "librewolf.desktop" ];
+            "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+            "application/pdf" = [ "librewolf.desktop" ];
+            "x-scheme-handler/mailto" = [ "librewolf.desktop" ];
+            "application/xhtml+xml" = [ "librewolf.desktop" ];
+            # telegram:
+            "x-scheme-handler/tg" = [ "org.telegram.desktop.desktop" ];
+          };
     };
   };
 
@@ -632,10 +685,9 @@ rec {
       defaultCacheTtlSsh = 34560000;
       maxCacheTtl = 34560000;
       maxCacheTtlSsh = 34560000;
-      extraConfig =
-        ''
-          pinentry-timeout 34560000
-        '';
+      extraConfig = ''
+        pinentry-timeout 34560000
+      '';
     };
 
     keybase.enable = !setup.wsl;
@@ -678,5 +730,8 @@ rec {
 
   };
 
-  systemd = import ./systemd.nix { inherit setup; inherit pkgs; };
+  systemd = import ./systemd.nix {
+    inherit setup;
+    inherit pkgs;
+  };
 }

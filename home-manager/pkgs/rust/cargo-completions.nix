@@ -1,4 +1,9 @@
-{ bash, rust-toolchain-fenix, coreutils, stdenv }:
+{
+  bash,
+  rust-toolchain-fenix,
+  coreutils,
+  stdenv,
+}:
 
 derivation {
   inherit (stdenv.hostPlatform) system;

@@ -1,4 +1,9 @@
-{ buildNpmPackage, fetchFromGitHub, lib, bun }:
+{
+  buildNpmPackage,
+  fetchFromGitHub,
+  lib,
+  bun,
+}:
 
 buildNpmPackage rec {
   pname = "cspell-lsp";
@@ -15,10 +20,9 @@ buildNpmPackage rec {
   };
 
   npmDepsHash = "sha256-R00j7aa1XOLorWhZMEpXVE5WuR5qLaYs/26QWYB8HXA=";
-  postPatch =
-    ''
-      patch --ignore-whitespace --verbose -p1 -i ${./cspell-lsp.package-lock.json.patch}
-    '';
+  postPatch = ''
+    patch --ignore-whitespace --verbose -p1 -i ${./cspell-lsp.package-lock.json.patch}
+  '';
 
   # The prepack script runs the build script, which we'd rather do in the build phase.
   npmPackFlags = [ "--ignore-scripts" ];

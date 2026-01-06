@@ -1,4 +1,9 @@
-{ buildGoModule, fetchFromGitHub, git, lib }:
+{
+  buildGoModule,
+  fetchFromGitHub,
+  git,
+  lib,
+}:
 
 buildGoModule rec {
   pname = "chart-releaser";

@@ -21,7 +21,11 @@ with lib.hm.gvariant;
       dynamic-opacity = false;
       opacity = 219;
       sigma = 8;
-      whitelist = [ "org.wezfurlong.wezterm" "kitty" "obsidian" ];
+      whitelist = [
+        "org.wezfurlong.wezterm"
+        "kitty"
+        "obsidian"
+      ];
     };
 
     "org/gnome/shell/extensions/blur-my-shell/coverflow-alt-tab" = {

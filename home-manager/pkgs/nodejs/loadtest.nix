@@ -1,4 +1,8 @@
-{ buildNpmPackage, fetchFromGitHub, lib }:
+{
+  buildNpmPackage,
+  fetchFromGitHub,
+  lib,
+}:
 
 buildNpmPackage rec {
   pname = "loadtest";
@@ -13,10 +17,9 @@ buildNpmPackage rec {
 
   npmDepsHash = "sha256-XM07orPl504FweeexTwP23CwJdoJ2Xl1vA5+thFWfj4=";
   dontNpmBuild = true;
-  postPatch =
-    ''
-      cp ${./loadtest-package-lock.json} ./package-lock.json
-    '';
+  postPatch = ''
+    cp ${./loadtest-package-lock.json} ./package-lock.json
+  '';
 
   # The prepack script runs the build script, which we'd rather do in the build phase.
   npmPackFlags = [ "--ignore-scripts" ];

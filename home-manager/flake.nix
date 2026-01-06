@@ -19,19 +19,22 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      mkHomeManagerConfiguration = { extraSpecialArgs, ... }: home-manager.lib.homeManagerConfiguration ({
-        inherit pkgs;
+      mkHomeManagerConfiguration =
+        { extraSpecialArgs, ... }:
+        home-manager.lib.homeManagerConfiguration ({
+          inherit pkgs;
 
-        modules = [ ./home.nix ];
+          modules = [ ./home.nix ];
 
-        extraSpecialArgs = {
-          inherit inputs;
-          pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
-        } // extraSpecialArgs;
-      });
+          extraSpecialArgs = {
+            inherit inputs;
+            pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
+          }
+          // extraSpecialArgs;
+        });
     in
     {
-      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
       homeConfigurations =
         let
           setup = {
@@ -48,42 +51,64 @@
           };
           giggio_wsl = mkHomeManagerConfiguration {
             extraSpecialArgs = {
-              setup = setup // { wsl = true; };
+              setup = setup // {
+                wsl = true;
+              };
             };
           };
           giggio_virtualbox_nixos = mkHomeManagerConfiguration {
             extraSpecialArgs = {
-              setup = setup // { isVirtualBox = true; isNixOS = true; };
+              setup = setup // {
+                isVirtualBox = true;
+                isNixOS = true;
+              };
             };
           };
           giggio_nixos = mkHomeManagerConfiguration {
             extraSpecialArgs = {
-              setup = setup // { isNixOS = true; };
+              setup = setup // {
+                isNixOS = true;
+              };
             };
           };
           giggio_basic = mkHomeManagerConfiguration {
             extraSpecialArgs = {
-              setup = setup // { basicSetup = true; };
+              setup = setup // {
+                basicSetup = true;
+              };
             };
           };
           giggio_wsl_basic = mkHomeManagerConfiguration {
             extraSpecialArgs = {
-              setup = setup // { wsl = true; basicSetup = true; };
+              setup = setup // {
+                wsl = true;
+                basicSetup = true;
+              };
             };
           };
           giggio_virtualbox_basic = mkHomeManagerConfiguration {
             extraSpecialArgs = {
-              setup = setup // { isVirtualBox = true; basicSetup = true; };
+              setup = setup // {
+                isVirtualBox = true;
+                basicSetup = true;
+              };
             };
           };
           giggio_virtualbox_nixos_basic = mkHomeManagerConfiguration {
             extraSpecialArgs = {
-              setup = setup // { isVirtualBox = true; isNixOS = true; basicSetup = true; };
+              setup = setup // {
+                isVirtualBox = true;
+                isNixOS = true;
+                basicSetup = true;
+              };
             };
           };
           giggio_nixos_basic = mkHomeManagerConfiguration {
             extraSpecialArgs = {
-              setup = setup // { isNixOS = true; basicSetup = true; };
+              setup = setup // {
+                isNixOS = true;
+                basicSetup = true;
+              };
             };
           };
         };

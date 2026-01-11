@@ -102,7 +102,15 @@ let
       git-ignore # Interactive CLI to generate .gitignore files https://github.com/sondr3/git-ignore
       http-server # Simple zero-configuration command-line HTTP server https://github.com/http-party/http-server
       cachix # install cache, for example, with: $HOME/.nix-profile/bin/cachix use nix-community
-      kitty # Modern, hackable, featureful, OpenGL based terminal emulator https://sw.kovidgoyal.net/kitty/
+      (symlinkJoin {
+        # kitty: Modern, hackable, featureful, OpenGL based terminal emulator https://sw.kovidgoyal.net/kitty/
+        name = "kitty-with-python-packages";
+        paths = [ kitty ];
+        nativeBuildInputs = [ makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/kitty --set PYTHONPATH "${python3Packages.wcwidth}/lib/python3.13/site-packages"
+        '';
+      })
       dhcping # Send DHCP request to DHCP server for monitoring purposes https://www.mavetju.org/unix/general.php
       ipcalc # Simple IP network calculator (CIDR) https://gitlab.com/ipcalc/ipcalc
       arp-scan # ARP scanning and fingerprinting tool https://github.com/royhills/arp-scan

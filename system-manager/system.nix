@@ -90,7 +90,40 @@
                   all + wsl + rog2;
               };
             };
-            wsl = if setup.wsl then { } else { };
+            wsl =
+              if setup.wsl then
+                {
+                  wsl-add-winhost = {
+                    # todo: probably will fail inside container, fix it
+                    description = "Set winhost in /etc/hosts";
+                    serviceConfig = {
+                      ExecStart = ./bin/wsl-add-winhost;
+                      RemainAfterExit = true;
+                      Type = "oneshot";
+                    };
+                    wantedBy = [ "multi-user.target" ];
+                    path = with pkgs; [
+                      bash
+                      coreutils
+                      gnugrep
+                      gnused
+                      gawk
+                    ];
+                  };
+                  wsl-clean-memory = {
+                    description = "Clean WSL Memory if needed";
+                    serviceConfig = {
+                      ExecStart = ./bin/wsl-clean-memory;
+                    };
+                    path = with pkgs; [
+                      bash
+                      coreutils
+                      gawk
+                    ];
+                  };
+                }
+              else
+                { };
             rog2 =
               if setup.hostname != "rog2" then
                 { }
@@ -119,6 +152,27 @@
                 };
           in
           all // rog2 // wsl;
+
+        timers =
+          let
+            all = { };
+            wsl =
+              if setup.wsl then
+                {
+                  wsl-clean-memory = {
+                    description = "Clean WSL Memory if needed on a timer";
+                    timerConfig = {
+                      OnCalendar = "*:*:1";
+                      Unit = "wsl-clean-memory.service";
+                    };
+                    wantedBy = [ "multi-user.target" ];
+                  };
+                }
+              else
+                { };
+          in
+          all // wsl;
+
         units =
           let
             wsl = if setup.wsl then { } else { };

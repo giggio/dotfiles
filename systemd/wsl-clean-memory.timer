@@ -1,9 +1,0 @@
-[Unit]
-Description=Clean WSL Memory if needed on a timer
-
-[Timer]
-OnCalendar=*:*:1
-Unit=wsl-clean-memory.service
-
-[Install]
-WantedBy=multi-user.target

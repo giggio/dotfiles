@@ -336,9 +336,7 @@ let
       opencode # AI coding agent built for the terminal https://opencode.ai/ https://github.com/sst/opencode
       audacity # Sound editor with graphical UI https://www.audacityteam.org/
       coolercontrol.coolercontrol-gui # Monitor and control your cooling devices (GUI) https://gitlab.com/coolercontrol/coolercontrol
-      # dotnet-install # .NET SDK installer script https://dot.net
-      # dotnet-sdk # .NET SDK https://dot.net
-      # dotnet-tools # Collection of useful command-line tools for .NET
+      # dotnet # see ./pkgs/dotnet
       # end of common non basic packages
     ]
     ++ (

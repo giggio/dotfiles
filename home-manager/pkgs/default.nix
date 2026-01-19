@@ -1,12 +1,10 @@
-{ pkgs }:
+self: super:
 
-with pkgs;
-{
-  dotnet-sdk =
-    with dotnetCorePackages;
-    combinePackages [
-      sdk_10_0
-    ];
+let
+  pkgs = super;
+in
+(import ./dotnet pkgs)
+// (with pkgs; {
   mylua = (
     lua5_1.withPackages (
       ps: with ps; [
@@ -19,12 +17,6 @@ with pkgs;
       ]
     )
   );
-  dotnet-runtime = dotnetCorePackages.sdk_10_0;
-  dotnet-tools = callPackage ./dotnet/dotnet-tools.nix {
-    inherit dotnet-sdk;
-    inherit dotnet-runtime;
-  };
-  dotnet-install = callPackage ./dotnet/dotnet-install.nix { };
   extra-completions = callPackage ./completions.nix { };
   terraform = callPackage ./unfree/terraform.nix { };
   vault = callPackage ./unfree/vault.nix { };
@@ -54,4 +46,4 @@ with pkgs;
   };
   cspell-dict-pt-br = callPackage ./nodejs/cspell-dict-pt-br.nix { };
   telegram-desktop-wrapped = callPackage ./wrappers/telegram-desktop.nix { };
-}
+})

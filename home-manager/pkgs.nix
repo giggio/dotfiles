@@ -23,9 +23,6 @@ let
           sha256 = "sha256-zkYAvxsmKb7Gb4qNQle4b/nS9VLwBBtHgINvIAKwWes=";
         };
       })
-      dotnet-install # .NET SDK installer script https://dot.net
-      dotnet-sdk # .NET SDK https://dot.net
-      dotnet-tools # Collection of useful command-line tools for .NET
       terraform # Tool for building, changing, and versioning infrastructure https://www.terraform.io
       vault # Tool for managing secrets https://www.vaultproject.io
       psmisc # Small useful utilities that use the /proc filesystem https://gitlab.com/psmisc/psmisc
@@ -144,7 +141,7 @@ let
       bash-language-server # A language server for Bash https://github.com/bash-lsp/bash-language-server
       systemd-language-server # Language Server for Systemd unit files https://github.com/psacawa/systemd-language-server
       yaml-language-server # Language Server for YAML Files https://github.com/redhat-developer/yaml-language-server
-      roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp
+      # roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp
       fsautocomplete # FsAutoComplete project (FSAC) provides a backend service for rich editing or intellisense features for editors https://github.com/fsharp/FsAutoComplete
       basedpyright # Type checker for the Python language (and lsp) https://github.com/detachhead/basedpyright
       uv # Extremely fast Python package installer and resolver, written in Rust https://docs.astral.sh/uv/
@@ -341,6 +338,9 @@ let
       opencode # AI coding agent built for the terminal https://opencode.ai/ https://github.com/sst/opencode
       audacity # Sound editor with graphical UI https://www.audacityteam.org/
       coolercontrol.coolercontrol-gui # Monitor and control your cooling devices (GUI) https://gitlab.com/coolercontrol/coolercontrol
+      # dotnet-install # .NET SDK installer script https://dot.net
+      # dotnet-sdk # .NET SDK https://dot.net
+      # dotnet-tools # Collection of useful command-line tools for .NET
       # end of common non basic packages
     ]
     ++ (

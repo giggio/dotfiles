@@ -5,8 +5,7 @@ with pkgs;
   dotnet-sdk =
     with dotnetCorePackages;
     combinePackages [
-      sdk_8_0
-      sdk_9_0
+      sdk_10_0
     ];
   mylua = (
     lua5_1.withPackages (
@@ -20,7 +19,7 @@ with pkgs;
       ]
     )
   );
-  dotnet-runtime = dotnetCorePackages.sdk_9_0;
+  dotnet-runtime = dotnetCorePackages.sdk_10_0;
   dotnet-tools = callPackage ./dotnet/dotnet-tools.nix {
     inherit dotnet-sdk;
     inherit dotnet-runtime;

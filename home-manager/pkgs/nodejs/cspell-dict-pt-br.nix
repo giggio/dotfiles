@@ -4,12 +4,11 @@
   lib,
   stdenv,
   nodejs,
-  pnpm_9,
+  pnpm,
+  pnpmConfigHook,
+  fetchPnpmDeps,
 }:
 
-let
-  pnpm = pnpm_9;
-in
 stdenv.mkDerivation (finalAttrs: rec {
   pname = "cspell-dict-pt-br";
   version = "2.4.0";
@@ -22,17 +21,18 @@ stdenv.mkDerivation (finalAttrs: rec {
   };
 
   nativeBuildInputs = [
+    pnpm
     nodejs
-    pnpm.configHook
+    pnpmConfigHook
   ];
 
   pnpmWorkspaces = [ "@cspell/dict-pt-br" ];
 
-  pnpmDeps = pnpm.fetchDeps {
+  pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     inherit (finalAttrs) pnpmWorkspaces;
     fetcherVersion = 2;
-    hash = "sha256-h1E8Ai3M7Z4rDSB+I6sGT0nqgYchwe2k8ni9qnzhhkw=";
+    hash = "sha256-zxgwbLpZViM/vr3Y4xZR9sZql0ojxuZN2iBNkmMU1xA=";
   };
 
   buildPhase = ''

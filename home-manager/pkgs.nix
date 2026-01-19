@@ -45,7 +45,7 @@ let
       xdg-utils # Set of command line tools that assist applications with desktop integration tasks https://www.freedesktop.org/wiki/Software/xdg-utils/
       nil # Language server for Nix https://github.com/oxalica/nil
       nixpkgs-fmt # Nix code formatter for nixpkgs https://github.com/nix-community/nixpkgs-fmt
-      nixfmt-rfc-style # The official formatter for Nix code https://github.com/NixOS/nixfmt
+      nixfmt # The official formatter for Nix code https://github.com/NixOS/nixfmt
       bat # Cat clone with syntax highlighting and Git integration https://github.com/sharkdp/bat
       iperf # Tool to measure IP bandwidth using UDP or TCP https://sourceforge.net/projects/iperf2/
       inetutils # Collection of common network programs https://www.gnu.org/software/inetutils/
@@ -368,7 +368,7 @@ let
           kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application
           cdrtools # Highly portable CD/DVD/BluRay command line recording software
           dvdauthor # Tools for generating DVD files to be played on standalone DVD players https://dvdauthor.sourceforge.net/
-          dvdstyler # DVD authoring software https://www.dvdstyler.org/
+          # dvdstyler # DVD authoring software https://www.dvdstyler.org/ # todo: not working, check back later
           doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
           tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
           tesseract # OCR engine https://github.com/tesseract-ocr/tesseract

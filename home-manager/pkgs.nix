@@ -407,7 +407,7 @@ let
     )
   );
   stable_basic_pkgs = (
-    with pkgs-stable;
+    # with pkgs-stable;
     [
       # common basic packages (stable)
       # end of common basic packages (stable)
@@ -438,7 +438,7 @@ let
     )
   );
   stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (
-    with pkgs-stable;
+    # with pkgs-stable;
     [
       # common non basic packages (stable)
       # end of common non basic packages (stable)

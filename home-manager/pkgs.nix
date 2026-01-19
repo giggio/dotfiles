@@ -62,8 +62,7 @@ let
       zoxide # Fast cd command that learns your habits https://github.com/ajeetdsouza/zoxide
       navi # Interactive cheatsheet tool for the command-line https://github.com/denisidoro/navi
       bundix # Creates Nix packages from Gemfiles https://github.com/nix-community/bundix
-      (ruby_3_4.withPackages (ps: with ps; [ ]))
-      my_gems # bundling ruby-lsp and other gems (in the future)
+      (ruby_4_0.withPackages (ps: with ps; [ ruby-lsp ]))
       rust-toolchain-fenix # from pkgs/default.nix
       cargo-completions # Shell completions for cargo
       yq-go # Portable command-line YAML processor https://github.com/mikefarah/yq

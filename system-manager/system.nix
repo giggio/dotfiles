@@ -162,7 +162,7 @@
                   wsl-clean-memory = {
                     description = "Clean WSL Memory if needed on a timer";
                     timerConfig = {
-                      OnCalendar = "*:*:1";
+                      OnCalendar = "*-*-* 0:0/5:00";
                       Unit = "wsl-clean-memory.service";
                     };
                     wantedBy = [ "multi-user.target" ];

@@ -41,7 +41,17 @@
       commonTargets // otherTargets;
     services =
       let
-        commonServices = { };
+        commonServices = {
+          nix-metadata-update = {
+            Unit = {
+              Description = "Caches nix metadata";
+            };
+            Service = {
+              Type = "oneshot";
+              ExecStart = "${pkgs.nix}/bin/nix flake metadata nixpkgs";
+            };
+          };
+        };
         otherServices =
           if !setup.wsl then
             {
@@ -172,5 +182,24 @@
             };
       in
       commonSockets // otherSockets;
+
+    timers =
+      let
+        all = {
+          nix-metadata-update = {
+            Unit = {
+              Description = "Caches nix metadata";
+            };
+            Timer = {
+              OnCalendar = "*-*-* 0/1:00:00";
+            };
+            Install = {
+              WantedBy = [ "graphical-session.target" ];
+            };
+          };
+        };
+        wsl = if setup.wsl then { } else { };
+      in
+      all // wsl;
   };
 }

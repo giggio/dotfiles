@@ -45,10 +45,16 @@
           nix-metadata-update = {
             Unit = {
               Description = "Caches nix metadata";
+              StartLimitIntervalSec = "infinity";
+              StartLimitBurst = 5;
             };
             Service = {
               Type = "oneshot";
               ExecStart = "${pkgs.nix}/bin/nix flake metadata nixpkgs";
+              Restart = "on-failure";
+              RestartMaxDelaySec = "1m";
+              RestartSec = "1s";
+              RestartSteps = 3;
             };
           };
         };

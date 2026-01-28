@@ -285,7 +285,7 @@ let
       istioctl # Istio command-line tool https://istio.io/
       tflint # Terraform linter https://github.com/terraform-linters/tflint
       gh # GitHub CLI tool https://cli.github.com/
-      gh-copilot # GitHub Copilot on the command line https://github.com/github/gh-copilot
+      github-copilot-cli # GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal. https://github.com/github/copilot-cli
       k9s # Kubernetes CLI to manage your clusters in style https://k9scli.io/
       awscli2 # Unified tool to manage AWS services https://aws.amazon.com/cli/
       k3d # Helper to run k3s in Docker https://k3d.io/
@@ -351,7 +351,7 @@ let
           slack # Desktop client for Slack https://slack.com/
           discord # All-in-one voice and text chat for gamers https://discord.com/
           obs-studio # Free and open source software for video recording and live streaming https://obsproject.com/
-          kdePackages.kdenlive # Video editor by KDE https://kdenlive.org/
+          # kdePackages.kdenlive # Video editor by KDE https://kdenlive.org/ # todo: not building, see: https://github.com/NixOS/nixpkgs/issues/483540
           glaxnimate # Simple vector animation program https://glaxnimate.mattbas.org/
           # openshot-qt # Free, open-source video editor http://openshot.org/ # todo: depending on qtwebengine, which is insecure, try to add it back later
           wireshark # Network protocol analyzer https://www.wireshark.org/

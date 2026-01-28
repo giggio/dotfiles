@@ -39,7 +39,7 @@ rec {
         builtins.elem (lib.strings.getName pkg) [
           "code"
           "discord"
-          "gh-copilot"
+          "github-copilot-cli"
           "microsoft-edge-stable"
           "mqtt-explorer"
           "obsidian"
@@ -271,9 +271,6 @@ rec {
             trash = "trash-put";
             "??" = "ollama run --keepalive=-1s linus"; # see https://github.com/giggio/ollama_models
             "?rs" = "ollama run --keepalive=-1s furry"; # see https://github.com/giggio/ollama_models
-            "?bash" = "gh-copilot suggest -t shell";
-            "?gh" = "gh-copilot suggest -t gh";
-            "?git" = "gh-copilot suggest -t git";
             ls = "ls --color=auto --hyperlink=always";
             dir = "dir --color=auto";
             vdir = "vdir --color=auto";
@@ -305,8 +302,6 @@ rec {
             "cd...." = "cd ../../..";
             weather = "curl -s wttr.in";
             toyaml = "bat --language yaml";
-            ghce = "gh-copilot explain";
-            ghcs = "gh-copilot suggest";
             mg = "kitty +kitten hyperlinked_grep --smart-case";
             keys = "dconf dump /org/gnome/desktop/wm/keybindings/";
             cdr = "cd `git rev-parse --show-toplevel 2> /dev/null || echo '.'`";
@@ -375,6 +370,18 @@ rec {
                 # make less more friendly for non-text input files, see lesspipe(1)
                 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
                 eval "$(navi widget bash)"
+                function ?bash() {
+                  if ! [ -v 1 ]; then echo "Please provide a question"; return 1; fi
+                  copilot --prompt "You are a bash specialist, answer with one quick sentence and at most 3 sample commands how to use Bash in Linux in this question: $*"
+                }
+                function ?gh() {
+                  if ! [ -v 1 ]; then echo "Please provide a question"; return 1; fi
+                  copilot --prompt "You are a Github specialist, answer with one quick sentence and at most 3 sample commands how to use Github cli tools. If it is not possible to use github cli tools for the question aswked, answer with a link to the Github documentation This is the question: $*"
+                }
+                function ?git() {
+                  if ! [ -v 1 ]; then echo "Please provide a question"; return 1; fi
+                  copilot --prompt "You are a Git specialist, answer with one quick sentence and at most 3 sample Git commands how to use Git. The answer has to be a Git command. This is the question: $*"
+                }
 
                 # beginning of nix configuration
               ''

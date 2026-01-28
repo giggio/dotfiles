@@ -460,6 +460,11 @@ rec {
       enable = !setup.wsl;
       package = pkgs.zapzap;
     };
+
+    chromium = {
+      enable = !setup.wsl;
+      package = pkgs.ungoogled-chromium;
+    };
   };
 
   fonts.fontconfig.enable = !setup.wsl;

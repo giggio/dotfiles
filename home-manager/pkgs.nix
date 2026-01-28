@@ -275,7 +275,6 @@ let
       shellcheck # Shell script analysis tool https://www.shellcheck.net/
       silver-searcher # Code searching tool similar to Ack, but faster https://github.com/ggreer/the_silver_searcher
       w3m # Text-based web browser https://github.com/tats/w3m
-      chromium # Open source web browser from Google https://www.chromium.org/
       temurin-bin-25 # Eclipse Temurin, Java Development Kit https://adoptium.net/
       maven # Build automation tool for Java https://maven.apache.org/
       (azure-cli.withExtensions [ azure-cli.extensions.containerapp ]) # Microsoft Azure command-line interface https://github.com/Azure/azure-cli

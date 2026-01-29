@@ -114,6 +114,7 @@ rec {
       XDG_CACHE_HOME = "\${XDG_CACHE_HOME:-$HOME/.cache}";
       NPM_CONFIG_PREFIX = "\${NPM_CONFIG_PREFIX:-$HOME/.local/share/npm}";
       BASIC_SETUP = "\${BASIC_SETUP:-false}";
+      MANPAGER = "nvim +Man!";
     };
     sessionVariablesExtra = lib.mkOrder 2000 ''
       # this is from sessionVariablesExtra, and is loaded at the very end hm-session-vars.sh

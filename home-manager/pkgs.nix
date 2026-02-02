@@ -335,6 +335,7 @@ let
       opencode # AI coding agent built for the terminal https://opencode.ai/ https://github.com/sst/opencode
       audacity # Sound editor with graphical UI https://www.audacityteam.org/
       coolercontrol.coolercontrol-gui # Monitor and control your cooling devices (GUI) https://gitlab.com/coolercontrol/coolercontrol
+      browsh # Fully-modern text-based browser, rendering to TTY and browsers https://www.brow.sh/
       # dotnet # see ./pkgs/dotnet
       # end of common non basic packages
     ]

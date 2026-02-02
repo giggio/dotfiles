@@ -542,6 +542,7 @@ rec {
         enable = !setup.wsl;
         source = "${pkgs.onedriver}/share/systemd/user/onedriver@.service";
       };
+      "browsh/config.toml".source = ./config/browsh_config.toml;
     };
     dataFile = { };
     desktopEntries =

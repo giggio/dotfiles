@@ -23,5 +23,3 @@
     ~/.dotfiles:
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'
-- shell:
-    - ./home-manager/cheats/build.sh

@@ -18,9 +18,10 @@ let
     FZF_DEFAULT_OPTS = "--ansi";
     FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
   };
+  homeManagerConfigPath = "${config.home.homeDirectory}/.dotfiles/home-manager";
+  mkHomeManagerRelativePath = path: "${homeManagerConfigPath}/${path}";
   mkOutOfStoreSymlinkRelative =
-    path:
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home-manager/${path}";
+    path: config.lib.file.mkOutOfStoreSymlink (mkHomeManagerRelativePath path);
 in
 rec {
   imports = (
@@ -161,6 +162,24 @@ rec {
       ".vimrc".text = "source ~/.vim/init.vim";
     };
 
+    activation = {
+      buildCheats =
+        let
+          buildCheats = pkgs.writeShellApplication {
+            name = "build-cheats";
+            runtimeInputs = [
+              pkgs.util-linux
+              pkgs.gawk
+            ];
+            text = ''
+              exec ${homeManagerConfigPath}/cheats/build.sh
+            '';
+          };
+        in
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          run ${buildCheats}/bin/build-cheats
+        '';
+    };
   };
 
   targets.genericLinux = {
@@ -333,7 +352,11 @@ rec {
           bashSessionVariables = {
             # environment variables to add only to .bashrc
             PATH = "$HOME/.local/bin:$PATH"; # this is here so it is added before the other paths
-            NAVI_PATH = "${config.home.profileDirectory}/share/navi/cheats/common/:${config.home.profileDirectory}/share/navi/cheats/bash/:${config.home.profileDirectory}/share/navi/cheats/linux/common/:${config.home.profileDirectory}/share/navi/cheats/linux/bash/";
+            NAVI_PATH =
+              let
+                cheatsDir = mkHomeManagerRelativePath "cheats/dist";
+              in
+              "${cheatsDir}/common/:${cheatsDir}/bash/:${cheatsDir}/linux/common/:${cheatsDir}/linux/bash/";
             LUA_PATH = "\"${pkgs.mylua}/share/lua/5.1/?.lua;${pkgs.mylua}/share/lua/5.1/?/init.lua;$HOME/.luarocks/share/lua/5.1/?.lua;$HOME/.luarocks/share/lua/5.1/?/init.lua;$LUA_PATH;;\"";
             LUA_CPATH = "\"${pkgs.mylua}/lib/lua/5.1/?.so;$HOME/.luarocks/lib/lua/5.1/?.so;$LUA_CPATH;;\"";
           };

@@ -132,6 +132,7 @@ rec {
       ".local/bin/hm".source = ./bin/hm;
       ".local/bin/sm".source = ./bin/sm;
       ".local/bin/updatedb_local".source = ./bin/updatedb_local;
+      ".local/share/npm/etc/npmrc".text = "sign-git-tag = true";
       ".hushlogin".text = "";
       ".XCompose".source = "${pkgs.custom-xcompose}/lib/.XCompose";
       ".tmux.conf".text = ''
@@ -163,6 +164,10 @@ rec {
     };
 
     activation = {
+      createDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        run mkdir -p ${config.home.homeDirectory}/p
+        run mkdir -p ${config.home.homeDirectory}/.cache
+      '';
       buildCheats =
         let
           buildCheats = pkgs.writeShellApplication {

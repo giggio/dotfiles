@@ -1,5 +1,4 @@
 name: Build
-
 on:
   workflow_dispatch:
   push:
@@ -26,27 +25,18 @@ on:
       - ".github/**"
       - .gitignore
       - .gitattributes
-
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: docker
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Shellcheck
-        uses: reviewdog/action-shellcheck@v1
+        uses: https://github.com/ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: --shell bash
         with:
-          reporter: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'github-check' }}
-          path: "."
-          pattern: |
-            *.sh
-            *.bash
-          exclude: |
-            ./.testsupport/*
-            ./.git/*
-          check_all_files_with_shebangs: true
-          shellcheck_flags: --shell bash
-          fail_on_error: true
+          ignore_paths: ./.testsupport/* ./.git/*

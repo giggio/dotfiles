@@ -1,8 +1,10 @@
 # Giovanni Bassi's Dotfiles
 
+Main repo: [codeberg.org/giggio/dotfiles](https://codeberg.org/giggio/dotfiles)
+
 These are the dotfiles. I'm using
 [Dotbot](https://github.com/anishathalye/dotbot)
-to automate it.
+to automate it. It is mostly Nix, now.
 
 ## Installation
 

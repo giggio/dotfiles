@@ -20,15 +20,8 @@
     - |
       [ ! -f "$HOME/.npmrc" ] && echo 'sign-git-tag=true' > "$HOME/.npmrc" || true
 - link:
-    ~/.config/kitty: config/kitty
-    ~/.config/nvim: vimfiles
-    ~/.config/powershell: poshfiles
-    ~/.config/tabby/config.yaml: config/tabby/config.yaml
-    ~/.config/zellij: config/zellij
     ~/.dotfiles:
       path: ""
       if: '[ `pwd` != "$HOME/.dotfiles" ]'
-    ~/.gitconfig: home/.gitconfig
-    ~/.vim: vimfiles
 - shell:
     - ./home-manager/cheats/build.sh

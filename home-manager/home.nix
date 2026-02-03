@@ -18,6 +18,9 @@ let
     FZF_DEFAULT_OPTS = "--ansi";
     FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
   };
+  mkOutOfStoreSymlinkRelative =
+    path:
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home-manager/${path}";
 in
 rec {
   imports = (
@@ -121,6 +124,8 @@ rec {
     '';
 
     file = {
+      ".vim".source = mkOutOfStoreSymlinkRelative "config/vimfiles";
+      ".gitconfig".source = mkOutOfStoreSymlinkRelative "home/.gitconfig";
       ".cargo/.keep".text = "";
       ".local/bin/dotnet-uninstall".source = ./bin/dotnet-uninstall;
       ".local/bin/hm".source = ./bin/hm;
@@ -543,6 +548,11 @@ rec {
         source = "${pkgs.onedriver}/share/systemd/user/onedriver@.service";
       };
       "browsh/config.toml".source = ./config/browsh_config.toml;
+      "tabby/config.yaml".source = mkOutOfStoreSymlinkRelative "config/tabby-config.yaml";
+      "zellij".source = mkOutOfStoreSymlinkRelative "config/zellij";
+      "kitty".source = mkOutOfStoreSymlinkRelative "config/kitty";
+      "nvim".source = mkOutOfStoreSymlinkRelative "config/vimfiles";
+      "powershell".source = mkOutOfStoreSymlinkRelative "config/poshfiles";
     };
     dataFile = { };
     desktopEntries =

@@ -5,10 +5,10 @@
 	path = bashscripts
 	url = ../bashscripts.git
 [submodule "poshfiles"]
-	path = poshfiles
+	path = home-manager/config/poshfiles
 	url = ../poshfiles.git
 [submodule "vimfiles"]
-	path = vimfiles
+	path = home-manager/config/vimfiles
 	url = ../vimfiles.git
 [submodule "nuscripts"]
 	path = nuscripts

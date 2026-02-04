@@ -51,6 +51,7 @@ if $VERBOSE; then
   Update is $UPDATE"
 fi
 
+git submodule update --init --recursive
 sudo su --login root -c "'$BASEDIR/install-root-pkgs.sh' $*"
 sudo su --login root -c "'$BASEDIR/configure-root-env.sh' $*"
 if hash systemd-notify 2> /dev/null && systemd-notify --booted; then

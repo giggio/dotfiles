@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$BASEDIR"/_common-setup.sh
+source "$BASEDIR"/scripts/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   die "Please run this script as root"
@@ -43,8 +43,6 @@ fi
 if $VERBOSE; then
   writeGreen "Running $(basename "$0") $ALL_ARGS"
 fi
-
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 snap list
 snap remove ubuntu-desktop-installer

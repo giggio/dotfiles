@@ -65,15 +65,6 @@ else
   fi
 fi
 
-if ! [ -f /etc/profile.d/xdg_dirs_extra.sh ]; then
-  if $VERBOSE; then
-    writeBlue "Copying xdg_dirs_extra.sh to /etc/profile.d/."
-  fi
-  cp "$BASEDIR"/setup/xdg_dirs_extra.sh /etc/profile.d/
-elif $VERBOSE; then
-  writeBlue "Not copying xdg_dirs_extra.sh, it already exists."
-fi
-
 if $WSL && ! $RUNNING_IN_CONTAINER; then
   if hash wslview 2> /dev/null; then
     setAlternative x-www-browser wslview
@@ -85,25 +76,6 @@ if $WSL && ! $RUNNING_IN_CONTAINER; then
 fi
 
 setAlternative editor /usr/bin/vim.basic
-
-# todo: find a way to create apparmor profiles for nix packages
-# until then, make apparmor allow unprivileged user namespaces
-# This became a problem since Ubuntu 24.04
-# See: https://discourse.ubuntu.com/t/ubuntu-24-04-lts-noble-numbat-release-notes/39890#unprivileged-user-namespace-restrictions-15
-if hash aa-status 2> /dev/null && aa-status &> /dev/null; then
-  if [ -f /etc/sysctl.d/60-apparmor-namespace.conf ]; then
-    if $VERBOSE; then
-      writeBlue "Apparmor is already set to allow unprivileged user namespaces."
-    fi
-  else
-    if $VERBOSE; then
-      writeBlue "Setting Apparmor to allow unprivileged user namespaces."
-    fi
-    echo 'kernel.apparmor_restrict_unprivileged_userns=0' > /etc/sysctl.d/60-apparmor-namespace.conf
-  fi
-else
-  writeBlue "Apparmor is not installed or is not running."
-fi
 
 if $WSL; then
   "$BASEDIR"/configure-root-env-wsl.sh "$@"

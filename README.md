@@ -2,21 +2,12 @@
 
 Main repo: [codeberg.org/giggio/dotfiles](https://codeberg.org/giggio/dotfiles)
 
-These are the dotfiles. I'm using
-[Dotbot](https://github.com/anishathalye/dotbot)
-to automate it. It is mostly Nix, now.
+These are the dotfiles. It is mostly Nix, now.
 
 ## Installation
 
-*Note:* Some files and directories from the home directory will be removed.
-Check the [install.conf.yaml](./install.conf.yaml)
-file, on the `shell` section to see which ones and make sure you are ok with it,
-there will be no prompt.
-
-* Clone this repo to ~/.dotfiles
-
-If you are the repo owner make sure the SSH keys are correct, as some submodules
-use SSH, and clone with SSH:
+Clone this repo to ~/.dotfiles. If you are the repo owner make sure the SSH
+keys are correct, as some submodules use SSH, and clone with SSH:
 
 ````bash
 git clone --recurse-submodules git@codeberg.org:giggio/dotfiles.git $HOME/.dotfiles
@@ -28,7 +19,7 @@ If you are not the repo owner then you need to use https:
 git clone --recurse-submodules https://codeberg.org/giggio/dotfiles $HOME/.dotfiles
 ````
 
-* Run the install script `~/.dotfiles/install`.
+Then run the install script `~/.dotfiles/install --verbose`.
 
 (to update run `~/.dotfiles/install --update`)
 

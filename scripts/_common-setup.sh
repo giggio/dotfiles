@@ -6,7 +6,7 @@ fi
 set -euo pipefail
 # shellcheck disable=SC2034
 ALL_ARGS=$*
-source "$BASEDIR"/setup/xdg_dirs_extra.sh
+source "$BASEDIR"/../system-manager/etc/profile.d/xdg_dirs_extra.sh
 source "$BASEDIR"/_functions.sh
 getOptions "$@"
 eval set -- "$PARSED_ARGS"

@@ -19,12 +19,9 @@
       environment = {
         systemPackages =
           let
-            all = (
-              with pkgs;
-              [
-                system-manager.packages.${system}.default # system-manager binary
-              ]
-            );
+            all = ([
+              system-manager.packages.${system}.default # system-manager binary
+            ]);
             rog2 = lib.lists.optionals (setup.hostname == "rog2") (
               with pkgs;
               [
@@ -40,6 +37,8 @@
           let
             all = {
               "systemd/logind.conf".source = ./etc/systemd/logind.conf;
+              "profile.d/xdg_dirs_extra.sh".source = ./etc/profile.d/xdg_dirs_extra.sh;
+              "sysctl.d/60-apparmor-namespace.conf".source = ./etc/sysctl.d/60-apparmor-namespace.conf;
             };
             rog2 =
               if setup.hostname != "rog2" then
@@ -72,8 +71,8 @@
                 };
                 script =
                   let
-                    all = '''';
-                    wsl = if setup.wsl then "" else '''';
+                    all = "";
+                    wsl = if setup.wsl then "" else "";
                     rog2 =
                       if setup.hostname != "rog2" then
                         ""

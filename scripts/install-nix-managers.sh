@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
 source "$BASEDIR"/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
@@ -100,21 +101,31 @@ setup_nix_channels() {
 }
 
 install_system_manager() {
-  sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.backup
-  "$BASEDIR"/system-manager/bin/sm switch --first-run
+  if ! hash system-manager 2> /dev/null; then
+    writeBlue "Install Nix system-manager."
+    sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.backup
+    "$BASEDIR"/../system-manager/bin/sm switch --first-run
+  elif $UPDATE; then
+    writeBlue "Update Nix system-manager."
+    rm -f "$BASEDIR"/../system-manager/flake.lock
+    hm_switch --refresh
+    download_nixpkgs_cache_index
+  else
+    writeBlue "Not installing Nix system-manager, it is already installed."
+  fi
 }
 
 install_home_manager() {
   if ! hash home-manager 2> /dev/null; then
     setup_nix_channels
     writeBlue "Install Nix home-manager."
-    nix run home-manager/master -- init --show-trace --flake "$BASEDIR"/home-manager?submodules=1
+    nix run home-manager/master -- init --show-trace --flake "$BASEDIR"/../home-manager?submodules=1
     hm_switch
     download_nixpkgs_cache_index
   elif $UPDATE; then
     writeBlue "Update Nix home-manager."
     nix-channel --update
-    rm -f "$BASEDIR"/home-manager/flake.lock
+    rm -f "$BASEDIR"/../home-manager/flake.lock
     hm_switch --refresh
     download_nixpkgs_cache_index
   elif $VERBOSE; then

@@ -48,4 +48,4 @@ requests. Pull requests on Github will probably be ignored, so avoid them.
 
 ## License
 
-Licensed under the Apache License, Version 2.0.
+Licensed under the MIT license.

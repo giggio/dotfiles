@@ -351,7 +351,7 @@ let
           slack # Desktop client for Slack https://slack.com/
           discord # All-in-one voice and text chat for gamers https://discord.com/
           obs-studio # Free and open source software for video recording and live streaming https://obsproject.com/
-          # kdePackages.kdenlive # Video editor by KDE https://kdenlive.org/ # todo: not building, see: https://github.com/NixOS/nixpkgs/issues/483540
+          kdePackages.kdenlive # Video editor by KDE https://kdenlive.org/
           glaxnimate # Simple vector animation program https://glaxnimate.mattbas.org/
           # openshot-qt # Free, open-source video editor http://openshot.org/ # todo: depending on qtwebengine, which is insecure, try to add it back later
           wireshark # Network protocol analyzer https://www.wireshark.org/

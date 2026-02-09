@@ -25,6 +25,7 @@ with lib.hm.gvariant;
         "org.wezfurlong.wezterm"
         "kitty"
         "obsidian"
+        "com.mitchellh.ghostty"
       ];
     };
 

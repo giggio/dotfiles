@@ -506,6 +506,10 @@ rec {
       enable = !setup.wsl;
       package = pkgs.ungoogled-chromium;
     };
+
+    ghostty = {
+      enable = true;
+    };
   };
 
   fonts.fontconfig.enable = !setup.wsl;

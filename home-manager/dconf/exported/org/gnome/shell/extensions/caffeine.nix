@@ -6,6 +6,7 @@ with lib.hm.gvariant;
 {
   dconf.settings = {
     "org/gnome/shell/extensions/caffeine" = {
+      cli-toggle = false;
       countdown-timer = 1800;
       duration-timer = 2;
       enable-fullscreen = false;

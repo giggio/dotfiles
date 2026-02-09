@@ -313,7 +313,6 @@ let
       imagemagick # Software suite to create, edit, compose, or convert bitmap images https://imagemagick.org/
       kubectx # Faster way to switch between clusters and namespaces in kubectl https://github.com/ahmetb/kubectx
       lazydocker # Simple terminal UI for docker and docker-compose https://github.com/jesseduffield/lazydocker
-      ghostty # Fast, feature-rich, and cross-platform terminal emulator https://ghostty.org/
       fabric-ai # Open-source framework for augmenting humans using AI https://github.com/danielmiessler/fabric
       nixpkgs-review # Review pull requests on nixpkgs https://github.com/Mic92/nixpkgs-review
       bacon # Rust background code checker

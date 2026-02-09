@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$BASEDIR"/_common-setup.sh
+SCRIPTSDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/_common-setup.sh
+source "$SCRIPTSDIR"/_common-setup.sh
 THIS_FILE="${BASH_SOURCE[0]}"
 
 if (return 0 2> /dev/null); then

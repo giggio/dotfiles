@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$BASEDIR"/_common-setup.sh
+SCRIPTSDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/_common-setup.sh
+source "$SCRIPTSDIR"/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   die "Please run this script as root"
@@ -153,8 +154,8 @@ if ! $WSL; then
       verbose_flag=
       if $VERBOSE; then verbose_flag="--verbose"; fi
       if ! grep 'Abort if user is not root' /lib/security/howdy/pam.py -q; then
-        patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$BASEDIR"/patches/howdy-pam.py.patch
-        patch --ignore-whitespace $verbose_flag -u /usr/lib/security/howdy/config.ini -i "$BASEDIR"/patches/howdy-config.patch
+        patch --ignore-whitespace $verbose_flag -u /lib/security/howdy/pam.py -i "$SCRIPTSDIR"/patches/howdy-pam.py.patch
+        patch --ignore-whitespace $verbose_flag -u /usr/lib/security/howdy/config.ini -i "$SCRIPTSDIR"/patches/howdy-config.patch
       fi
     fi
 

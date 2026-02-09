@@ -6,8 +6,13 @@ fi
 set -euo pipefail
 # shellcheck disable=SC2034
 ALL_ARGS=$*
-source "$BASEDIR"/../system-manager/etc/profile.d/xdg_dirs_extra.sh
-source "$BASEDIR"/_functions.sh
+if ! [ -v SCRIPTSDIR ]; then
+  SCRIPTSDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+# shellcheck source=system-manager/etc/profile.d/xdg_dirs_extra.sh
+source "$SCRIPTSDIR"/../system-manager/etc/profile.d/xdg_dirs_extra.sh
+# shellcheck source=scripts/_functions.sh
+source "$SCRIPTSDIR"/_functions.sh
 getOptions "$@"
 eval set -- "$PARSED_ARGS"
 

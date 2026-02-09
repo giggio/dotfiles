@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$BASEDIR"/_common-setup.sh
+SCRIPTSDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/_common-setup.sh
+source "$SCRIPTSDIR"/_common-setup.sh
 
 if $ANDROID; then
   writeGreen "Not running configure-systemd.sh because this is Android."
@@ -87,7 +88,7 @@ function create_systemd_script_hooks {
   if [ "$EUID" != '0' ]; then
     die "Use nix to create systemd user services, sockets etc."
   fi
-  local SOURCE_DIR="$BASEDIR"/systemd/hooks
+  local SOURCE_DIR="$SCRIPTSDIR"/systemd/hooks
   local SYSTEMD_DIR=/lib/systemd/
   for HOOK_DIR in "$SOURCE_DIR"/*; do
     if ! [ -d "$HOOK_DIR" ]; then

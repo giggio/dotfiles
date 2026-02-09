@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$BASEDIR"/_common-setup.sh
+SCRIPTSDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/_common-setup.sh
+source "$SCRIPTSDIR"/_common-setup.sh
 
 if [ "$EUID" != "0" ]; then
   die "Please run this script as root"
@@ -78,9 +79,9 @@ fi
 setAlternative editor /usr/bin/vim.basic
 
 if $WSL; then
-  "$BASEDIR"/configure-root-env-wsl.sh "$@"
+  "$SCRIPTSDIR"/configure-root-env-wsl.sh "$@"
 elif $ANDROID; then
-  "$BASEDIR"/configure-root-env-android.sh "$@"
+  "$SCRIPTSDIR"/configure-root-env-android.sh "$@"
 else
   # non-WSL, non-Android
 
@@ -91,7 +92,7 @@ else
       writeBlue "Patching /etc/pam.d/common-session-noninteractive."
       verbose_flag=
       if $VERBOSE; then verbose_flag="--verbose"; fi
-      patch --ignore-whitespace $verbose_flag -u /etc/pam.d/common-session-noninteractive -i "$BASEDIR"/patches/common-session-noninteractive.patch --merge
+      patch --ignore-whitespace $verbose_flag -u /etc/pam.d/common-session-noninteractive -i "$SCRIPTSDIR"/patches/common-session-noninteractive.patch --merge
     else
       if $VERBOSE; then
         writeYellow "PAM configuration file /etc/pam.d/common-session-noninteractive does not contain pam_ecryptfs.so."

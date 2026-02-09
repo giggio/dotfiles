@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$BASEDIR"/_common-setup.sh
+SCRIPTSDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/_common-setup.sh
+source "$SCRIPTSDIR"/_common-setup.sh
 
 if [ "$EUID" == "0" ]; then
   die "Please do not run as root"
@@ -52,9 +53,9 @@ if $VERBOSE; then
 fi
 
 git submodule update --init --recursive
-sudo su --login root -c "'$BASEDIR/install-root-pkgs.sh' $*"
-sudo su --login root -c "'$BASEDIR/configure-root-env.sh' $*"
+sudo su --login root -c "'$SCRIPTSDIR/install-root-pkgs.sh' $*"
+sudo su --login root -c "'$SCRIPTSDIR/configure-root-env.sh' $*"
 if hash systemd-notify 2> /dev/null && systemd-notify --booted; then
-  sudo su --login root -c "'$BASEDIR/configure-systemd.sh' $*"
+  sudo su --login root -c "'$SCRIPTSDIR/configure-systemd.sh' $*"
 fi
-sudo su --login "$USER" -c "'$BASEDIR/install-nix-managers.sh' $*"
+sudo su --login "$USER" -c "'$SCRIPTSDIR/install-nix-managers.sh' $*"

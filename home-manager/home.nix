@@ -508,6 +508,12 @@ rec {
     };
 
     ghostty = {
+      enable = !setup.wsl;
+      package = inputs.ghostty.packages.${pkgs.system}.ghostty-releasefast; # todo: remove when ghostty 1.3.0 is released
+      installBatSyntax = true;
+    };
+
+    bat = {
       enable = true;
     };
   };
@@ -547,6 +553,7 @@ rec {
       "burn-my-windows/profiles/open.conf".source = ./dconf/cfg/burn-open.conf;
       "burn-my-windows/profiles/burn-app-brave.conf".source = ./dconf/cfg/burn-app-brave.conf;
       "alacritty".source = mkOutOfStoreSymlinkRelative "config/alacritty";
+      "ghostty/config".source = mkOutOfStoreSymlinkRelative "config/ghostty-config";
       "navi/config.yaml".source = ./config/navi-config.yaml;
       "terminator/config".source = ./config/terminator-config;
       "starship.toml".source = ./config/starship.toml;
@@ -727,6 +734,8 @@ rec {
             "application/xhtml+xml" = [ "librewolf.desktop" ];
             # telegram:
             "x-scheme-handler/tg" = [ "org.telegram.desktop.desktop" ];
+            # text
+            "text/plain" = [ "nvim.desktop" ];
           };
     };
   };

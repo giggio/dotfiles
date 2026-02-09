@@ -1,0 +1,17 @@
+# Run `ghostty +show-config --default --docs` to view a list of all available config options and their default values.
+# Additionally, each config option is also explained in detail on Ghostty's website, at https://ghostty.org/docs/config.
+# Ghostty can reload the configuration while running by using the menu options or the bound key (Control + Shift + comma).
+
+theme = Deep
+background-opacity = 0.999
+background = #000000
+# background-blur = true # does not work, using blur-my-shell from gnome extensions
+window-decoration = none
+window-show-tab-bar = auto
+maximize = true
+gtk-toolbar-style = flat
+gtk-wide-tabs = false
+font-family = CaskaydiaCove Nerd Font Mono
+font-size = 11
+
+keybind = ctrl+shift+l=clear_screen

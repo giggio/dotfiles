@@ -542,7 +542,7 @@ rec {
       "burn-my-windows/profiles/burn-app-edge.conf".source = ./dconf/cfg/burn-app-edge.conf;
       "burn-my-windows/profiles/open.conf".source = ./dconf/cfg/burn-open.conf;
       "burn-my-windows/profiles/burn-app-brave.conf".source = ./dconf/cfg/burn-app-brave.conf;
-      "alacritty".source = ./config/alacritty;
+      "alacritty".source = mkOutOfStoreSymlinkRelative "config/alacritty";
       "navi/config.yaml".source = ./config/navi-config.yaml;
       "terminator/config".source = ./config/terminator-config;
       "starship.toml".source = ./config/starship.toml;

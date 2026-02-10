@@ -157,8 +157,6 @@ rec {
       '';
       ".inputrc".text = ''
         set bell-style none
-        # reset the screen with Ctrl+L, normal CTRL+L in Kitty will not clear the scrollback
-        "\C-l":"\C-k \C-utput reset\n"
       '';
       ".vimrc".text = "source ~/.vim/init.vim";
     };
@@ -244,7 +242,7 @@ rec {
 
           export LOCATE_PATH=$XDG_CACHE_HOME/mlocate.db
 
-          source "${./bash/aliases-and-functions.bash}"
+          source "${mkOutOfStoreSymlinkRelative "bash/aliases-and-functions.bash"}"
 
           source "$(blesh-share)/ble.sh"
           # end of .bashrc
@@ -387,6 +385,10 @@ rec {
               ''
 
                 # beginning of .bashrc config
+                if hash zellij 2> /dev/null; then
+                  export ZELLIJ_AUTO_EXIT=true
+                  eval "$(zellij setup --generate-auto-start bash)"
+                fi
                 unset MAILCHECK
                 # If not running interactively, don't do anything
                 [[ $- == *i* ]] || return
@@ -532,6 +534,15 @@ rec {
           builtins.readFile "${pkgs.kitty}/share/applications/kitty.desktop"
         );
       };
+      "autostart/ghostty.desktop" = {
+        enable = !setup.wsl;
+        text = builtins.replaceStrings [ "/bin/ghostty" ] [ "/bin/ghostty --title=main" ] (
+          builtins.readFile
+            "${
+              inputs.ghostty.packages.${pkgs.system}.ghostty-releasefast
+            }/share/applications/com.mitchellh.ghostty.desktop" # todo: use pkgs.ghostty when 1.3.0 is released
+        );
+      };
       "autostart/activitywatch.desktop" = {
         enable = !setup.wsl;
         source = "${pkgs.activitywatch}/share/applications/aw-qt.desktop";
@@ -574,6 +585,10 @@ rec {
         # ctrl+c to discard line
         ble-bind -m vi_imap -f 'C-c' discard-line
         ble-bind -m vi_nmap -f 'C-c' discard-line
+        if [ -v ZELLIJ ]; then
+          blehook POSTEXEC+='my/ble-hook/rename-zellij-tab-after'
+          blehook PREEXEC+='my/ble-hook/rename-zellij-tab-before'
+        fi
       '';
       "cspell/cspell.json".text = ''
         {

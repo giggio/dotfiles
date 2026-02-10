@@ -6,7 +6,7 @@ with lib.hm.gvariant;
 {
   dconf.settings = {
     "org/gnome/desktop/applications/terminal" = {
-      exec = "kitty";
+      exec = "ghostty";
       exec-arg = "";
     };
 

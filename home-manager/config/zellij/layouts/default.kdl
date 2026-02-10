@@ -1,0 +1,31 @@
+layout {
+    default_tab_template {
+        // pane size=1 borderless=true {
+        //     plugin location="zellij:tab-bar"
+        // }
+        // children
+        // pane size=1 borderless=true { // bring this back to remember the base keybindings
+        //     plugin location="zellij:status-bar"
+        // }
+        pane size=1 {
+            plugin location="zjstatus" {
+                format_left  "{mode}#[fg=blue,bg=#000000,bold]{tabs}"
+                // format_right "#[fg=blue,bg=bg]{datetime}"
+                format_right  "{pipe_zjstatus_hints} "
+                pipe_zjstatus_hints_format "{output}"
+                format_space "#[bg=fg]"
+
+                mode_normal   "#[bg=black,fg=green,bold] NORMAL "
+                mode_pane     "#[bg=black,fg=magenta,bold] PANE "
+                mode_tab      "#[bg=black,fg=blue,bold] TAB "
+
+                tab_normal "#[fg=#A9B1D6,bg=fg] {name}"
+                tab_normal "#[fg=black,bg=black]#[fg=black,bg=#A9B1D6] #[fg=#000000,bg=#A9B1D6,bold,italic]{name}#[fg=#A9B1D6,bg=black]"
+                tab_active "#[fg=black,bg=black]#[fg=black,bg=green] #[fg=#000000,bg=green,bold,italic]{name}#[fg=green,bg=black]"
+            }
+        }
+        children
+    }
+    tab
+}
+

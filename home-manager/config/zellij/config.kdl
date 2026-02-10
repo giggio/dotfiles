@@ -1,12 +1,135 @@
+on_force_close "quit"
+pane_frames false
+theme "molokai-dark"
+scroll_buffer_size 10000
+copy_on_select false
+session_serialization false
+pane_viewport_serialization false
+pane_viewport_serialization 100
+serialization_interval 60
+
+ui {
+    pane_frames {
+        hide_session_name true
+    }
+}
+
 keybinds {
     normal {
-    }
-    pane {
-    }
-    locked {
+        bind "Ctrl Shift 1" { GoToTab 1; }
+        bind "Ctrl Shift 2" { GoToTab 2; }
+        bind "Ctrl Shift 3" { GoToTab 3; }
+        bind "Ctrl Shift 4" { GoToTab 4; }
+        bind "Ctrl Shift 5" { GoToTab 5; }
+        bind "Ctrl Shift 6" { GoToTab 6; }
+        bind "Ctrl Shift 7" { GoToTab 7; }
+        bind "Ctrl Shift 8" { GoToTab 8; }
+        bind "Ctrl Shift 9" { GoToTab 9; }
+        bind "Ctrl Shift 0" { GoToTab 10; }
     }
     shared_except "locked" {
-        bind "Alt t" { NewTab; SwitchToMode "Normal"; }
-        bind "Alt y" { NewTab; SwitchToMode "Normal"; }
+        unbind "Ctrl q"
+        unbind "Ctrl g"
+        unbind "Alt n"
+        unbind "Alt f"
+        unbind "Alt i"
+        unbind "Alt o"
+        unbind "Alt h"
+        unbind "Alt j"
+        unbind "Alt k"
+        unbind "Alt l"
+        unbind "Alt Left"
+        unbind "Alt Right"
+        unbind "Alt Down"
+        unbind "Alt Up"
+        unbind "Alt ["
+        unbind "Alt ]"
+        unbind "Alt =" "Alt +"
+        unbind "Alt -"
+        unbind "Alt p"
+        unbind "Alt Shift p"
+        bind "Ctrl Shift g" { SwitchToMode "Locked"; }
+        bind "Ctrl Shift q" { Quit; }
+        // bind "Alt f" { ToggleFloatingPanes; }
+        // bind "Alt n" { NewPane; }
+        bind "Ctrl Shift ," { MoveTab "Left"; }
+        bind "Ctrl Shift ." { MoveTab "Right"; }
+        bind "Ctrl Shift [" { PreviousSwapLayout; }
+        bind "Ctrl Shift ]" { NextSwapLayout; }
+        bind "Ctrl Shift Tab" { GoToPreviousTab; }
+        bind "Ctrl Tab" { GoToNextTab; }
     }
+    shared_except "pane" "locked" {
+        unbind "Ctrl p"
+        bind "Ctrl Shift p" { SwitchToMode "Pane"; }
+        bind "Ctrl Shift Enter" { NewPane; }
+        bind "Ctrl Shift w" { CloseFocus; }
+        bind "Ctrl Shift \\" { ToggleFloatingPanes; }
+        bind "Ctrl Shift h"  { MoveFocus "Left"; }
+        bind "Ctrl Shift j" { MoveFocus "Down"; }
+        bind "Ctrl Shift l" { MoveFocus "Right"; } // not working
+        bind "Ctrl Shift k" { MoveFocus "Up"; }
+    }
+    pane {
+      unbind "x"
+      bind "w" { CloseFocus; SwitchToMode "Normal"; }
+      bind "\\" { ToggleFloatingPanes; SwitchToMode "Normal"; }
+    }
+    shared_except "resize" "locked" {
+        unbind "Ctrl n"
+        bind "Ctrl Shift n" { SwitchToMode "Resize"; }
+        bind "Ctrl Shift =" "Ctrl Shift +" { Resize "Increase"; }
+        bind "Ctrl Shift -" { Resize "Decrease"; }
+    }
+    shared_except "scroll" "locked" {
+        unbind "Ctrl s"
+        bind "Ctrl Shift f" { SwitchToMode "Scroll"; }
+    }
+    shared_except "scroll" {
+        bind "Ctrl h" { MessagePlugin { name "nvim_nav_left"; payload "8"; }; }
+        bind "Ctrl j" { MessagePlugin { name "nvim_nav_down"; payload "10"; }; }
+        bind "Ctrl k" { MessagePlugin { name "nvim_nav_up"; payload "11"; }; }
+        bind "Ctrl l" { MessagePlugin { name "nvim_nav_right"; payload "12"; }; }
+    }
+    shared_except "session" "locked" {
+        unbind "Ctrl o"
+        bind "Ctrl Shift o" { SwitchToMode "Session"; }
+    }
+    shared_except "tab" "locked" {
+        unbind "Ctrl t"
+        bind "Ctrl Shift Alt t" { SwitchToMode "Tab"; }
+        bind "Ctrl Shift t" { NewTab; SwitchToMode "Normal"; }
+    }
+    shared_except "move" "locked" {
+        bind "Ctrl Shift m" { SwitchToMode "Move"; }
+    }
+    shared_except "tmux" "locked" {
+        unbind "Ctrl b"
+        bind "Ctrl Shift b" { SwitchToMode "Tmux"; }
+    }
+    scroll {
+      unbind "s"
+      bind "/" { SwitchToMode "EnterSearch"; SearchInput 0; }
+    }
+    search {
+        bind "q" { SwitchToMode "Normal"; }
+    }
+}
+
+plugins {
+    zjstatus location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
+    }
+    zjstatus-hints location="https://github.com/b0o/zjstatus-hints/releases/latest/download/zjstatus-hints.wasm" {
+        max_length 0 // 0 = unlimited
+        overflow_str "..."
+        pipe_name "zjstatus_hints"
+        hide_in_base_mode true
+    }
+    nvim-nav location="https://github.com/sharph/zellij-nvim-nav-plugin/releases/latest/download/zellij-nvim-nav-plugin.wasm"
+}
+
+load_plugins {
+    zjstatus
+    zjstatus-hints
+    nvim-nav
 }

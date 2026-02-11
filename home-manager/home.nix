@@ -528,12 +528,6 @@ rec {
         enable = !setup.wsl;
         source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
       };
-      "autostart/kitty.desktop" = {
-        enable = !setup.wsl;
-        text = builtins.replaceStrings [ "\nExec=kitty" ] [ "\nExec=kitty --title main" ] (
-          builtins.readFile "${pkgs.kitty}/share/applications/kitty.desktop"
-        );
-      };
       "autostart/ghostty.desktop" = {
         enable = !setup.wsl;
         text = builtins.replaceStrings [ "/bin/ghostty" ] [ "/bin/ghostty --title=main" ] (

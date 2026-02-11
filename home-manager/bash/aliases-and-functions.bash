@@ -124,3 +124,15 @@ Ctrl Shift o => Session
 Ctrl Shift p => Pane
 Ctrl Shift q => Quit"
 }
+
+function ocr {
+  if ! [ -v 1 ]; then
+    echo "Call this with the image file path, e.g.: 'ocr file.jpg'" >&2
+    exit 1
+  fi
+  if ! [ -f "$1" ]; then
+    echo "File $1 does not exist." >&2
+    exit 1
+  fi
+  tesseract -l por "$1" /tmp/t &>/dev/null && cat /tmp/t.txt && cat /tmp/t.txt | clip && rm /tmp/t.txt
+}

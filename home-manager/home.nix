@@ -387,7 +387,9 @@ rec {
 
                 # beginning of .bashrc config
                 if [[ $- == *i* ]] && [ -t 1 ] && [ "xterm-ghostty" = "$TERM" ] && hash zellij 2> /dev/null; then
-                  export ZELLIJ_AUTO_EXIT=true
+                  if ! [ -f ~/.config/zellij/.zellij_noautoexit ]; then
+                    export ZELLIJ_AUTO_EXIT=true
+                  fi
                   eval "$(zellij setup --generate-auto-start bash)"
                 fi
                 unset MAILCHECK

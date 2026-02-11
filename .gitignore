@@ -5,3 +5,4 @@ kitty-wsl.conf
 *.rej
 *.orig
 result
+.zellij*

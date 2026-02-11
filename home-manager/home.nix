@@ -530,12 +530,16 @@ rec {
       };
       "autostart/ghostty.desktop" = {
         enable = !setup.wsl;
-        text = builtins.replaceStrings [ "/bin/ghostty" ] [ "/bin/ghostty --title=main" ] (
-          builtins.readFile
-            "${
-              inputs.ghostty.packages.${pkgs.system}.ghostty-releasefast
-            }/share/applications/com.mitchellh.ghostty.desktop" # todo: use pkgs.ghostty when 1.3.0 is released
-        );
+        text =
+          builtins.replaceStrings
+            [ "/bin/ghostty --gtk-single-instance=true" ]
+            [ "/bin/ghostty --gtk-single-instance=true --title=main" ]
+            (
+              builtins.readFile
+                "${
+                  inputs.ghostty.packages.${pkgs.system}.ghostty-releasefast
+                }/share/applications/com.mitchellh.ghostty.desktop" # todo: use pkgs.ghostty when 1.3.0 is released
+            );
       };
       "autostart/activitywatch.desktop" = {
         enable = !setup.wsl;

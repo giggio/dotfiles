@@ -243,6 +243,7 @@ rec {
           export LOCATE_PATH=$XDG_CACHE_HOME/mlocate.db
 
           source "${mkOutOfStoreSymlinkRelative "bash/aliases-and-functions.bash"}"
+          my/ble-hook/rename-zellij-tab-after
 
           source "$(blesh-share)/ble.sh"
           # end of .bashrc

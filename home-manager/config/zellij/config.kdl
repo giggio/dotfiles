@@ -7,6 +7,10 @@ session_serialization false
 pane_viewport_serialization false
 pane_viewport_serialization 100
 serialization_interval 60
+// todo: reenable kitty protocol when fixed (missing ctrl+enter):
+// https://github.com/zellij-org/zellij/issues/3540
+// also: https://github.com/zellij-org/zellij/issues/4159
+support_kitty_keyboard_protocol false
 
 ui {
     pane_frames {

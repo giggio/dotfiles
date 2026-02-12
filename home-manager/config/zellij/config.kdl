@@ -65,6 +65,10 @@ keybinds {
         bind "Ctrl Shift Tab" { GoToPreviousTab; }
         bind "Ctrl Tab" { GoToNextTab; }
     }
+    locked {
+        unbind "Ctrl g"
+        bind "Ctrl Shift g" { SwitchToMode "Normal"; }
+    }
     shared_except "pane" "locked" {
         unbind "Ctrl p"
         bind "Ctrl Shift p" { SwitchToMode "Pane"; }
@@ -73,7 +77,7 @@ keybinds {
         bind "Ctrl Shift \\" { ToggleFloatingPanes; }
         bind "Ctrl Shift h"  { MoveFocus "Left"; }
         bind "Ctrl Shift j" { MoveFocus "Down"; }
-        bind "Ctrl Shift l" { MoveFocus "Right"; } // not working
+        bind "Ctrl Shift l" { MoveFocus "Right"; }
         bind "Ctrl Shift k" { MoveFocus "Up"; }
     }
     pane {
@@ -92,12 +96,13 @@ keybinds {
         bind "Ctrl Shift s" { SwitchToMode "Scroll"; }
         bind "Ctrl Shift f" { EditScrollback; } // will open less // todo: use raw when https://github.com/zellij-org/zellij/issues/3937 closes
     }
-    shared_except "scroll" {
-        bind "Ctrl h" { MessagePlugin { name "nvim_nav_left"; payload "8"; }; }
-        bind "Ctrl j" { MessagePlugin { name "nvim_nav_down"; payload "10"; }; }
-        bind "Ctrl k" { MessagePlugin { name "nvim_nav_up"; payload "11"; }; }
-        bind "Ctrl l" { MessagePlugin { name "nvim_nav_right"; payload "12"; }; }
-    }
+    // todo: reenable when https://github.com/zellij-org/zellij/issues/4699 is fixed
+    // shared_except "scroll" {
+    //     bind "Ctrl h" { MessagePlugin { name "nvim_nav_left"; payload "8"; }; }
+    //     bind "Ctrl j" { MessagePlugin { name "nvim_nav_down"; payload "10"; }; }
+    //     bind "Ctrl k" { MessagePlugin { name "nvim_nav_up"; payload "11"; }; }
+    //     bind "Ctrl l" { MessagePlugin { name "nvim_nav_right"; payload "12"; }; }
+    // }
     shared_except "session" "locked" {
         unbind "Ctrl o"
         bind "Ctrl Shift o" { SwitchToMode "Session"; }
@@ -108,6 +113,7 @@ keybinds {
         bind "Ctrl Shift t" { NewTab; SwitchToMode "Normal"; }
     }
     shared_except "move" "locked" {
+        unbind "Ctrl h"
         bind "Ctrl Shift m" { SwitchToMode "Move"; }
     }
     shared_except "tmux" "locked" {

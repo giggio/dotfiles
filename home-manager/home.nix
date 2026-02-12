@@ -355,6 +355,7 @@ rec {
         let
           bashSessionVariables = {
             # environment variables to add only to .bashrc
+            EDITOR = "nvim"; # adding again, as zellij will overwrite it, so that the pager works
             PATH = "$HOME/.local/bin:$PATH"; # this is here so it is added before the other paths
             NAVI_PATH =
               let
@@ -370,6 +371,8 @@ rec {
             [
               ''
                 # beginning of .bashrc
+
+                unset LESS # set by zellij
 
                 # Shell session variables:
               ''
@@ -390,7 +393,8 @@ rec {
                   if ! [ -f ~/.config/zellij/.zellij_noautoexit ]; then
                     export ZELLIJ_AUTO_EXIT=true
                   fi
-                  eval "$(zellij setup --generate-auto-start bash)"
+                  # using less as EDITOR so that EditScrollback works
+                  LESS="--chop-long-lines --use-color -R +G" EDITOR=less eval "$(zellij setup --generate-auto-start bash)"
                 fi
                 unset MAILCHECK
                 # If not running interactively, don't do anything

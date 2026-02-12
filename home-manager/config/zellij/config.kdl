@@ -89,7 +89,8 @@ keybinds {
     }
     shared_except "scroll" "locked" {
         unbind "Ctrl s"
-        bind "Ctrl Shift f" { SwitchToMode "Scroll"; }
+        bind "Ctrl Shift s" { SwitchToMode "Scroll"; }
+        bind "Ctrl Shift f" { EditScrollback; } // will open less // todo: use raw when https://github.com/zellij-org/zellij/issues/3937 closes
     }
     shared_except "scroll" {
         bind "Ctrl h" { MessagePlugin { name "nvim_nav_left"; payload "8"; }; }

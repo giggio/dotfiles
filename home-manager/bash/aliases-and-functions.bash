@@ -66,6 +66,9 @@ function my/ble-hook/rename-zellij-tab-before {
     dir="${PWD##*/}"
     tab_name=" $dir"
     ;;
+  make)
+    tab_name=" $1"
+    ;;
   ssh)
     while [ "$#" -gt 0 ]; do
       case "$1" in

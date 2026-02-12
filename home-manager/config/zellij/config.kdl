@@ -30,6 +30,8 @@ keybinds {
         bind "Ctrl Shift 8" { GoToTab 8; }
         bind "Ctrl Shift 9" { GoToTab 9; }
         bind "Ctrl Shift 0" { GoToTab 10; }
+        bind "Ctrl <" { MoveTab "Left"; }
+        bind "Ctrl >" { MoveTab "Right"; }
     }
     shared_except "locked" {
         unbind "Ctrl q"

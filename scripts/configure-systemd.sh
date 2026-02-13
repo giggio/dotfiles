@@ -59,18 +59,6 @@ if $VERBOSE; then
   fi
 fi
 
-function mask_service {
-  for SERVICE in "$@"; do
-    if systemctl cat "$SERVICE" &> /dev/null; then
-      for ACTION in stop mask; do
-        writeBlue "Running systemctl $ACTION $SERVICE..."
-        systemctl --user $ACTION "$SERVICE"
-        writeBlue "Runned systemctl $ACTION $SERVICE."
-      done
-    fi
-  done
-}
-
 function mask_user_service {
   for SERVICE in "$@"; do
     if systemctl --user cat "$SERVICE" &> /dev/null; then
@@ -130,6 +118,7 @@ function create_systemd_script_hooks {
 if [ "$EUID" == '0' ]; then
   create_systemd_script_hooks
 else
+  # remove when issue implemented: https://github.com/nix-community/home-manager/issues/8739
   if $WSL; then
     mask_user_service gpg-agent-browser.socket gpg-agent-extra.socket gpg-agent-ssh.socket gpg-agent.socket dirmngr.socket gpg-agent dirmngr ssh-agent
   else

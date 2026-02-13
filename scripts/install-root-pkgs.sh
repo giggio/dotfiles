@@ -225,6 +225,11 @@ fi
 if ! [ -f /etc/bash.bashrc.backup-before-nix ] && ! [ -d /nix/ ]; then
   writeBlue "Install Nix."
   sh <(curl -L https://nixos.org/nix/install) --daemon --yes
+elif $UPDATE; then
+  writeBlue "Update Nix."
+  nix-env --install --file '<nixpkgs>' --attr nix cacert -I nixpkgs=channel:nixpkgs-unstable
+  systemctl daemon-reload
+  systemctl restart nix-daemon
 elif $VERBOSE; then
   writeBlue "Not installing Nix, it is already installed."
 fi

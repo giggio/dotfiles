@@ -333,6 +333,7 @@ let
       coolercontrol.coolercontrol-gui # Monitor and control your cooling devices (GUI) https://gitlab.com/coolercontrol/coolercontrol
       browsh # Fully-modern text-based browser, rendering to TTY and browsers https://www.brow.sh/
       # dotnet # see ./pkgs/dotnet
+      gitui # Blazing fast terminal-ui for git written in rust https://github.com/gitui-org/gitui
       # end of common non basic packages
     ]
     ++ (

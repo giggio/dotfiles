@@ -564,6 +564,7 @@ rec {
       "burn-my-windows/profiles/open.conf".source = ./dconf/cfg/burn-open.conf;
       "burn-my-windows/profiles/burn-app-brave.conf".source = ./dconf/cfg/burn-app-brave.conf;
       "alacritty".source = mkOutOfStoreSymlinkRelative "config/alacritty";
+      "gitui/key_bindings.ron".source = mkOutOfStoreSymlinkRelative "config/gitui-keybindings.ron";
       "ghostty/config".source = mkOutOfStoreSymlinkRelative "config/ghostty-config";
       "navi/config.yaml".source = ./config/navi-config.yaml;
       "terminator/config".source = ./config/terminator-config;

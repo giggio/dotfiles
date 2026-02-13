@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  pkgs-stable,
   lib,
   inputs,
   setup,
@@ -24,10 +23,13 @@ let
     path: config.lib.file.mkOutOfStoreSymlink (mkHomeManagerRelativePath path);
 in
 rec {
-  imports = (
+  imports = [
+    ./systemd.nix
+    ./pkgs.nix
+  ]
+  ++ (
     if setup.wsl then
-      [
-      ]
+      [ ]
     else
       [
         ./dconf/dconf.nix
@@ -83,13 +85,6 @@ rec {
       package = pkgs.adwaita-icon-theme;
       name = "Adwaita";
       size = 22;
-    };
-    packages = import ./pkgs.nix {
-      inherit config;
-      inherit pkgs;
-      inherit pkgs-stable;
-      inherit lib;
-      inherit setup;
     };
 
     shell = {
@@ -814,10 +809,5 @@ rec {
       };
     };
 
-  };
-
-  systemd = import ./systemd.nix {
-    inherit setup;
-    inherit pkgs;
   };
 }

@@ -1,7 +1,6 @@
 {
-  config,
   pkgs,
-  pkgs-stable,
+  # pkgs-stable,
   lib,
   setup,
   ...
@@ -472,4 +471,6 @@ let
   );
   all_packages = basic_pkgs ++ non_basic_pkgs ++ stable_basic_pkgs ++ stable_non_basic_pkgs;
 in
-all_packages
+{
+  home.packages = all_packages;
+}

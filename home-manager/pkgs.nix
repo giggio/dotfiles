@@ -334,6 +334,7 @@ let
       browsh # Fully-modern text-based browser, rendering to TTY and browsers https://www.brow.sh/
       # dotnet # see ./pkgs/dotnet
       gitui # Blazing fast terminal-ui for git written in rust https://github.com/gitui-org/gitui
+      dysk # A linux utility to get information on filesystems, like df but better https://github.com/Canop/dysk
       # end of common non basic packages
     ]
     ++ (

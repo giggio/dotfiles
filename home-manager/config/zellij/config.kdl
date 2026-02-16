@@ -55,7 +55,7 @@ keybinds {
         unbind "Alt p"
         unbind "Alt Shift p"
         bind "Ctrl Shift g" { SwitchToMode "Locked"; }
-        bind "Ctrl Shift q" { Quit; }
+        // bind "Ctrl Shift q" { Quit; }
         // bind "Alt f" { ToggleFloatingPanes; }
         // bind "Alt n" { NewPane; }
         bind "Ctrl Shift ," { MoveTab "Left"; }

@@ -127,6 +127,8 @@ rec {
       ".local/bin/hm".source = ./bin/hm;
       ".local/bin/sm".source = ./bin/sm;
       ".local/bin/updatedb_local".source = ./bin/updatedb_local;
+      ".local/bin/git-browse".source = ./bin/git-browse;
+      ".local/bin/git-http".source = ./bin/git-http;
       ".local/share/npm/etc/npmrc".text = "sign-git-tag = true";
       ".hushlogin".text = "";
       ".XCompose".source = "${pkgs.custom-xcompose}/lib/.XCompose";

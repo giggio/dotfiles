@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+git-browse() {
+  local remote
+  if remote=$(git-http); then
+    xdg-open "$remote"
+  fi
+}
+git-browse "$@"

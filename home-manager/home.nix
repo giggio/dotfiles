@@ -129,6 +129,8 @@ rec {
       ".local/bin/updatedb_local".source = ./bin/updatedb_local;
       ".local/bin/git-browse".source = ./bin/git-browse;
       ".local/bin/git-http".source = ./bin/git-http;
+      ".local/bin/newgidmap".source = config.lib.file.mkOutOfStoreSymlink "/usr/bin/newgidmap";
+      ".local/bin/newuidmap".source = config.lib.file.mkOutOfStoreSymlink "/usr/bin/newuidmap";
       ".local/share/npm/etc/npmrc".text = "sign-git-tag = true";
       ".hushlogin".text = "";
       ".XCompose".source = "${pkgs.custom-xcompose}/lib/.XCompose";

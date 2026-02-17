@@ -120,6 +120,7 @@ pkg-config
 scdaemon
 socat
 software-properties-common
+uidmap
 vim
 wget" | sort)" ''
 

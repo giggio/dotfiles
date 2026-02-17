@@ -335,6 +335,7 @@ let
       # dotnet # see ./pkgs/dotnet
       gitui # Blazing fast terminal-ui for git written in rust https://github.com/gitui-org/gitui
       dysk # A linux utility to get information on filesystems, like df but better https://github.com/Canop/dysk
+      buildah # A tool that facilitates building OCI images https://github.com/containers/buildah
       # end of common non basic packages
     ]
     ++ (

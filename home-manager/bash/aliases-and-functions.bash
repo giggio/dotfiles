@@ -116,3 +116,11 @@ function ocr {
   fi
   tesseract -l por "$1" /tmp/t &>/dev/null && cat /tmp/t.txt && cat /tmp/t.txt | clip && rm /tmp/t.txt
 }
+
+function add {
+  if ! [ -v 1 ]; then
+    git add :/
+    return
+  fi
+  git add "$@"
+}

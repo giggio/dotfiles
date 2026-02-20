@@ -310,9 +310,8 @@ rec {
             l = "ls -CF";
             cls = "clear";
             alert = ''notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e ";\";";s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//";\";";)"'';
-            add = "git add";
             st = "git status";
-            log = "git log";
+            log = "git log -n5";
             ci = "git commit";
             push = "git push";
             pushf = "git push --force-with-lease";
@@ -320,8 +319,7 @@ rec {
             pull = "git pull";
             fixup = "git fixup";
             dif = "git diff";
-            pushsync = "git push --set-upstream origin `git rev-parse --abbrev-ref HEAD`";
-            # git = "hub"; # now using a function, see ./bash/aliases-and-functions.bash
+            rst = ''git fetch origin && git reset --hard "origin/$(git rev-parse --abbrev-ref HEAD)"'';
             istio = "istioctl";
             tf = "terraform";
             "cd-" = "cd -";

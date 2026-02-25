@@ -1,6 +1,6 @@
 {
   pkgs,
-  # pkgs-stable,
+  pkgs-stable,
   lib,
   setup,
   ...
@@ -82,7 +82,6 @@ let
       nodePackages.yarn # Fast, reliable, and secure dependency management for JavaScript https://yarnpkg.com/
       loadtest # HTTP load testing tool https://github.com/alexfernandez/loadtest
       prettier-plugin-awk # Prettier plugin for awk https://github.com/Beaglefoot/prettier-plugin-awk
-      node2nix # Generate Nix expressions to build NPM packages https://github.com/svanderburg/node2nix
       nodePackages.prettier # Opinionated code formatter https://prettier.io/
       prettierd # prettier, as a daemon, for improved formatting speed https://github.com/fsouza/prettierd
       nodePackages.eslint # AST-based pattern checker for JavaScript https://eslint.org/
@@ -274,7 +273,7 @@ let
       w3m # Text-based web browser https://github.com/tats/w3m
       temurin-bin-25 # Eclipse Temurin, Java Development Kit https://adoptium.net/
       maven # Build automation tool for Java https://maven.apache.org/
-      (azure-cli.withExtensions [ azure-cli.extensions.containerapp ]) # Microsoft Azure command-line interface https://github.com/Azure/azure-cli
+      # azure-cli # Microsoft Azure command-line interface https://github.com/Azure/azure-cli
       kubectl # Kubernetes CLI https://kubernetes.io/
       kubespy # Tools for observing Kubernetes resources in real time https://github.com/pulumi/kubespy
       dive # Tool for exploring each layer in a docker image https://github.com/wagoodman/dive
@@ -367,7 +366,7 @@ let
           doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
           tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
           tesseract # OCR engine https://github.com/tesseract-ocr/tesseract
-          calibre # Comprehensive e-book software https://calibre-ebook.com/
+          # calibre # Comprehensive e-book software https://calibre-ebook.com/ # reenable when https://github.com/nixOS/nixpkgs/issues/493843 is fixed
           # fontconfig # Library for font customization and configuration http://fontconfig.org/ # doesn't make sense to uninstall from Ubuntu as it has a lot of dependencies
           gparted # Graphical disk partitioning tool https://gparted.org/
           terminator # Terminal emulator with support for tiling and tabs https://gnome-terminator.org/
@@ -434,7 +433,7 @@ let
     )
   );
   stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (
-    # with pkgs-stable;
+    with pkgs-stable;
     [
       # common non basic packages (stable)
       # end of common non basic packages (stable)
@@ -448,6 +447,7 @@ let
       else
         [
           # non wsl non basic packages (stable)
+          calibre # Comprehensive e-book software https://calibre-ebook.com/ # remove when https://github.com/nixOS/nixpkgs/issues/493843 is fixed
           # end of non wsl non basic packages (stable)
         ]
     )

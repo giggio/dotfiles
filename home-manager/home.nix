@@ -515,7 +515,6 @@ rec {
 
     ghostty = {
       enable = !setup.wsl;
-      package = inputs.ghostty.packages.${pkgs.system}.ghostty-releasefast; # todo: remove when ghostty 1.3.0 is released
       installBatSyntax = true;
     };
 
@@ -538,12 +537,7 @@ rec {
           builtins.replaceStrings
             [ "/bin/ghostty --gtk-single-instance=true" ]
             [ "/bin/ghostty --gtk-single-instance=true --title=main" ]
-            (
-              builtins.readFile
-                "${
-                  inputs.ghostty.packages.${pkgs.system}.ghostty-releasefast
-                }/share/applications/com.mitchellh.ghostty.desktop" # todo: use pkgs.ghostty when 1.3.0 is released
-            );
+            (builtins.readFile "${pkgs.ghostty}/share/applications/com.mitchellh.ghostty.desktop");
       };
       "autostart/activitywatch.desktop" = {
         enable = !setup.wsl;

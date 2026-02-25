@@ -12,11 +12,6 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ghostty = {
-      # todo: remove when ghostty 1.3.0 is released
-      url = "github:ghostty-org/ghostty";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =

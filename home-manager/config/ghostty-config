@@ -17,7 +17,8 @@ bell-features = no-audio,no-title,no-attention,no-system,no-border
 
 keybind = clear
 keybind = ctrl+shift+F5=reload_config
-keybind = copy=copy_to_clipboard:mixed
+# keybind = copy=copy_to_clipboard:mixed # todo: reenable, only available on 1.3.0
+keybind = copy=copy_to_clipboard
 keybind = paste=paste_from_clipboard
 keybind = ctrl+shift+c=copy_to_clipboard
 keybind = ctrl+shift+v=paste_from_clipboard

@@ -38,6 +38,6 @@ keybind = shift+arrow_down=adjust_selection:down
 # keybind = ctrl+shift+page_down=jump_to_prompt:1
 # keybind = ctrl+shift+f=start_search
 # keybind = escape=end_search
-keybind = ctrl+shift+p=toggle_command_palette
+# keybind = ctrl+shift+p=toggle_command_palette
 
 keybind = ctrl+alt+shift+l=clear_screen

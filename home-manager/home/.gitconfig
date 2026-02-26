@@ -24,6 +24,7 @@
   continue = "-c core.editor=true rebase --continue"
   a = add :/
   hooks = !\"githooks-cli\"
+  rst = "!f() { git fetch origin && git reset --hard \"origin/$(git rev-parse --abbrev-ref HEAD)\"; }; f"
   parse-env-vars = "!f() { \
                      awk '{ \
                        finalstr = $0; \

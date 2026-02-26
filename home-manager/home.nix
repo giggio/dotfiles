@@ -317,9 +317,9 @@ rec {
             pushf = "git push --force-with-lease";
             co = "git checkout";
             pull = "git pull";
-            fixup = "git fixup";
+            fixup = "git fixup"; # see .gitconfig
             dif = "git diff";
-            rst = ''git fetch origin && git reset --hard "origin/$(git rev-parse --abbrev-ref HEAD)"'';
+            rst = "git rst"; # see .gitconfig
             istio = "istioctl";
             tf = "terraform";
             "cd-" = "cd -";

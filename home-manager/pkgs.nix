@@ -306,7 +306,7 @@ let
       gox # Dead simple, no frills Go cross compile tool https://github.com/mitchellh/gox
       manifest-tool # Tool for inspecting and creating manifests for multi-architecture container images https://github.com/estesp/manifest-tool
       shfmt # Shell parser, formatter, and interpreter https://github.com/mvdan/sh
-      neofetch # Fast, highly customizable system info script https://github.com/dylanaraps/neofetch
+      fastfetch # A maintained, feature-rich and performance oriented, neofetch like system information tool https://github.com/fastfetch-cli/fastfetch
       imagemagick # Software suite to create, edit, compose, or convert bitmap images https://imagemagick.org/
       kubectx # Faster way to switch between clusters and namespaces in kubectl https://github.com/ahmetb/kubectx
       lazydocker # Simple terminal UI for docker and docker-compose https://github.com/jesseduffield/lazydocker

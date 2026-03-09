@@ -271,6 +271,9 @@ rec {
             chmod 755 "$XDG_RUNTIME_DIR"
           fi
         fi
+        if [ -z "$DOCKER_HOST" ]; then
+          export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/docker.sock"
+        fi
         # ending of .profile
       '';
       historySize = -1;

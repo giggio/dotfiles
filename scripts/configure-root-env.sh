@@ -103,7 +103,7 @@ else
   fi
 
   if [ -v SUDO_USER ]; then
-    groups_to_add=(docker i2c)
+    groups_to_add=(i2c)
     for group in "${groups_to_add[@]}"; do
       if ! getent group "$group" &> /dev/null; then
         writeBlue "Group $group does not exist."

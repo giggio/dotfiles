@@ -90,6 +90,42 @@
                     WantedBy = [ "default.target" ];
                   };
                 };
+                docker =
+                  let
+                    settingsFormat = pkgs.formats.json { };
+                    daemonSettingsFile = settingsFormat.generate "daemon.json" {
+                      "data-root" = "/var/lib/docker-giggio"; # because the storage-driver can't run on ecryptfs which by default lives on a subdirectory of the home dir
+                      "storage-driver" = "btrfs"; # to match my filesystem and get the best performance
+                    };
+                  in
+                  {
+                    # adapted from https://github.com/NixOS/nixpkgs/blob/fabb8c9/nixos/modules/virtualisation/docker-rootless.nix
+                    Install = {
+                      WantedBy = [ "default.target" ];
+                    };
+                    Unit = {
+                      Description = "Docker Application Container Engine (Rootless)";
+                      # docker-rootless doesn't support running as root.
+                      ConditionUser = "!root";
+                      StartLimitInterval = "60s";
+                      StartLimitBurst = 3;
+                    };
+                    Service = {
+                      Environment = "PATH=/usr/bin"; # needs newuidmap
+                      Type = "notify";
+                      ExecStart = "${pkgs.docker}/bin/dockerd-rootless --config-file=${daemonSettingsFile}";
+                      ExecReload = "${pkgs.procps}/bin/kill -s HUP $MAINPID";
+                      TimeoutSec = 0;
+                      RestartSec = 2;
+                      Restart = "always";
+                      LimitNOFILE = "infinity";
+                      LimitNPROC = "infinity";
+                      LimitCORE = "infinity";
+                      Delegate = true;
+                      NotifyAccess = "all";
+                      KillMode = "mixed";
+                    };
+                  };
               }
             else
               {

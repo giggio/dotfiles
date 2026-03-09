@@ -125,12 +125,6 @@ vim
 wget" | sort)" ''
 
 if ! $WSL; then
-  # docker
-  if ! hash docker 2> /dev/null; then
-    writeBlue "Install Docker."
-    curl -fsSL https://get.docker.com | bash
-  fi
-
   apt_basic_pkgs_to_install_not_wsl=$'\n'kitty-terminfo
   apt_pkgs_to_install_not_wsl=$'\n'systemd-timesyncd
 

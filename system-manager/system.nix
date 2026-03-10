@@ -51,6 +51,7 @@
                   "sensors.d/disabling".source = ./etc/sensors.d/disabling;
                   "systemd/timesyncd.conf.d/local_network.conf".source =
                     ./etc/systemd/timesyncd.conf.d/local_network.conf; # Ubuntu is not picking up DHCP configuration for NTP (option 42)
+                  "sysctl.d/70-ping_group_range.conf".source = ./etc/sysctl.d/70-ping_group_range.conf;
                 };
           in
           all // rog2;
@@ -71,7 +72,12 @@
                 };
                 script =
                   let
-                    all = "";
+                    all = ''
+                      echo "Reloading apparmor rules..."
+                      ${lib.getBin pkgs.apparmor-parser}/bin/apparmor_parser -r /etc/apparmor.d/usr.local.bin.liquidctl
+                      echo "Reloading sysctl config..."
+                      ${lib.getBin pkgs.sysctl}/bin/sysctl --system
+                    '';
                     wsl = if setup.wsl then "" else "";
                     rog2 =
                       if setup.hostname != "rog2" then
@@ -82,8 +88,6 @@
                           udevadm control --reload
                           echo "Triggering udev rules..."
                           udevadm trigger
-                          echo "Reloading apparmor rules..."
-                          ${lib.getBin pkgs.apparmor-parser}/bin/apparmor_parser -r /etc/apparmor.d/usr.local.bin.liquidctl
                         '';
                   in
                   all + wsl + rog2;

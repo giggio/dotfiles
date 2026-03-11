@@ -339,7 +339,7 @@ rec {
             kubectl = "kubecolor";
             http = "xh";
             vim = "nvim";
-            vi = "nvim";
+            vi = "zellij action new-pane --floating --height 100% --width 80% --x 10% --y 0 --name vi --close-on-exit -- nvim";
             cl = "tput clear";
           };
         in

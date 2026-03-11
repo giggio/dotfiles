@@ -1,6 +1,6 @@
 # allows to use docker build with Containerfile
 docker() {
-  if [ "$1" = build ]; then
+  if [ "$1" = build ] && [ -f Containerfile ]; then
     shift
     has_file_arg=false
     for arg in "$@"; do

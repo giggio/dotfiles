@@ -205,6 +205,16 @@
           # };
         };
       };
-
+      security = {
+        enableWrappers = true;
+        wrappers = {
+          ping = {
+            owner = "root";
+            group = "root";
+            capabilities = "cap_net_raw+ep";
+            source = "${pkgs.inetutils}/bin/ping";
+          };
+        };
+      };
     };
 }

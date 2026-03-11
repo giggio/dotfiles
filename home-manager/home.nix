@@ -252,6 +252,7 @@ rec {
         (lib.mkOrder 10000 ''
           # very end of .bashrc
           export PATH="$(printf '%s\n' "$HOME/.local/bin:$PATH" | tr ':' '\n' | awk '!seen[$0]++' | paste -sd: -)"
+          export PATH="$(printf '%s\n' "/run/wrappers/bin:$PATH" | tr ':' '\n' | awk '!seen[$0]++' | paste -sd: -)"
         '')
       ];
       logoutExtra = ''

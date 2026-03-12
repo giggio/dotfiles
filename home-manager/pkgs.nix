@@ -366,7 +366,7 @@ let
           doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
           tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
           tesseract # OCR engine https://github.com/tesseract-ocr/tesseract
-          # calibre # Comprehensive e-book software https://calibre-ebook.com/ # reenable when https://github.com/nixOS/nixpkgs/issues/493843 is fixed
+          calibre # Comprehensive e-book software https://calibre-ebook.com/ # reenable when https://github.com/nixOS/nixpkgs/issues/493843 is fixed
           # fontconfig # Library for font customization and configuration http://fontconfig.org/ # doesn't make sense to uninstall from Ubuntu as it has a lot of dependencies
           gparted # Graphical disk partitioning tool https://gparted.org/
           terminator # Terminal emulator with support for tiling and tabs https://gnome-terminator.org/
@@ -433,7 +433,7 @@ let
     )
   );
   stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (
-    with pkgs-stable;
+    # with pkgs-stable;
     [
       # common non basic packages (stable)
       # end of common non basic packages (stable)
@@ -447,7 +447,6 @@ let
       else
         [
           # non wsl non basic packages (stable)
-          calibre # Comprehensive e-book software https://calibre-ebook.com/ # remove when https://github.com/nixOS/nixpkgs/issues/493843 is fixed
           # end of non wsl non basic packages (stable)
         ]
     )

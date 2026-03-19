@@ -1,6 +1,6 @@
 {
   pkgs,
-  pkgs-stable,
+  # pkgs-stable,
   lib,
   setup,
   ...

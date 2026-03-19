@@ -118,29 +118,5 @@ else
         fi
       fi
     done
-
-    # Move openrgb udev rules file to udev rules directory
-    openrgb_bin=$(su - "$SUDO_USER" -c "which openrgb || true")
-    if [ -n "$openrgb_bin" ]; then
-      openrgb_rules="$(realpath "$(dirname "$(readlink -f "$openrgb_bin")")"/../lib/udev/rules.d/60-openrgb.rules)"
-      if [ -f "$openrgb_rules" ]; then
-        destination_udev_rules=/usr/lib/udev/rules.d/60-openrgb.rules
-        if [ "$(readlink -f /usr/lib/udev/rules.d/60-openrgb.rules)" = "$openrgb_rules" ]; then
-          if $VERBOSE; then
-            writeBlue "OpenRGB udev rules are already linked."
-          fi
-        else
-          writeBlue "Linking OpenRGB udev rules from $openrgb_rules to $destination_udev_rules."
-          ln -fs "$openrgb_rules" $destination_udev_rules
-          writeBlue "Reloading udev rules for openrgb."
-          udevadm control --reload-rules
-          udevadm trigger
-        fi
-      else
-        writeBlue "OpenRGB udev rules do not exist."
-      fi
-    else
-      writeBlue "OpenRGB is not installed."
-    fi
   fi
 fi

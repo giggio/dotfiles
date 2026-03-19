@@ -45,6 +45,8 @@
                 { }
               else
                 {
+                  "udev/rules.d/60-openrgb.rules".source =
+                    "${pkgs.openrgb-with-all-plugins}/lib/udev/rules.d/60-openrgb.rules";
                   # todo: keep this here until liquidctl is updated to run with my water cooler
                   "udev/rules.d/71-liquidctl.rules".source = "${pkgs.liquidctl}/lib/udev/rules.d/71-liquidctl.rules";
                   "apparmor.d/usr.local.bin.liquidctl".source = ./etc/apparmor.d/usr.local.bin.liquidctl;

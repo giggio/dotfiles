@@ -10,9 +10,34 @@
   config =
     let
       system-manager = inputs.system-manager;
+      username = "giggio";
     in
     {
       nixpkgs.hostPlatform = "x86_64-linux";
+
+      users = {
+        users.${username} = {
+          extraGroups = [
+            "i2c"
+            "kvm"
+            "libvirt"
+            "sudo"
+            "users"
+          ];
+          isNormalUser = true;
+          shell = "/bin/bash";
+          group = username;
+          description = "Giovanni Bassi,,,";
+        };
+        groups = {
+          ${username} = { };
+          i2c = { };
+          kvm = { };
+          libvirt = { };
+          sudo = { };
+          users = { };
+        };
+      };
 
       services = { };
 

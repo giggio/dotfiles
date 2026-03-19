@@ -101,22 +101,4 @@ else
   else
     writeYellow "PAM configuration file /etc/pam.d/common-session-noninteractive does not exist."
   fi
-
-  if [ -v SUDO_USER ]; then
-    groups_to_add=(i2c)
-    for group in "${groups_to_add[@]}"; do
-      if ! getent group "$group" &> /dev/null; then
-        writeBlue "Group $group does not exist."
-      else
-        if getent group "$group" | grep -qw "$SUDO_USER"; then
-          if $VERBOSE; then
-            writeBlue "$SUDO_USER is already in $group group."
-          fi
-        else
-          writeBlue "Adding $SUDO_USER to $group group."
-          usermod "$SUDO_USER" -aG "$group"
-        fi
-      fi
-    done
-  fi
 fi

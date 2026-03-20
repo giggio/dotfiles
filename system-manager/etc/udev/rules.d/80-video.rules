@@ -1,0 +1,3 @@
+KERNEL=="video*", ATTR{index}=="0", ATTR{name}=="Logitech BRIO", SYMLINK+="videocam"
+KERNEL=="video*", ATTRS{idProduct}=="0813", ATTRS{idVendor}=="2109", SYMLINK+="videocapturekvm"
+KERNEL=="video*", ATTRS{idProduct}=="2813", ATTRS{idVendor}=="2109", SYMLINK+="videocaptureanalog"

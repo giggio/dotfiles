@@ -74,6 +74,7 @@
                     "${pkgs.openrgb-with-all-plugins}/lib/udev/rules.d/60-openrgb.rules";
                   # todo: keep this here until liquidctl is updated to run with my water cooler
                   "udev/rules.d/71-liquidctl.rules".source = "${pkgs.liquidctl}/lib/udev/rules.d/71-liquidctl.rules";
+                  "udev/rules.d/80-video.rules".source = ./etc/udev/rules.d/80-video.rules;
                   "apparmor.d/usr.local.bin.liquidctl".source = ./etc/apparmor.d/usr.local.bin.liquidctl;
                   "sensors.d/disabling".source = ./etc/sensors.d/disabling;
                   "systemd/timesyncd.conf.d/local_network.conf".source =

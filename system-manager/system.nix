@@ -72,6 +72,9 @@
                 {
                   "udev/rules.d/60-openrgb.rules".source =
                     "${pkgs.openrgb-with-all-plugins}/lib/udev/rules.d/60-openrgb.rules";
+                  "sudoers.d/keepterminfo".text = ''
+                    Defaults env_keep += "TERMINFO TERMINFO_DIRS"
+                  '';
                   # todo: keep this here until liquidctl is updated to run with my water cooler
                   "udev/rules.d/71-liquidctl.rules".source = "${pkgs.liquidctl}/lib/udev/rules.d/71-liquidctl.rules";
                   "udev/rules.d/80-video.rules".source = ./etc/udev/rules.d/80-video.rules;

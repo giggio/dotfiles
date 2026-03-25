@@ -90,7 +90,7 @@ function my/ble-hook/rename-zellij-tab-after {
         dir="$PWD"
       fi
     fi
-    zellij action rename-tab "$dir"
+    zellij action rename-tab "$dir" --tab-id "$(zellij action list-panes --json | jq -r "map(select(.id == $ZELLIJ_PANE_ID))[0].tab_id")"
   fi
 }
 

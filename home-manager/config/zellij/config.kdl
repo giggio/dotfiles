@@ -152,6 +152,7 @@ plugins {
 }
 
 load_plugins {
+    zellij:link
     zjstatus
     zjstatus-hints
     nvim-nav

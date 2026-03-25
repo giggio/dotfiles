@@ -44,9 +44,16 @@
       environment = {
         systemPackages =
           let
-            all = ([
-              system-manager.packages.${system}.default # system-manager binary
-            ]);
+            all = (
+              with pkgs;
+              [
+                system-manager.packages.${system}.default # system-manager binary
+                bat
+                delta
+                fd
+                silver-searcher
+              ]
+            );
             rog2 = lib.lists.optionals (setup.hostname == "rog2") (
               with pkgs;
               [
@@ -73,7 +80,10 @@
                   "udev/rules.d/60-openrgb.rules".source =
                     "${pkgs.openrgb-with-all-plugins}/lib/udev/rules.d/60-openrgb.rules";
                   "sudoers.d/keepterminfo".text = ''
-                    Defaults env_keep += "TERMINFO TERMINFO_DIRS"
+                    Defaults:${username} env_keep += "TERMINFO TERMINFO_DIRS"
+                  '';
+                  "sudoers.d/nix_sm_paths".text = ''
+                    Defaults:${username} secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/run/wrappers/bin:/run/system-manager/sw/bin/"
                   '';
                   # todo: keep this here until liquidctl is updated to run with my water cooler
                   "udev/rules.d/71-liquidctl.rules".source = "${pkgs.liquidctl}/lib/udev/rules.d/71-liquidctl.rules";

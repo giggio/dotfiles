@@ -241,7 +241,17 @@ rec {
 
           export LOCATE_PATH=$XDG_CACHE_HOME/mlocate.db
 
-          source "${mkOutOfStoreSymlinkRelative "bash/aliases-and-functions.bash"}"
+          source "${
+            (pkgs.writeShellApplication {
+              name = "aliases-and-functions.bash";
+              bashOptions = [ ];
+              text = ''
+                # shellcheck disable=SC1090
+                source <(sed 's|zellij |${pkgs.zellij}/bin/zellij |g' "${mkOutOfStoreSymlinkRelative "bash/aliases-and-functions.bash"}")
+              '';
+            })
+          }/bin/aliases-and-functions.bash"
+
           my/ble-hook/rename-zellij-tab-after
 
           source "$(blesh-share)/ble.sh"
@@ -345,7 +355,7 @@ rec {
             kubectl = "kubecolor";
             http = "xh";
             vim = "nvim";
-            vi = "zellij action new-pane --floating --height 100% --width 80% --x 10% --y 0 --name vi --close-on-exit -- nvim 1>/dev/null";
+            vi = "${pkgs.zellij}/bin/zellij action new-pane --floating --height 100% --width 80% --x 10% --y 0 --name vi --close-on-exit -- nvim 1>/dev/null";
             cl = "tput clear";
           };
         in

@@ -131,6 +131,7 @@ rec {
       ".local/bin/git-http".source = ./bin/git-http;
       ".local/bin/newgidmap".source = config.lib.file.mkOutOfStoreSymlink "/usr/bin/newgidmap";
       ".local/bin/newuidmap".source = config.lib.file.mkOutOfStoreSymlink "/usr/bin/newuidmap";
+      ".local/bin/nvim-scrollback".source = config.lib.file.mkOutOfStoreSymlink ./bin/nvim-scrollback;
       ".local/share/npm/etc/npmrc".text = "sign-git-tag = true";
       ".hushlogin".text = "";
       ".XCompose".source = "${pkgs.custom-xcompose}/lib/.XCompose";

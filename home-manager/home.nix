@@ -245,6 +245,11 @@ rec {
           my/ble-hook/rename-zellij-tab-after
 
           source "$(blesh-share)/ble.sh"
+          if [ "$TERM" != "dumb" ] && [ ! -v STARSHIP_DISABLE ]; then
+            eval "$(${lib.getExe pkgs.starship} init bash --print-full-init)"
+          else
+            export PS1="$ "
+          fi
           # end of .bashrc
 
           # beginning of configurations coming from other options, like gpg-agent, direnv and zoxide
@@ -455,7 +460,10 @@ rec {
       '';
     };
 
-    starship.enable = true;
+    starship = {
+      enable = true;
+      enableBashIntegration = false; # done manually so it can be disabled
+    };
 
     gpg = {
       enable = true;

@@ -136,7 +136,7 @@ rec {
       ".local/share/npm/etc/npmrc".text = "sign-git-tag = true";
       ".hushlogin".text = "";
       ".XCompose".source = "${pkgs.custom-xcompose}/lib/.XCompose";
-      ".tmux.conf".text = ''
+      ".tmux.conf".text = /* bash */ ''
         set -g default-terminal "screen-256color"
         set-option -g default-shell /bin/bash
         set -g history-limit 10000
@@ -207,7 +207,7 @@ rec {
     bash = {
       enable = true;
       initExtra = lib.mkMerge [
-        ''
+        /* bash */ ''
           # end of nix configuration
 
           # ending of .bashrc:
@@ -271,19 +271,19 @@ rec {
 
           # beginning of configurations coming from other options, like gpg-agent, direnv and zoxide
         ''
-        (lib.mkOrder 10000 ''
+        (lib.mkOrder 10000 /* bash */ ''
           # very end of .bashrc
           export PATH="$(printf '%s\n' "$HOME/.local/bin:$PATH" | tr ':' '\n' | awk '!seen[$0]++' | paste -sd: -)"
           export PATH="$(printf '%s\n' "/run/wrappers/bin:$PATH" | tr ':' '\n' | awk '!seen[$0]++' | paste -sd: -)"
         '')
       ];
-      logoutExtra = ''
+      logoutExtra = /* bash */ ''
         # when leaving the console clear the screen to increase privacy
         if [ "$SHLVL" = 1 ]; then
           [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
         fi
       '';
-      profileExtra = ''
+      profileExtra = /* bash */ ''
         # beginning of .profile
         umask 022
         if ! [ -v XDG_RUNTIME_DIR ]; then
@@ -410,7 +410,7 @@ rec {
             ]
             (lib.mapAttrsToList (k: v: "export ${k}=${v}") bashSessionVariables)
             [
-              ''
+              /* bash */ ''
 
                 # beginning of .bashrc config
                 if [[ $- == *i* ]] && [ -t 1 ] && [ "xterm-ghostty" = "$TERM" ] && hash zellij 2> /dev/null; then
@@ -459,17 +459,17 @@ rec {
 
     nushell = {
       enable = true;
-      extraConfig = ''
+      extraConfig = /* nu */ ''
         # beginning of extra nushell configuration
         source ${home.homeDirectory}/.dotfiles/nuscripts/config.nu
         # end of extra nushell configuration
       '';
-      extraEnv = ''
+      extraEnv = /* bash */ ''
         # beginning of extra nushell environment
         source ${home.homeDirectory}/.dotfiles/nuscripts/env.nu
         # end of extra nushell environment
       '';
-      extraLogin = ''
+      extraLogin = /* nu */ ''
         # beginning of extra nushell login
         ${lib.concatStringsSep "\n" (
           lib.mapAttrsToList (k: v: "$env.${k} = \"${v}\"") shellSessionVariables
@@ -600,7 +600,7 @@ rec {
       "carapace/overlays".source = ./config/carapace/overlays;
       "carapace/specs".source = ./config/carapace/specs;
       "mimeapps.list".force = true; # overwrite the default file which keeps being recreated by Ubuntu
-      "blesh/init.sh".text = ''
+      "blesh/init.sh".text = /* bash */ ''
         ble-import integration/zoxide
         ble-import integration/nix-completion.bash
         ble-import vim-airline

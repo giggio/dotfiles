@@ -6,3 +6,4 @@ kitty-wsl.conf
 *.orig
 result
 .zellij*
+.direnv

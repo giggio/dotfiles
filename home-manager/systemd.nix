@@ -1,4 +1,9 @@
-{ setup, pkgs, ... }:
+{
+  setup,
+  pkgs,
+  config,
+  ...
+}:
 
 {
   systemd = {
@@ -244,6 +249,10 @@
           wsl = if setup.wsl then { } else { };
         in
         all // wsl;
+
+      tmpfiles.rules = [
+        "d ${config.home.homeDirectory}/.ssh/config.d/ 0700 ${config.home.username} ${config.home.username} -"
+      ];
     };
   };
 }

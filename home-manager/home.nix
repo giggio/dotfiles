@@ -26,6 +26,7 @@ rec {
   imports = [
     ./systemd.nix
     ./pkgs.nix
+    inputs.sops-nix.homeManagerModules.sops
   ]
   ++ (
     if setup.wsl then
@@ -159,6 +160,11 @@ rec {
         set bell-style none
       '';
       ".vimrc".text = "source ~/.vim/init.vim";
+      ".ssh/config" = {
+        text = "Include ~/.ssh/config.d/*.conf";
+      };
+      ".ssh/config.d/base.conf".source =
+        config.lib.file.mkOutOfStoreSymlink config.sops.secrets.ssh_config.path;
     };
 
     activation = {
@@ -315,6 +321,7 @@ rec {
               };
           wslOnly = if setup.wsl then { } else { };
           common = {
+            ssh = "ssh -F ~/.ssh/config"; # make my ssh config the one with the most priority
             start = "xdg-open";
             trash = "trash-put";
             "??" = "ollama run --keepalive=-1s linus"; # see https://github.com/giggio/ollama_models
@@ -830,4 +837,13 @@ rec {
     };
 
   };
+
+  sops = {
+    defaultSopsFile = ./secrets/home.yaml;
+    secrets = {
+      "ssh_config" = { };
+    };
+    gnupg.home = "${home.homeDirectory}/.gnupg";
+  };
+
 }

@@ -8,6 +8,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -112,5 +116,16 @@
             };
           };
         };
+      devShells = {
+        ${system}.default = pkgs.mkShell {
+          name = "Image build environment";
+          buildInputs = with pkgs; [
+            sops
+          ];
+          shellHook = ''
+            echo "Welcome to dotfiles!"
+          '';
+        };
+      };
     };
 }

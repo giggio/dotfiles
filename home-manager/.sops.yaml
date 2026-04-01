@@ -1,0 +1,7 @@
+keys:
+  - &giggio 275F6749AFD2379D1033548C1237AB122E6F4761
+creation_rules:
+  - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+      - pgp:
+          - *giggio

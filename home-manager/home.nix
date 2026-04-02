@@ -16,6 +16,7 @@ let
     FZF_DEFAULT_COMMAND = "'fd --type file --color=always --exclude .git'";
     FZF_DEFAULT_OPTS = "--ansi";
     FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
+    GIT_SSH_COMMAND = ''"${pkgs.openssh}/bin/ssh -F ~/.ssh/config"'';
   };
   homeManagerConfigPath = "${config.home.homeDirectory}/.dotfiles/home-manager";
   mkHomeManagerRelativePath = path: "${homeManagerConfigPath}/${path}";

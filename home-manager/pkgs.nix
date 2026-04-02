@@ -35,7 +35,7 @@ let
       pinentry-gnome3 # GnuPG's interface to passphrase input https://gnupg.org/
       vim-full # Most popular clone of the VI editor https://www.vim.org/
       htop # Interactive process viewer https://htop.dev/
-      gitFull # Distributed version control system https://git-scm.com/
+      git # Distributed version control system https://git-scm.com/
       nix-index # Files database for nixpkgs https://github.com/nix-community/nix-index
       xdg-utils # Set of command line tools that assist applications with desktop integration tasks https://www.freedesktop.org/wiki/Software/xdg-utils/
       nil # Language server for Nix https://github.com/oxalica/nil

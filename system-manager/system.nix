@@ -48,11 +48,23 @@
               with pkgs;
               [
                 system-manager.packages.${system}.default # system-manager binary
-                bat
-                delta
-                fd
-                silver-searcher
+                bat # A cat clone with wings  https://github.com/sharkdp/bat
+                colorized-logs # Tools for logs with ANSI color https://github.com/kilobyte/colorized-logs
+                delta # Syntax-highlighting pager for git and diff output https://github.com/dandavison/delta
+                fd # Simple, fast and user-friendly alternative to find https://github.com/sharkdp/fd
+                git # Distributed version control system https://git-scm.com/
+                htop # Interactive process viewer https://htop.dev/
+                inetutils # Collection of common network programs https://www.gnu.org/software/inetutils/
+                iproute2 # Collection of utilities for controlling TCP/IP networking and traffic control in Linux https://wiki.linuxfoundation.org/networking/iproute2
+                net-tools # Set of tools for controlling the network subsystem in Linux https://sourceforge.net/projects/net-tools/
+                silver-searcher # Code searching tool similar to Ack, but faster https://github.com/ggreer/the_silver_searcher
+                vim-full # Most popular clone of the VI editor https://www.vim.org/
               ]
+              ++ (with unixtools; [
+                arp
+                netstat
+                route
+              ])
             );
             rog2 = lib.lists.optionals (setup.hostname == "rog2") (
               with pkgs;

@@ -21,8 +21,6 @@ let
           sha256 = "sha256-zkYAvxsmKb7Gb4qNQle4b/nS9VLwBBtHgINvIAKwWes=";
         };
       })
-      terraform # Tool for building, changing, and versioning infrastructure https://www.terraform.io
-      vault # Tool for managing secrets https://www.vaultproject.io
       psmisc # Small useful utilities that use the /proc filesystem https://gitlab.com/psmisc/psmisc
       coreutils-full # GNU Core Utilities https://www.gnu.org/software/coreutils/
       util-linux # System utilities for Linux https://github.com/util-linux/util-linux
@@ -33,16 +31,12 @@ let
       file # Program that shows the type of files https://darwinsys.com/file/
       gnupg # Modern release of the GNU Privacy Guard, a GPL OpenPGP implementation https://gnupg.org/
       pinentry-gnome3 # GnuPG's interface to passphrase input https://gnupg.org/
-      vim-full # Most popular clone of the VI editor https://www.vim.org/
-      htop # Interactive process viewer https://htop.dev/
-      git # Distributed version control system https://git-scm.com/
       nix-index # Files database for nixpkgs https://github.com/nix-community/nix-index
       xdg-utils # Set of command line tools that assist applications with desktop integration tasks https://www.freedesktop.org/wiki/Software/xdg-utils/
       nil # Language server for Nix https://github.com/oxalica/nil
       nixpkgs-fmt # Nix code formatter for nixpkgs https://github.com/nix-community/nixpkgs-fmt
       nixfmt # The official formatter for Nix code https://github.com/NixOS/nixfmt
       iperf # Tool to measure IP bandwidth using UDP or TCP https://sourceforge.net/projects/iperf2/
-      inetutils # Collection of common network programs https://www.gnu.org/software/inetutils/
       jq # Lightweight and flexible command-line JSON processor https://jqlang.github.io/jq/
       mosh # Mobile shell, allows roaming and intelligent local echo https://mosh.org/
       powerline # Ultimate statusline/prompt utility https://github.com/powerline/powerline
@@ -51,15 +45,11 @@ let
       tree # Command to produce a depth indented directory listing https://mama.indstate.edu/users/ice/tree/
       glibcLocales # Locale data for the GNU C Library
       gnumake # Tool which controls the generation of executables and other non-source files https://www.gnu.org/software/make/
-      nettools # Set of tools for controlling the network subsystem in Linux https://sourceforge.net/projects/net-tools/
       eza # Modern replacement for ls https://github.com/eza-community/eza
-      delta # Syntax-highlighting pager for git and diff output https://github.com/dandavison/delta
       carapace # Multi-shell multi-command argument completer https://github.com/carapace-sh/carapace-bin
       fzf # Command-line fuzzy finder https://github.com/junegunn/fzf
       zoxide # Fast cd command that learns your habits https://github.com/ajeetdsouza/zoxide
       navi # Interactive cheatsheet tool for the command-line https://github.com/denisidoro/navi
-      bundix # Creates Nix packages from Gemfiles https://github.com/nix-community/bundix
-      rust-toolchain-fenix # from pkgs/default.nix
       cargo-completions # Shell completions for cargo
       yq-go # Portable command-line YAML processor https://github.com/mikefarah/yq
       tzdata # Time zone and daylight-saving time data https://www.iana.org/time-zones
@@ -68,22 +58,17 @@ let
       docker-client # Pack, ship and run any application as a lightweight container https://www.docker.com/
       docker-compose # Multi-container orchestration for Docker https://github.com/docker/compose
       dust # More intuitive version of du in rust https://github.com/bootandy/dust
-      fd # Simple, fast and user-friendly alternative to find https://github.com/sharkdp/fd
-      just # Just a command runner https://github.com/casey/just
       procs # A modern replacement for ps written in Rust https://github.com/dalance/procs
       tealdeer # Very fast implementation of tldr in Rust https://github.com/dbrgn/tealdeer
       githooks # Simple Git hooks manager https://github.com/gabyx/githooks
       ranger # File manager with minimalistic curses interface https://ranger.github.io/
-      colorized-logs # Tools for logs with ANSI color https://github.com/kilobyte/colorized-logs
       zellij # Terminal workspace with batteries included https://zellij.dev/
       hub # Command-line tool that makes git easier to use with GitHub https://hub.github.com/
       trash-cli # Command line interface to the freedesktop.org trashcan https://github.com/andreafrancia/trash-cli
       nodejs # Event-driven I/O framework for the V8 JavaScript engine https://nodejs.org
-      yarn-berry # Fast, reliable, and secure dependency management for JavaScript https://yarnpkg.com/
       prettier # Opinionated code formatter https://prettier.io/
       eslint # AST-based pattern checker for JavaScript https://eslint.org/
       bash-language-server # Language server for Bash https://github.com/bash-lsp/bash-language-server
-      loadtest # HTTP load testing tool https://github.com/alexfernandez/loadtest
       prettier-plugin-awk # Prettier plugin for awk https://github.com/Beaglefoot/prettier-plugin-awk
       prettierd # prettier, as a daemon, for improved formatting speed https://github.com/fsouza/prettierd
       (bats.withLibraries (p: [
@@ -93,29 +78,18 @@ let
       git-ignore # Interactive CLI to generate .gitignore files https://github.com/sondr3/git-ignore
       http-server # Simple zero-configuration command-line HTTP server https://github.com/http-party/http-server
       cachix # install cache, for example, with: $HOME/.nix-profile/bin/cachix use nix-community
-      (symlinkJoin {
-        # kitty: Modern, hackable, featureful, OpenGL based terminal emulator https://sw.kovidgoyal.net/kitty/
-        name = "kitty-with-python-packages";
-        paths = [ kitty ];
-        nativeBuildInputs = [ makeWrapper ];
-        postBuild = ''
-          wrapProgram $out/bin/kitty --set PYTHONPATH "${python3Packages.wcwidth}/lib/python3.13/site-packages"
-        '';
-      })
+      kitty
       dhcping # Send DHCP request to DHCP server for monitoring purposes https://www.mavetju.org/unix/general.php
       ipcalc # Simple IP network calculator (CIDR) https://gitlab.com/ipcalc/ipcalc
       arp-scan # ARP scanning and fingerprinting tool https://github.com/royhills/arp-scan
       xh # Friendly and fast tool for sending HTTP requests https://github.com/ducaale/xh
       dua # View disk space usage and delete unwanted data, fast https://github.com/Byron/dua-cli
       yazi # Blazing Fast Terminal File Manager
-      kondo # A command-line tool to clean up your code
+      kondo # A command-line tool to clean up your code https://github.com/tbillington/kondo
       universal-ctags # Maintained ctags implementation https://ctags.io/
-      nixd # Nix language server https://github.com/nix-community/nixd/tree/main
       dockerfile-language-server # A language server for Dockerfiles powered by Node.js https://github.com/rcjsuen/dockerfile-language-server
       docker-compose-language-service # Language service for Docker Compose documents https://github.com/microsoft/compose-language-service
       systemd-language-server # Systemd language server https://github.com/psacawa/systemd-language-server
-      omnisharp-roslyn # C# language server https://github.com/OmniSharp/omnisharp-roslyn
-      csharp-ls # C# language server https://github.com/razzmatazz/csharp-language-server
       lldb_20 # for lldb-dab, the debugger adapter protocol server for lldb, used in Rust
       code-lldb # my custom package that extracts the binary
       vscode-js-debug # A DAP-compatible JavaScript debugger https://github.com/microsoft/vscode-js-debug
@@ -127,19 +101,13 @@ let
       mylua # see ./pkgs/default.nix
       emmet-language-server # Language server for emmet.io (Based on VSCode emmet ls) https://github.com/olrtg/emmet-language-server
       vscode-langservers-extracted # vscode-langservers bin collection https://github.com/hrsh7th/vscode-langservers-extracted
-      # todo: revisit cspell-lsp when https://github.com/vlabo/cspell-lsp/issues/13 is fixed
-      # cspell-lsp # A simple source code spell checker for helix (and NeoVim) https://github.com/vlabo/cspell-lsp
       pv # Tool for monitoring the progress of data through a pipeline https://www.ivarch.com/programs/pv.shtml
       sqls # SQL language server written in Go https://github.com/sqls-server/sqls
-      gopls # Official language server for the Go language https://github.com/golang/tools/tree/master/gopls
       bash-language-server # A language server for Bash https://github.com/bash-lsp/bash-language-server
       systemd-language-server # Language Server for Systemd unit files https://github.com/psacawa/systemd-language-server
       yaml-language-server # Language Server for YAML Files https://github.com/redhat-developer/yaml-language-server
-      # roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp
-      fsautocomplete # FsAutoComplete project (FSAC) provides a backend service for rich editing or intellisense features for editors https://github.com/fsharp/FsAutoComplete
       basedpyright # Type checker for the Python language (and lsp) https://github.com/detachhead/basedpyright
       uv # Extremely fast Python package installer and resolver, written in Rust https://docs.astral.sh/uv/
-      powershell-editor-services # Common platform for PowerShell development support in any editor or application https://github.com/PowerShell/PowerShellEditorServices
     ])
     ++ (with llvmPackages_20; [
       clang-tools # Standalone command line tools for C++ development https://clangd.llvm.org/
@@ -196,7 +164,6 @@ let
           nerd-fonts.caskaydia-cove # Nerd Fonts patched version of Cascadia Code
           nerd-fonts.symbols-only # Just the Nerd Font Icons
           smile # Emoji picker https://github.com/mijorus/smile
-          ulauncher # Feature rich application Launcher for Linux https://github.com/Ulauncher/Ulauncher/
         ]
         ++ (with gnomeExtensions; [
           # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
@@ -236,32 +203,20 @@ let
       # common non basic packages
       ookla-speedtest # Command line internet speedtest tool by Ookla https://www.speedtest.net/apps/cli
       slides # Terminal based presentation tool https://github.com/maaslalani/slides
-      mermaid-cli # Generation of diagrams and flowcharts from text https://github.com/mermaid-js/mermaid-cli
       presenterm # Terminal slideshow tool https://github.com/mfontanini/presenterm
-      hugo # Fast and flexible static site generator https://gohugo.io
-      pagefind # Static search library https://pagefind.app/
+      mermaid-cli # Generation of diagrams and flowcharts from text https://github.com/mermaid-js/mermaid-cli
       element-desktop # Feature-rich client for Matrix https://element.io/
       ccd2iso # Converts CCD/IMG CloneCD images to ISO format https://sourceforge.net/projects/ccd2iso/
       iat # ISO9660 analyzer tool https://sourceforge.net/projects/iat.berlios/
       apparmor-utils # Userspace utilities for AppArmor https://gitlab.com/apparmor/apparmor
-      chart-releaser # Hosting Helm Charts via GitHub Pages and Releases https://github.com/helm/chart-releaser
       docker-show-context # Shows docker context in prompt https://github.com/pwaller/docker-show-context
-      deno # Secure runtime for JavaScript and TypeScript https://deno.com/
-      opentofu # Tool for building, changing, and versioning infrastructure safely and efficiently https://opentofu.org/
-      krew # Package manager for kubectl plugins https://krew.sigs.k8s.io/
-      kube-capacity # CLI that provides resource capacity metrics https://github.com/robscott/kube-capacity
-      kail # Kubernetes log viewer https://github.com/boz/kail
-      ketall # Like kubectl get all, but get really all resources https://github.com/corneliusweig/ketall
       ctop # Top-like interface for container metrics https://github.com/bcicen/ctop
-      go # Go Programming Language https://go.dev/
       (lib.hiPrio gcc) # GNU Compiler Collection https://gcc.gnu.org/
-      docker-slim # Minify and secure Docker containers https://github.com/slimtoolkit/slim
       asciinema # Terminal session recorder https://asciinema.org/
       bison # Yacc-compatible parser generator https://www.gnu.org/software/bison/
       cowsay # Program that generates ASCII pictures of a cow with a message https://github.com/piuccio/cowsay
       figlet # Program for making large letters out of ordinary text https://github.com/cmatsuoka/figlet
       fontforge # Font editor https://fontforge.org/
-      # ghostscript # PostScript interpreter https://www.ghostscript.com/ # cups (for printing) depends on it on Ubuntu, so I'll keep it installed there and not on Nix
       gzip # GNU zip compression program https://www.gnu.org/software/gzip/
       inotify-tools # C library and CLI tools providing a simple interface to inotify https://github.com/inotify-tools/inotify-tools
       nmap # Network exploration tool and security / port scanner https://nmap.org/
@@ -269,57 +224,44 @@ let
       ripgrep # Line-oriented search tool that recursively searches your current directory for a regex pattern https://github.com/BurntSushi/ripgrep
       screenfetch # Bash screenshot information tool https://github.com/KittyKatt/screenFetch
       shellcheck # Shell script analysis tool https://www.shellcheck.net/
-      silver-searcher # Code searching tool similar to Ack, but faster https://github.com/ggreer/the_silver_searcher
       w3m # Text-based web browser https://github.com/tats/w3m
-      temurin-bin-25 # Eclipse Temurin, Java Development Kit https://adoptium.net/
-      maven # Build automation tool for Java https://maven.apache.org/
+      browsh # Fully-modern text-based browser, rendering to TTY and browsers https://www.brow.sh/
+      wiki-tui # Simple and easy to use Wikipedia Text User Interface
+      lynx # text web browser https://lynx.invisible-island.net/
       # azure-cli # Microsoft Azure command-line interface https://github.com/Azure/azure-cli
       kubectl # Kubernetes CLI https://kubernetes.io/
-      kubespy # Tools for observing Kubernetes resources in real time https://github.com/pulumi/kubespy
       dive # Tool for exploring each layer in a docker image https://github.com/wagoodman/dive
-      kubernetes-helm # Package manager for Kubernetes https://helm.sh/
       istioctl # Istio command-line tool https://istio.io/
-      tflint # Terraform linter https://github.com/terraform-linters/tflint
       gh # GitHub CLI tool https://cli.github.com/
       github-copilot-cli # GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal. https://github.com/github/copilot-cli
-      k9s # Kubernetes CLI to manage your clusters in style https://k9scli.io/
       awscli2 # Unified tool to manage AWS services https://aws.amazon.com/cli/
       k3d # Helper to run k3s in Docker https://k3d.io/
       act # Run your GitHub Actions locally https://github.com/nektos/act
-      kn # Knative command-line interface https://knative.dev/
-      func # Knative Functions CLI https://github.com/knative/func
       kubecolor # Colorize kubectl output https://github.com/hidetatz/kubecolor
-      k6 # Modern load testing tool, using Go and JavaScript https://k6.io/
       xlsx2csv # Convert Excel XLSX files to CSV format https://github.com/dilshod/xlsx2csv
       clolcat # Like lolcat but faster https://github.com/ooJaan/clolcat
       bandwhich # Terminal bandwidth utilization tool https://github.com/imsnif/bandwhich
+      rust-toolchain-fenix # from pkgs/default.nix
       cargo-update # Cargo subcommand for updating installed crates https://github.com/nabijaczleweli/cargo-update
       cargo-edit # Tool for managing cargo dependencies https://github.com/killercup/cargo-edit
       cargo-expand # Subcommand to show result of macro expansion https://github.com/dtolnay/cargo-expand
       cargo-outdated # Cargo subcommand for displaying outdated dependencies https://github.com/kbknapp/cargo-outdated
       cargo-watch # Watches over your Cargo project's source https://github.com/watchexec/cargo-watch
       cargo-binstall # Install Rust binaries instead of building from source https://github.com/cargo-bins/cargo-binstall
+      cargo-info # Cargo subcommand to show crates info from crates.io
+      rusty-man # Command-line viewer for documentation generated by rustdoc
       gping # Ping, but with a graph https://github.com/orf/gping
       grex # Command-line tool for generating regular expressions https://github.com/pemistahl/grex
       sccache # Compiler caching tool https://github.com/mozilla/sccache
       tokei # Display statistics about your code https://github.com/XAMPPRocky/tokei
-      gox # Dead simple, no frills Go cross compile tool https://github.com/mitchellh/gox
       manifest-tool # Tool for inspecting and creating manifests for multi-architecture container images https://github.com/estesp/manifest-tool
       shfmt # Shell parser, formatter, and interpreter https://github.com/mvdan/sh
       fastfetch # A maintained, feature-rich and performance oriented, neofetch like system information tool https://github.com/fastfetch-cli/fastfetch
-      imagemagick # Software suite to create, edit, compose, or convert bitmap images https://imagemagick.org/
       kubectx # Faster way to switch between clusters and namespaces in kubectl https://github.com/ahmetb/kubectx
       lazydocker # Simple terminal UI for docker and docker-compose https://github.com/jesseduffield/lazydocker
       fabric-ai # Open-source framework for augmenting humans using AI https://github.com/danielmiessler/fabric
       nixpkgs-review # Review pull requests on nixpkgs https://github.com/Mic92/nixpkgs-review
-      bacon # Rust background code checker
-      bacon-ls # Language server for Rust using Bacon diagnostics
-      cargo-info # Cargo subcommand to show crates info from crates.io
-      rusty-man # Command-line viewer for documentation generated by rustdoc
-      wiki-tui # Simple and easy to use Wikipedia Text User Interface
-      lynx # text web browser https://lynx.invisible-island.net/
       fdupes # program for identifying or deleting duplicate files residing within specified directories https://github.com/adrianlopezroche/fdupes
-      wezterm # GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust
       sqlite # Self-contained, serverless, zero-configuration, transactional SQL database engine https://www.sqlite.org/
       ladybird # a truly independent web browser https://ladybird.org/
       ffmpeg # the leading multimedia framework https://www.ffmpeg.org/
@@ -330,7 +272,6 @@ let
       opencode # AI coding agent built for the terminal https://opencode.ai/ https://github.com/sst/opencode
       audacity # Sound editor with graphical UI https://www.audacityteam.org/
       coolercontrol.coolercontrol-gui # Monitor and control your cooling devices (GUI) https://gitlab.com/coolercontrol/coolercontrol
-      browsh # Fully-modern text-based browser, rendering to TTY and browsers https://www.brow.sh/
       # dotnet # see ./pkgs/dotnet
       gitui # Blazing fast terminal-ui for git written in rust https://github.com/gitui-org/gitui
       dysk # A linux utility to get information on filesystems, like df but better https://github.com/Canop/dysk
@@ -347,7 +288,6 @@ let
         [
           # non wsl non basic packages
           dconf2nix # Convert dconf files to Nix expressions https://github.com/gvolpe/dconf2nix
-          slack # Desktop client for Slack https://slack.com/
           discord # All-in-one voice and text chat for gamers https://discord.com/
           obs-studio # Free and open source software for video recording and live streaming https://obsproject.com/
           kdePackages.kdenlive # Video editor by KDE https://kdenlive.org/
@@ -476,3 +416,54 @@ in
 {
   home.packages = all_packages;
 }
+
+# Extra pkgs that were used but are no longer needed to be installed globally
+# but can be installed on local devShells:
+
+# loadtest # HTTP load testing tool https://github.com/alexfernandez/loadtest
+# terraform # Tool for building, changing, and versioning infrastructure https://www.terraform.io
+# vault # Tool for managing secrets https://www.vaultproject.io
+# bundix # Creates Nix packages from Gemfiles https://github.com/nix-community/bundix
+# just # Just a command runner https://github.com/casey/just
+# (symlinkJoin {
+#   # kitty: Modern, hackable, featureful, OpenGL based terminal emulator https://sw.kovidgoyal.net/kitty/
+#   name = "kitty-with-python-packages";
+#   paths = [ kitty ];
+#   nativeBuildInputs = [ makeWrapper ];
+#   postBuild = ''
+#     wrapProgram $out/bin/kitty --set PYTHONPATH "${python3Packages.wcwidth}/lib/python3.13/site-packages"
+#   '';
+# })
+# omnisharp-roslyn # C# language server https://github.com/OmniSharp/omnisharp-roslyn
+# csharp-ls # C# language server https://github.com/razzmatazz/csharp-language-server
+# # roslyn-ls # Language server behind C# Dev Kit for Visual Studio Code https://github.com/dotnet/vscode-csharp
+# fsautocomplete # FsAutoComplete project (FSAC) provides a backend service for rich editing or intellisense features for editors https://github.com/fsharp/FsAutoComplete
+# gopls # Official language server for the Go language https://github.com/golang/tools/tree/master/gopls
+# todo: revisit cspell-lsp when https://github.com/vlabo/cspell-lsp/issues/13 is fixed
+# cspell-lsp # A simple source code spell checker for helix (and NeoVim) https://github.com/vlabo/cspell-lsp
+# ulauncher # Feature rich application Launcher for Linux https://github.com/Ulauncher/Ulauncher/
+# chart-releaser # Hosting Helm Charts via GitHub Pages and Releases https://github.com/helm/chart-releaser
+# deno # Secure runtime for JavaScript and TypeScript https://deno.com/
+# opentofu # Tool for building, changing, and versioning infrastructure safely and efficiently https://opentofu.org/
+# krew # Package manager for kubectl plugins https://krew.sigs.k8s.io/
+# ketall # Like kubectl get all, but get really all resources (krew plugin) https://github.com/corneliusweig/ketall
+# kubespy # Tools for observing Kubernetes resources in real time https://github.com/pulumi/kubespy
+# kubernetes-helm # Package manager for Kubernetes https://helm.sh/
+# kube-capacity # CLI that provides resource capacity metrics https://github.com/robscott/kube-capacity
+# kail # Kubernetes log viewer https://github.com/boz/kail
+# kn # Knative command-line interface https://knative.dev/
+# func # Knative Functions CLI https://github.com/knative/func
+# k9s # Kubernetes CLI to manage your clusters in style https://k9scli.io/
+# go # Go Programming Language https://go.dev/
+# gox # Dead simple, no frills Go cross compile tool https://github.com/mitchellh/gox
+# docker-slim # Minify and secure Docker containers https://github.com/slimtoolkit/slim
+# # ghostscript # PostScript interpreter https://www.ghostscript.com/ # cups (for printing) depends on it on Ubuntu, so I'll keep it installed there and not on Nix
+# temurin-bin-25 # Eclipse Temurin, Java Development Kit https://adoptium.net/
+# maven # Build automation tool for Java https://maven.apache.org/
+# tflint # Terraform linter https://github.com/terraform-linters/tflint
+# k6 # Modern load testing tool, using Go and JavaScript https://k6.io/
+# imagemagick # Software suite to create, edit, compose, or convert bitmap images https://imagemagick.org/
+# bacon # Rust background code checker
+# bacon-ls # Language server for Rust using Bacon diagnostics
+# wezterm # GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust
+# slack # Desktop client for Slack https://slack.com/

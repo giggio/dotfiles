@@ -78,14 +78,14 @@ let
       zellij # Terminal workspace with batteries included https://zellij.dev/
       hub # Command-line tool that makes git easier to use with GitHub https://hub.github.com/
       trash-cli # Command line interface to the freedesktop.org trashcan https://github.com/andreafrancia/trash-cli
-      nodePackages_latest.nodejs # Event-driven I/O framework for the V8 JavaScript engine https://nodejs.org
-      nodePackages.yarn # Fast, reliable, and secure dependency management for JavaScript https://yarnpkg.com/
+      nodejs # Event-driven I/O framework for the V8 JavaScript engine https://nodejs.org
+      yarn-berry # Fast, reliable, and secure dependency management for JavaScript https://yarnpkg.com/
+      prettier # Opinionated code formatter https://prettier.io/
+      eslint # AST-based pattern checker for JavaScript https://eslint.org/
+      bash-language-server # Language server for Bash https://github.com/bash-lsp/bash-language-server
       loadtest # HTTP load testing tool https://github.com/alexfernandez/loadtest
       prettier-plugin-awk # Prettier plugin for awk https://github.com/Beaglefoot/prettier-plugin-awk
-      nodePackages.prettier # Opinionated code formatter https://prettier.io/
       prettierd # prettier, as a daemon, for improved formatting speed https://github.com/fsouza/prettierd
-      nodePackages.eslint # AST-based pattern checker for JavaScript https://eslint.org/
-      nodePackages.bash-language-server # Language server for Bash https://github.com/bash-lsp/bash-language-server
       (bats.withLibraries (p: [
         p.bats-support
         p.bats-assert

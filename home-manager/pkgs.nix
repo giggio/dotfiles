@@ -314,6 +314,8 @@ let
           transmission_4-gtk # Fast, easy and free BitTorrent client https://www.transmissionbt.com/
           transmission-remote-gtk # GTK remote control for the Transmission BitTorrent client https://github.com/transmission-remote-gtk/transmission-remote-gtk
           onedriver # A native Linux filesystem for Microsoft OneDrive https://github.com/jstaf/onedriver
+          kdePackages.filelight # Quickly visualize your disk space usage https://invent.kde.org/utilities/filelight
+          btrfs-assistant # GUI management tool to make managing a Btrfs filesystem easier https://gitlab.com/btrfs-assistant/btrfs-assistant
           # end of non wsl non basic packages
         ]
     )

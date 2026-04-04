@@ -27,6 +27,7 @@ rec {
   imports = [
     ./systemd.nix
     ./pkgs.nix
+    ./programs
     inputs.sops-nix.homeManagerModules.sops
   ]
   ++ (
@@ -631,6 +632,8 @@ rec {
       "kitty".source = mkOutOfStoreSymlinkRelative "config/kitty";
       "nvim".source = mkOutOfStoreSymlinkRelative "config/vimfiles";
       "powershell".source = mkOutOfStoreSymlinkRelative "config/poshfiles";
+      "yazi/material.tmTheme".source = mkOutOfStoreSymlinkRelative "config/yazi/material.tmTheme";
+      "yazi/starship.toml".source = mkOutOfStoreSymlinkRelative "config/yazi/starship.toml";
     };
     dataFile = { };
     desktopEntries =

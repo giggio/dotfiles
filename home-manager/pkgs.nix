@@ -61,7 +61,6 @@ let
       procs # A modern replacement for ps written in Rust https://github.com/dalance/procs
       tealdeer # Very fast implementation of tldr in Rust https://github.com/dbrgn/tealdeer
       githooks # Simple Git hooks manager https://github.com/gabyx/githooks
-      ranger # File manager with minimalistic curses interface https://ranger.github.io/
       zellij # Terminal workspace with batteries included https://zellij.dev/
       hub # Command-line tool that makes git easier to use with GitHub https://hub.github.com/
       trash-cli # Command line interface to the freedesktop.org trashcan https://github.com/andreafrancia/trash-cli
@@ -84,7 +83,6 @@ let
       arp-scan # ARP scanning and fingerprinting tool https://github.com/royhills/arp-scan
       xh # Friendly and fast tool for sending HTTP requests https://github.com/ducaale/xh
       dua # View disk space usage and delete unwanted data, fast https://github.com/Byron/dua-cli
-      yazi # Blazing Fast Terminal File Manager
       kondo # A command-line tool to clean up your code https://github.com/tbillington/kondo
       universal-ctags # Maintained ctags implementation https://ctags.io/
       dockerfile-language-server # A language server for Dockerfiles powered by Node.js https://github.com/rcjsuen/dockerfile-language-server
@@ -108,6 +106,8 @@ let
       yaml-language-server # Language Server for YAML Files https://github.com/redhat-developer/yaml-language-server
       basedpyright # Type checker for the Python language (and lsp) https://github.com/detachhead/basedpyright
       uv # Extremely fast Python package installer and resolver, written in Rust https://docs.astral.sh/uv/
+      imagemagick # Software suite to create, edit, compose, or convert bitmap images https://imagemagick.org/
+      rich-cli # Rich-cli is a command line toolbox for fancy output in the terminal https://github.com/Textualize/rich-cli
     ])
     ++ (with llvmPackages_20; [
       clang-tools # Standalone command line tools for C++ development https://clangd.llvm.org/
@@ -164,6 +164,7 @@ let
           nerd-fonts.caskaydia-cove # Nerd Fonts patched version of Cascadia Code
           nerd-fonts.symbols-only # Just the Nerd Font Icons
           smile # Emoji picker https://github.com/mijorus/smile
+          eog # GNOME image viewer https://gitlab.gnome.org/GNOME/eog
         ]
         ++ (with gnomeExtensions; [
           # gsconnect # todo: not running, see: https://github.com/NixOS/nixpkgs/issues/173301
@@ -462,7 +463,6 @@ in
 # maven # Build automation tool for Java https://maven.apache.org/
 # tflint # Terraform linter https://github.com/terraform-linters/tflint
 # k6 # Modern load testing tool, using Go and JavaScript https://k6.io/
-# imagemagick # Software suite to create, edit, compose, or convert bitmap images https://imagemagick.org/
 # bacon # Rust background code checker
 # bacon-ls # Language server for Rust using Bacon diagnostics
 # wezterm # GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust

@@ -187,7 +187,7 @@ if ! $WSL; then
         writeBlue "Not installing packages with Flatpak, they are all already installed."
       fi
     }
-    install_flatpak_pkgs '' "net.davidotek.pupgui2" "com.microsoft.AzureStorageExplorer"
+    install_flatpak_pkgs '' '' '' # "com.microsoft.AzureStorageExplorer"
 
     function install_snap_pkgs() {
       local snap_basic_pkgs_to_install=$1

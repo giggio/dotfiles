@@ -297,13 +297,14 @@ let
           wireshark # Network protocol analyzer https://www.wireshark.org/
           brave # Privacy-oriented browser https://brave.com/
           orca-slicer # G-code generator for 3D printers https://github.com/SoftFever/OrcaSlicer
+          bambu-studio # PC Software for BambuLab's 3D printers https://github.com/bambulab/BambuStudio
           fritzing # Electronic design automation software https://fritzing.org/
           mqttx # MQTT 5.0 client desktop application https://mqttx.app/
           mqtt-explorer # MQTT client https://mqtt-explorer.com/
           kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application
           cdrtools # Highly portable CD/DVD/BluRay command line recording software
           dvdauthor # Tools for generating DVD files to be played on standalone DVD players https://dvdauthor.sourceforge.net/
-          # dvdstyler # DVD authoring software https://www.dvdstyler.org/ # todo: not working, check back later
+          # dvdstyler # DVD authoring software https://www.dvdstyler.org/ # todo: not working, issue https://github.com/NixOS/nixpkgs/issues/506767
           doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
           tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
           tesseract # OCR engine https://github.com/tesseract-ocr/tesseract
@@ -316,6 +317,11 @@ let
           onedriver # A native Linux filesystem for Microsoft OneDrive https://github.com/jstaf/onedriver
           kdePackages.filelight # Quickly visualize your disk space usage https://invent.kde.org/utilities/filelight
           btrfs-assistant # GUI management tool to make managing a Btrfs filesystem easier https://gitlab.com/btrfs-assistant/btrfs-assistant
+          kicad # A Cross Platform and Open Source PCB Design Suite https://www.kicad.org/
+          rpi-imager # Raspberry Pi Imaging Utility https://github.com/raspberrypi/rpi-imager/
+          protonup-qt # Install and manage Proton-GE for Steam and Wine-GE for Lutris with this graphical user interface https://davidotek.github.io/protonup-qt/
+          gdm-settings # Settings app for GNOME's Login Manager https://gdm-settings.github.io/
+          virt-manager # Desktop user interface for managing virtual machines https://virt-manager.org/
           # end of non wsl non basic packages
         ]
     )

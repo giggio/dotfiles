@@ -62,6 +62,7 @@ let
       tealdeer # Very fast implementation of tldr in Rust https://github.com/dbrgn/tealdeer
       githooks # Simple Git hooks manager https://github.com/gabyx/githooks
       zellij # Terminal workspace with batteries included https://zellij.dev/
+      zellij_plugins # See pkgs/zellij_plugins.nix
       hub # Command-line tool that makes git easier to use with GitHub https://hub.github.com/
       trash-cli # Command line interface to the freedesktop.org trashcan https://github.com/andreafrancia/trash-cli
       nodejs # Event-driven I/O framework for the V8 JavaScript engine https://nodejs.org

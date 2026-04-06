@@ -141,15 +141,15 @@ keybinds {
 }
 
 plugins {
-    zjstatus location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
+    zjstatus location="file:~/.nix-profile/share/zellij/zjstatus.wasm" {
     }
-    zjstatus-hints location="https://github.com/b0o/zjstatus-hints/releases/latest/download/zjstatus-hints.wasm" {
+    zjstatus-hints location="file:~/.nix-profile/share/zellij/zjstatus-hints.wasm" {
         max_length 0 // 0 = unlimited
         overflow_str "..."
         pipe_name "zjstatus_hints"
         hide_in_base_mode true
     }
-    nvim-nav location="https://github.com/sharph/zellij-nvim-nav-plugin/releases/latest/download/zellij-nvim-nav-plugin.wasm"
+    nvim-nav location="file:~/.nix-profile/share/zellij/zellij-nvim-nav-plugin.wasm"
 }
 
 load_plugins {

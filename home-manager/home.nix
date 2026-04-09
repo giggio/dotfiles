@@ -364,7 +364,7 @@ rec {
             kubectl = "kubecolor";
             http = "xh";
             vim = "nvim";
-            vi = "${pkgs.zellij}/bin/zellij action new-pane --floating --height 100% --width 80% --x 10% --y 0 --name vi --close-on-exit -- nvim 1>/dev/null";
+            vi = ''${pkgs.zellij}/bin/zellij run --floating --height 100% --width 80% --x 10% --y 0 --name vi --close-on-exit -- env PATH="$PATH" nvim 1>/dev/null'';
             cl = "tput clear";
             gping = "PATH=/bin:$PATH gping";
           };

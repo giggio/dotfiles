@@ -636,31 +636,7 @@ rec {
       "yazi/starship.toml".source = mkOutOfStoreSymlinkRelative "config/yazi/starship.toml";
     };
     dataFile = { };
-    desktopEntries =
-      if setup.wsl then
-        { }
-      else
-        {
-          ulauncher = {
-            type = "Application";
-            name = "Ulauncher";
-            comment = "Application launcher for Linux";
-            icon = "ulauncher";
-            genericName = "Launcher";
-            categories = [
-              "GNOME"
-              "GTK"
-              "Utility"
-            ];
-            terminal = false;
-            exec = "env GDK_BACKEND=x11 ulauncher --hide-window";
-            settings = {
-              SingleMainWindow = "true";
-              TryExec = "ulauncher";
-              X-GNOME-UsesNotifications = "true";
-            };
-          };
-        };
+    desktopEntries = if setup.wsl then { } else { };
     mimeApps = {
       enable = true;
       associations = {

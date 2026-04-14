@@ -123,6 +123,7 @@ let
       yamlfmt # An extensible command line tool or library to format yaml files https://github.com/google/yamlfmt
       openssh # Implementation of the SSH protocol https://www.openssh.com/
       diffutils # GNU Diffutils is a package of several programs related to finding differences between files https://www.gnu.org/software/diffutils/diffutils.html
+      which # shows the full path of (shell) commands https://www.gnu.org/software/which/
       # end of common basic packages
     ])
     ++ (

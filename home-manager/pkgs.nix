@@ -130,7 +130,7 @@ let
       if setup.wsl then
         [
           # wsl basic packages
-          wslu # Collection of utilities for WSL https://github.com/wslutilities/wslu
+          wslview # see ./pkgs/wsl/wslview.nix
           # end of wsl basic packages
         ]
       else

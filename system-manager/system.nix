@@ -107,7 +107,7 @@
                   "sysctl.d/70-ping_group_range.conf".source = ./etc/sysctl.d/70-ping_group_range.conf;
                 };
           in
-          all // rog2;
+          builtins.mapAttrs (n: v: v // { replaceExisting = true; }) (all // rog2);
       };
 
       systemd = {

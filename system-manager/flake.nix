@@ -18,18 +18,18 @@
     let
       system = "x86_64-linux";
       mkSystemManagerConfiguration =
-        { extraSpecialArgs, ... }:
+        { specialArgs, ... }:
         system-manager.lib.makeSystemConfig ({
           modules = [
             ./configuration.nix
             ./system.nix
           ];
-          extraSpecialArgs = {
+          specialArgs = {
             inherit inputs;
             inherit system;
             pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
           }
-          // extraSpecialArgs;
+          // specialArgs;
           # Optionally specify overlays
         });
     in
@@ -47,29 +47,29 @@
         {
           # available profiles: default, rog2, giggio, giggio_wsl, giggio_virtualbox, giggio_basic, giggio_wsl_basic, giggio_virtualbox_basic
           default = mkSystemManagerConfiguration {
-            extraSpecialArgs = { inherit setup; };
+            specialArgs = { inherit setup; };
           };
           x86_64-linux = {
             rog2 = mkSystemManagerConfiguration {
               # machine specific
-              extraSpecialArgs = {
+              specialArgs = {
                 setup = setup // {
                   hostname = "rog2";
                 };
               };
             };
             giggio = mkSystemManagerConfiguration {
-              extraSpecialArgs = { inherit setup; };
+              specialArgs = { inherit setup; };
             };
             giggio_wsl = mkSystemManagerConfiguration {
-              extraSpecialArgs = {
+              specialArgs = {
                 setup = setup // {
                   wsl = true;
                 };
               };
             };
             giggio_virtualbox = mkSystemManagerConfiguration {
-              extraSpecialArgs = {
+              specialArgs = {
                 setup = setup // {
                   isVirtualBox = true;
                   isNixOS = true;
@@ -77,14 +77,14 @@
               };
             };
             giggio_basic = mkSystemManagerConfiguration {
-              extraSpecialArgs = {
+              specialArgs = {
                 setup = setup // {
                   basicSetup = true;
                 };
               };
             };
             giggio_wsl_basic = mkSystemManagerConfiguration {
-              extraSpecialArgs = {
+              specialArgs = {
                 setup = setup // {
                   wsl = true;
                   basicSetup = true;
@@ -92,7 +92,7 @@
               };
             };
             giggio_virtualbox_basic = mkSystemManagerConfiguration {
-              extraSpecialArgs = {
+              specialArgs = {
                 setup = setup // {
                   isVirtualBox = true;
                   basicSetup = true;

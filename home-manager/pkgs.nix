@@ -151,7 +151,6 @@ let
           hwloc # Portable abstraction of hierarchical architectures for high-performance computing https://www.open-mpi.org/projects/hwloc/
           keybase-gui # Keybase desktop client https://keybase.io/
           newsflash # Modern feed reader designed for the GNOME desktop https://gitlab.com/news-flash/news_flash_gtk
-          obsidian # Powerful knowledge base on top of a local folder of plain text Markdown files https://obsidian.md
           onlyoffice-desktopeditors # Office suite that combines text, spreadsheet and presentation editors https://www.onlyoffice.com/
           openrgb-with-all-plugins # Open source RGB lighting control https://openrgb.org/
           pinta # Drawing/editing program modeled after Paint.NET https://www.pinta-project.com/
@@ -307,7 +306,7 @@ let
           kdePackages.k3b # Full-featured CD/DVD/Blu-ray burning and ripping application
           cdrtools # Highly portable CD/DVD/BluRay command line recording software
           dvdauthor # Tools for generating DVD files to be played on standalone DVD players https://dvdauthor.sourceforge.net/
-          # dvdstyler # DVD authoring software https://www.dvdstyler.org/ # todo: not working, issue https://github.com/NixOS/nixpkgs/issues/506767
+          dvdstyler # DVD authoring software https://www.dvdstyler.org/
           doublecmd # Two-panel graphical file manager written in Pascal https://github.com/doublecmd/doublecmd
           tor-browser # Privacy-focused browser routing traffic through the Tor network https://www.torproject.org/
           tesseract # OCR engine https://github.com/tesseract-ocr/tesseract
@@ -334,7 +333,6 @@ let
           # NixOS non basic packages
           vscode-fhs # Visual Studio Code with FHS environment https://code.visualstudio.com/
           microsoft-edge # Web browser from Microsoft https://www.microsoft.com/edge
-          # protonup-qt # to use with steam
           # end of NixOS non basic packages
         ]
       else

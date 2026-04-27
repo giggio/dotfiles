@@ -549,6 +549,10 @@ rec {
       enable = !setup.wsl;
       installBatSyntax = true;
     };
+
+    obsidian = {
+      enable = !setup.wsl;
+    };
   };
 
   fonts.fontconfig.enable = !setup.wsl;

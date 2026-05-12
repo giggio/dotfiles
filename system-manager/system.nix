@@ -202,7 +202,7 @@
                     ];
                     serviceConfig = {
                       Type = "oneshot";
-                      ExecStart = "/usr/bin/sh -c 'if systemctl list-units --type=service | grep coolercontrold.service &> /dev/null; then /usr/bin/systemctl restart coolercontrol-liqctld.service coolercontrold.service; fi'";
+                      ExecStart = "/usr/bin/sh -c 'if systemctl list-units --type=service | grep coolercontrold.service &> /dev/null; then /usr/bin/systemctl restart coolercontrold.service; fi'";
                     };
                   };
                 };

@@ -1,8 +1,13 @@
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 {
   dconf = {
-    enable = true;
+    enable = !config.setup.wsl;
     settings = {
       "org/gnome/shell" = {
         disable-user-extensions = false;

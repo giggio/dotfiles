@@ -1,7 +1,7 @@
 {
   lib,
   pkgs,
-  setup,
+  config,
   system,
   inputs,
   ...
@@ -66,7 +66,7 @@
                 route
               ])
             );
-            rog2 = lib.lists.optionals (setup.hostname == "rog2") (
+            rog2 = lib.lists.optionals (config.setup.hostname == "rog2") (
               with pkgs;
               [
                 lm_sensors # Tools for reading hardware sensors - maintained fork https://github.com/hramrach/lm-sensors https://archive.kernel.org/oldwiki/hwmon.wiki.kernel.org/lm_sensors.html
@@ -85,7 +85,7 @@
               "sysctl.d/60-apparmor-namespace.conf".source = ./etc/sysctl.d/60-apparmor-namespace.conf;
             };
             rog2 =
-              if setup.hostname != "rog2" then
+              if config.setup.hostname != "rog2" then
                 { }
               else
                 {
@@ -131,9 +131,9 @@
                       echo "Reloading sysctl config..."
                       ${lib.getBin pkgs.sysctl}/bin/sysctl --system
                     '';
-                    wsl = if setup.wsl then "" else "";
+                    wsl = if config.setup.wsl then "" else "";
                     rog2 =
-                      if setup.hostname != "rog2" then
+                      if config.setup.hostname != "rog2" then
                         ""
                       else
                         ''
@@ -147,7 +147,7 @@
               };
             };
             wsl =
-              if setup.wsl then
+              if config.setup.wsl then
                 {
                   wsl-add-winhost = {
                     # todo: probably will fail inside container, fix it
@@ -181,7 +181,7 @@
               else
                 { };
             rog2 =
-              if setup.hostname != "rog2" then
+              if config.setup.hostname != "rog2" then
                 { }
               else
                 {
@@ -213,7 +213,7 @@
           let
             all = { };
             wsl =
-              if setup.wsl then
+              if config.setup.wsl then
                 {
                   wsl-clean-memory = {
                     description = "Clean WSL Memory if needed on a timer";
@@ -231,9 +231,9 @@
 
         units =
           let
-            wsl = if setup.wsl then { } else { };
+            wsl = if config.setup.wsl then { } else { };
             rog2 =
-              if setup.hostname != "rog2" then
+              if config.setup.hostname != "rog2" then
                 { }
               else
                 {

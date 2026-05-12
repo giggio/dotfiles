@@ -3,7 +3,6 @@
   pkgs,
   lib,
   inputs,
-  setup,
   ...
 }:
 
@@ -18,7 +17,7 @@ let
     FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
     GIT_SSH_COMMAND = ''"${pkgs.openssh}/bin/ssh -F ~/.ssh/config"'';
   };
-  homeManagerConfigPath = "${config.home.homeDirectory}/${setup.homeManagerRelativeConfigPath}";
+  homeManagerConfigPath = "${config.home.homeDirectory}/${config.setup.homeManagerRelativeConfigPath}";
   mkHomeManagerRelativePath = path: "${homeManagerConfigPath}/${path}";
   mkOutOfStoreSymlinkRelative =
     path: config.lib.file.mkOutOfStoreSymlink (mkHomeManagerRelativePath path);
@@ -29,16 +28,9 @@ rec {
     ./pkgs.nix
     ./programs
     inputs.sops-nix.homeManagerModules.sops
-  ]
-  ++ (
-    if setup.wsl then
-      [ ]
-    else
-      [
-        ./dconf/dconf.nix
-        ./virtualbox.nix
-      ]
-  );
+    ./virtualbox.nix
+    ./dconf/dconf.nix
+  ];
 
   nixpkgs = {
     config = {
@@ -195,7 +187,7 @@ rec {
   targets.genericLinux = {
     enable = true;
     gpu = {
-      enable = !setup.wsl;
+      enable = !config.setup.wsl;
     };
   };
 
@@ -314,13 +306,13 @@ rec {
       shellAliases =
         let
           nonWsl =
-            if setup.wsl then
+            if config.setup.wsl then
               { }
             else
               {
                 clip = "xclip -selection clipboard";
               };
-          wslOnly = if setup.wsl then { } else { };
+          wslOnly = if config.setup.wsl then { } else { };
           common = {
             ssh = "ssh -F ~/.ssh/config"; # make my ssh config the one with the most priority
             start = "xdg-open";
@@ -433,7 +425,7 @@ rec {
                 source ${pkgs.kubectl-aliases}/bin/kubectl_aliases.bash
                 source ${pkgs.complete-alias}/bin/complete_alias
               ''
-              (lib.strings.optionalString (!setup.isNixOS && setup.wsl) /* bash */ ''
+              (lib.strings.optionalString (!config.setup.isNixOS && config.setup.wsl) /* bash */ ''
                 # Loading bashscripts only if not on NixOS
                 # It is currently only being used in WSL
                 source $(realpath "${mkOutOfStoreSymlinkRelative "bash/wsl-bashrc.bash"}")
@@ -529,7 +521,7 @@ rec {
     };
 
     librewolf = {
-      enable = !setup.wsl;
+      enable = !config.setup.wsl;
       package = pkgs.librewolf;
       languagePacks = [
         "en-US"
@@ -542,35 +534,35 @@ rec {
     };
 
     zapzap = {
-      enable = !setup.wsl;
+      enable = !config.setup.wsl;
       package = pkgs.zapzap;
     };
 
     chromium = {
-      enable = !setup.wsl;
+      enable = !config.setup.wsl;
       package = pkgs.ungoogled-chromium;
     };
 
     ghostty = {
-      enable = !setup.wsl;
+      enable = !config.setup.wsl;
       installBatSyntax = true;
     };
 
     obsidian = {
-      enable = !setup.wsl;
+      enable = !config.setup.wsl;
     };
   };
 
-  fonts.fontconfig.enable = !setup.wsl;
+  fonts.fontconfig.enable = !config.setup.wsl;
 
   xdg = {
     configFile = {
       "autostart/bitwarden.desktop" = {
-        enable = !setup.wsl;
+        enable = !config.setup.wsl;
         source = "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop";
       };
       "autostart/ghostty.desktop" = {
-        enable = !setup.wsl;
+        enable = !config.setup.wsl;
         text =
           builtins.replaceStrings
             [ "/bin/ghostty --gtk-single-instance=true" ]
@@ -578,11 +570,11 @@ rec {
             (builtins.readFile "${pkgs.ghostty}/share/applications/com.mitchellh.ghostty.desktop");
       };
       "autostart/activitywatch.desktop" = {
-        enable = !setup.wsl;
+        enable = !config.setup.wsl;
         source = "${pkgs.activitywatch}/share/applications/aw-qt.desktop";
       };
       "autostart/forge-sparks.desktop" = {
-        enable = !setup.wsl;
+        enable = !config.setup.wsl;
         text = ''
           [Desktop Entry]
           Name=Forge Sparks
@@ -633,7 +625,7 @@ rec {
         }
       '';
       "systemd/user/onedriver@.service" = {
-        enable = !setup.wsl;
+        enable = !config.setup.wsl;
         source = "${pkgs.onedriver}/share/systemd/user/onedriver@.service";
       };
       "browsh/config.toml".source = ./config/browsh_config.toml;
@@ -646,12 +638,12 @@ rec {
       "yazi/starship.toml".source = mkOutOfStoreSymlinkRelative "config/yazi/starship.toml";
     };
     dataFile = { };
-    desktopEntries = if setup.wsl then { } else { };
+    desktopEntries = if config.setup.wsl then { } else { };
     mimeApps = {
       enable = true;
       associations = {
         added =
-          if setup.wsl then
+          if config.setup.wsl then
             { }
           else
             {
@@ -660,7 +652,7 @@ rec {
             };
       };
       defaultApplications =
-        if setup.wsl then
+        if config.setup.wsl then
           {
             # browser:
             "text/html" = [ "wslview.desktop" ];
@@ -770,7 +762,7 @@ rec {
 
   services = {
     gpg-agent = {
-      enable = !setup.wsl;
+      enable = !config.setup.wsl;
       enableExtraSocket = true;
       enableScDaemon = true;
       enableSshSupport = true;
@@ -784,29 +776,29 @@ rec {
       '';
     };
 
-    keybase.enable = !setup.wsl;
+    keybase.enable = !config.setup.wsl;
 
-    kbfs.enable = !setup.wsl;
+    kbfs.enable = !config.setup.wsl;
 
     syncthing = {
-      enable = false; # !setup.wsl; # todo: not using it for now. remove?
+      enable = false; # !config.setup.wsl; # todo: not using it for now. remove?
       overrideDevices = false;
       overrideFolders = false;
       tray = {
-        enable = false; # !setup.wsl; # todo: not using it for now. remove?
+        enable = false; # !config.setup.wsl; # todo: not using it for now. remove?
       };
     };
 
     ollama = {
       # Get up and running with large language models locally, using ROCm for AMD GPU acceleration https://ollama.com/
-      enable = !setup.wsl;
+      enable = !config.setup.wsl;
       package = pkgs.ollama-rocm;
       # acceleration= "rocm"; # checking from nixpkgs.config.rocmSupport
     };
 
     activitywatch = {
       # Best free and open-source automated time tracker https://activitywatch.net/
-      enable = !setup.wsl;
+      enable = !config.setup.wsl;
       settings = {
         custom_static = {
           aw-watcher-media-player = "${pkgs.aw-watcher-media-player}/share/aw-watcher-media-player/visualization";

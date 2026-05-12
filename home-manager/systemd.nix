@@ -1,5 +1,4 @@
 {
-  setup,
   pkgs,
   config,
   ...
@@ -25,7 +24,7 @@
         let
           commonTargets = { };
           otherTargets =
-            if !setup.wsl then
+            if !config.setup.wsl then
               { }
             else
               {
@@ -65,7 +64,7 @@
             };
           };
           otherServices =
-            if !setup.wsl then
+            if !config.setup.wsl then
               {
                 mount-data = {
                   Unit = {
@@ -159,7 +158,7 @@
         let
           commonSockets = { };
           otherSockets =
-            if !setup.wsl then
+            if !config.setup.wsl then
               { }
             else
               {
@@ -231,7 +230,7 @@
               };
             };
           };
-          wsl = if setup.wsl then { } else { };
+          wsl = if config.setup.wsl then { } else { };
         in
         all // wsl;
 

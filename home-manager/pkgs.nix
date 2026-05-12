@@ -2,7 +2,7 @@
   pkgs,
   # pkgs-stable,
   lib,
-  setup,
+  config,
   ...
 }:
 
@@ -127,7 +127,7 @@ let
       # end of common basic packages
     ])
     ++ (
-      if setup.wsl then
+      if config.setup.wsl then
         [
           # wsl basic packages
           wslview # see ./pkgs/wsl/wslview.nix
@@ -188,7 +188,7 @@ let
       # end of non wsl basic packages
     )
     ++ (
-      if setup.isNixOS then
+      if config.setup.isNixOS then
         [
           # NixOS basic packages
           # end of NixOS basic packages
@@ -200,7 +200,7 @@ let
         ]
     )
   );
-  non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (
+  non_basic_pkgs = lib.lists.optionals (!config.setup.basicSetup) (
     with pkgs;
     [
       # common non basic packages
@@ -282,7 +282,7 @@ let
       # end of common non basic packages
     ]
     ++ (
-      if setup.wsl then
+      if config.setup.wsl then
         [
           # wsl non basic packages
           # end of wsl non basic packages
@@ -328,7 +328,7 @@ let
         ]
     )
     ++ (
-      if setup.isNixOS then
+      if config.setup.isNixOS then
         [
           # NixOS non basic packages
           vscode-fhs # Visual Studio Code with FHS environment https://code.visualstudio.com/
@@ -337,7 +337,7 @@ let
         ]
       else
         (
-          if setup.wsl then
+          if config.setup.wsl then
             [
               # non NixOS wsl non basic packages
               # end of non NixOS wsl non basic packages
@@ -358,7 +358,7 @@ let
       # end of common basic packages (stable)
     ]
     ++ (
-      if setup.wsl then
+      if config.setup.wsl then
         [
           # wsl basic packages (stable)
           # enf of wsl basic packages (stable)
@@ -370,7 +370,7 @@ let
         ]
     )
     ++ (
-      if setup.isNixOS then
+      if config.setup.isNixOS then
         [
           # NixOS basic packages (stable)
           # end of NixOS basic packages (stable)
@@ -382,14 +382,14 @@ let
         ]
     )
   );
-  stable_non_basic_pkgs = lib.lists.optionals (!setup.basicSetup) (
+  stable_non_basic_pkgs = lib.lists.optionals (!config.setup.basicSetup) (
     # with pkgs-stable;
     [
       # common non basic packages (stable)
       # end of common non basic packages (stable)
     ]
     ++ (
-      if setup.wsl then
+      if config.setup.wsl then
         [
           # wsl non basic packages (stable)
           # end of wsl non basic packages (stable)
@@ -401,14 +401,14 @@ let
         ]
     )
     ++ (
-      if setup.isNixOS then
+      if config.setup.isNixOS then
         [
           # NixOS non basic packages (stable)
           # enf of NixOS non basic packages (stable)
         ]
       else
         (
-          if setup.wsl then
+          if config.setup.wsl then
             [
               # non NixOS wsl non basic packages (stable)
               # end of non NixOS wsl non basic packages (stable)

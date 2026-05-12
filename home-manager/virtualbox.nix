@@ -1,5 +1,5 @@
-{ lib, setup, ... }:
+{ lib, config, ... }:
 
-lib.mkIf (setup.isVirtualBox) {
+lib.mkIf (config.setup.isVirtualBox) {
   dconf.settings."org/gnome/desktop/peripherals/mouse".natural-scroll = (lib.mkForce false);
 }

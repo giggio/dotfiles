@@ -46,6 +46,7 @@
             basicSetup = false;
             isNixOS = false;
             isVirtualBox = false;
+            homeManagerRelativeConfigPath = ".dotfiles/home-manager"; # todo: adapt to nixos below
           };
         in
         {

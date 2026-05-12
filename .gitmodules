@@ -1,6 +1,3 @@
-[submodule "bashscripts"]
-	path = bashscripts
-	url = ../bashscripts.git
 [submodule "poshfiles"]
 	path = home-manager/config/poshfiles
 	url = ../poshfiles.git
@@ -8,7 +5,7 @@
 	path = home-manager/config/vimfiles
 	url = ../vimfiles.git
 [submodule "nuscripts"]
-	path = nuscripts
+	path = home-manager/config/nuscripts
 	url = ../nuscripts.git
 [submodule "cheats"]
 	path = home-manager/cheats

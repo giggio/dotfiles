@@ -18,7 +18,7 @@ let
     FZF_CTRL_T_COMMAND = ''"$FZF_DEFAULT_COMMAND"'';
     GIT_SSH_COMMAND = ''"${pkgs.openssh}/bin/ssh -F ~/.ssh/config"'';
   };
-  homeManagerConfigPath = "${config.home.homeDirectory}/.dotfiles/home-manager";
+  homeManagerConfigPath = "${config.home.homeDirectory}/${setup.homeManagerRelativeConfigPath}";
   mkHomeManagerRelativePath = path: "${homeManagerConfigPath}/${path}";
   mkOutOfStoreSymlinkRelative =
     path: config.lib.file.mkOutOfStoreSymlink (mkHomeManagerRelativePath path);
@@ -432,7 +432,13 @@ rec {
                 bind 'set completion-ignore-case on'
                 source ${pkgs.kubectl-aliases}/bin/kubectl_aliases.bash
                 source ${pkgs.complete-alias}/bin/complete_alias
-                source "$HOME/.dotfiles/bashscripts/.bashrc"
+              ''
+              (lib.strings.optionalString (!setup.isNixOS && setup.wsl) /* bash */ ''
+                # Loading bashscripts only if not on NixOS
+                # It is currently only being used in WSL
+                source $(realpath "${mkOutOfStoreSymlinkRelative "bash/wsl-bashrc.bash"}")
+              '')
+              /* bash */ ''
                 if [ -d ~/.luarocks/bin ]; then
                   export PATH="$PATH:$HOME/.luarocks/bin"
                 fi
@@ -463,12 +469,12 @@ rec {
       enable = true;
       extraConfig = /* nu */ ''
         # beginning of extra nushell configuration
-        source ${home.homeDirectory}/.dotfiles/nuscripts/config.nu
+        source ('${mkOutOfStoreSymlinkRelative "config/nuscripts/config.nu"}' | path expand)
         # end of extra nushell configuration
       '';
-      extraEnv = /* bash */ ''
+      extraEnv = /* nu */ ''
         # beginning of extra nushell environment
-        source ${home.homeDirectory}/.dotfiles/nuscripts/env.nu
+        source ('${mkOutOfStoreSymlinkRelative "config/nuscripts/env.nu"}' | path expand)
         # end of extra nushell environment
       '';
       extraLogin = /* nu */ ''

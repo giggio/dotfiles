@@ -108,6 +108,7 @@ rec {
       NPM_CONFIG_PREFIX = "\${NPM_CONFIG_PREFIX:-$HOME/.local/share/npm}";
       BASIC_SETUP = "\${BASIC_SETUP:-false}";
       MANPAGER = "nvim +Man!";
+      WSL = if config.setup.wsl then "true" else "false";
     };
     sessionVariablesExtra = lib.mkOrder 2000 ''
       # this is from sessionVariablesExtra, and is loaded at the very end hm-session-vars.sh
@@ -200,10 +201,27 @@ rec {
     bash = {
       enable = true;
       initExtra = lib.mkMerge [
-        /* bash */ ''
+        ''
           # end of nix configuration
 
           # ending of .bashrc:
+        ''
+        ''
+          # setup ssh socket
+        ''
+        (
+          if config.setup.wsl then
+            /* bash */ ''
+              # forward ssh socket to Windows
+              export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gnupg/ssh.sock"
+            ''
+          else
+            /* bash */ ''
+              # deal with ssh socket forwarding to gpg or using ssh-agent
+              source "${./bash/ssh-socket.bash}"
+            ''
+        )
+        /* bash */ ''
           if [ -f "$HOME"/.cargo/env ]; then
             source "$HOME/.cargo/env"
           fi
@@ -226,14 +244,6 @@ rec {
               git-ignore -a > .gitignore
             fi
           }
-          # setup ssh socket
-          if $WSL; then
-            # forward ssh socket to Windows
-            export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gnupg/ssh.sock"
-          else
-            # deal with ssh socket forwarding to gpg or using ssh-agent
-            source "${./bash/ssh-socket.bash}"
-          fi
           # auto complete all aliases
           complete -F _complete_alias "''${!BASH_ALIASES[@]}"
 

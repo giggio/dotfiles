@@ -1,0 +1,3 @@
+[submodule "home-manager"]
+	path = home-manager
+	url = ../home-manager-config

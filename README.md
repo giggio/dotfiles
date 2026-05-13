@@ -2,7 +2,9 @@
 
 Main repo: [codeberg.org/giggio/dotfiles](https://codeberg.org/giggio/dotfiles)
 
-These are the dotfiles. It is mostly Nix, now.
+These are the dotfiles. It is mostly Nix, now. Checkout my
+[Home manager config](https://codeberg.org/giggio/home-manager-config) too.
+There is also a [System manager config](./system-manager/) in the repo.
 
 ## Installation
 

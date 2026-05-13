@@ -1,1 +1,0 @@
-complete -C terraform terraform

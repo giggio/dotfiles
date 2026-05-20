@@ -35,7 +35,6 @@
             pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
           }
           // specialArgs;
-          # Optionally specify overlays
         });
     in
     {

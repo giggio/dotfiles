@@ -76,6 +76,7 @@
                 lm_sensors # Tools for reading hardware sensors - maintained fork https://github.com/hramrach/lm-sensors https://archive.kernel.org/oldwiki/hwmon.wiki.kernel.org/lm_sensors.html
                 neovim # Vim-fork focused on extensibility and agility https://neovim.io
                 net-tools # Set of tools for controlling the network subsystem in Linux https://sourceforge.net/projects/net-tools/
+                parted # Create, destroy, resize, check, and copy partitions https://www.gnu.org/software/parted/
                 procs # A modern replacement for ps written in Rust https://github.com/dalance/procs
                 tree # Command to produce a depth indented directory listing https://mama.indstate.edu/users/ice/tree/
                 tree-sitter # An incremental parsing system for programming tools https://github.com/tree-sitter/tree-sitter

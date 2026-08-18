@@ -1,9 +1,10 @@
 {
   description = "Standalone System Manager configuration";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     system-manager = {
-      url = "github:numtide/system-manager";
+      url = "github:numtide/system-manager?ref=v1.1.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -29,7 +30,7 @@
             ./configuration.nix
             ./system.nix
           ];
-          specialArgs = {
+          extraSpecialArgs = {
             inherit inputs;
             inherit system;
             pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
@@ -59,6 +60,12 @@
               # machine specific
               extraModule = {
                 setup.hostname = "rog2";
+              };
+            };
+            giggio-sp5 = mkSystemManagerConfiguration {
+              # machine specific
+              extraModule = wslSetup // {
+                setup.hostname = "giggio-sp5";
               };
             };
             giggio = mkSystemManagerConfiguration { };

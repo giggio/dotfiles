@@ -11,4 +11,5 @@ with lib;
       description = "Machine hostname";
     };
   };
+  options.services.displayManager.hiddenUsers = mkEnableOption "temp";
 }

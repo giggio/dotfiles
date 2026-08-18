@@ -49,7 +49,7 @@
             all = (
               # SystemManager only basic packages
               [
-                # system-manager.packages.${system}.default # system-manager binary
+                system-manager.packages.${system}.default # system-manager binary
               ]
               # end of SystemManager only basic packages
               # SystemManager basic packages shared with Home Manager

@@ -1,10 +1,9 @@
 {
   description = "Standalone System Manager configuration";
   inputs = {
-    # nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     system-manager = {
-      url = "github:numtide/system-manager?ref=v1.1.0";
+      url = "github:numtide/system-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

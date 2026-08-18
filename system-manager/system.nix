@@ -14,6 +14,7 @@
     in
     {
       nixpkgs.hostPlatform = "x86_64-linux";
+      overlays = [ ./pkgs/sm-pkgs.nix ];
 
       users = {
         users.${username} = {
@@ -50,6 +51,7 @@
               # SystemManager only basic packages
               [
                 system-manager.packages.${system}.default # system-manager binary
+                sm # my system-manager script
               ]
               # end of SystemManager only basic packages
               # SystemManager basic packages shared with Home Manager

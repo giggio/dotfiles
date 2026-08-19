@@ -25,6 +25,15 @@ Then run the install script `~/.dotfiles/install --verbose`.
 
 (to update run `~/.dotfiles/install --update`)
 
+The `system-manager/secret-modules` submodule is private and declared with
+`update = none`, so it is skipped by `--recurse-submodules` and by
+`git submodule update --init --recursive`. Everything works without it. If you
+are the repo owner, check it out with:
+
+````bash
+git submodule update --init --checkout system-manager/secret-modules
+````
+
 ## Cleaning up before installing
 
 Remove all directories that will be replaced by the submodules.

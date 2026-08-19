@@ -17,6 +17,8 @@
     }@inputs:
     let
       system = "x86_64-linux";
+      # private submodule, absent on machines that have no access to it, see ./secret-modules/README.md
+      secretModules = nixpkgs.lib.optional (builtins.pathExists ./secret-modules/secret-modules.nix) ./secret-modules/secret-modules.nix;
       mkSystemManagerConfiguration =
         {
           extraModule ? { },
@@ -28,7 +30,8 @@
             extraModule
             ./configuration.nix
             ./system.nix
-          ];
+          ]
+          ++ secretModules;
           extraSpecialArgs = {
             inherit inputs;
             inherit system;

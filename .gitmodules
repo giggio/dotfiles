@@ -1,3 +1,7 @@
 [submodule "home-manager"]
 	path = home-manager
 	url = ../home-manager-config
+[submodule "system-manager/secret-modules"]
+	path = system-manager/secret-modules
+	url = ../dotfiles_secret
+	update = none

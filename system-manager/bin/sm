@@ -37,6 +37,10 @@ get_generic_profile() {
   echo $profile
 }
 
+# The flake is referenced as path: and not as git+file with submodules=1 on purpose: nix fails to fetch a git tree
+# whose .gitmodules lists a submodule that is not checked out, and secret-modules is private, so machines without
+# access to it (and the docker test image) would not be able to switch. path: copies the directory as it is on disk,
+# so an absent secret-modules is simply an empty directory, which flake.nix handles.
 _sm() {
   local get_profile=false
   local verbose=false
@@ -93,16 +97,16 @@ _sm() {
     if $first_run; then
       local nix_extra_args="--accept-flake-config --extra-experimental-features nix-command --extra-experimental-features flakes"
       if $verbose; then
-        echo -e "\e[32mRunning:\e[0m \e[34m${env_extra_args}nix run $nix_extra_args 'github:numtide/system-manager' -- switch $* --sudo --flake $HOME/.dotfiles/system-manager?submodules=1#$profile"
+        echo -e "\e[32mRunning:\e[0m \e[34m${env_extra_args}nix run $nix_extra_args 'github:numtide/system-manager' -- switch $* --sudo --flake path:$HOME/.dotfiles/system-manager#$profile"
       fi
       # shellcheck disable=SC2086
-      ${env_extra_args}nix run $nix_extra_args 'github:numtide/system-manager' -- switch "$@" --sudo --flake "$HOME/.dotfiles/system-manager?submodules=1#$profile"
+      ${env_extra_args}nix run $nix_extra_args 'github:numtide/system-manager' -- switch "$@" --sudo --flake "path:$HOME/.dotfiles/system-manager#$profile"
     else
       if $verbose; then
-        echo -e "\e[32mRunning:\e[0m \e[34m${env_extra_args}system-manager switch $* --sudo --flake $HOME/.dotfiles/system-manager?submodules=1#$profile"
+        echo -e "\e[32mRunning:\e[0m \e[34m${env_extra_args}system-manager switch $* --sudo --flake path:$HOME/.dotfiles/system-manager#$profile"
       fi
       # shellcheck disable=SC2086
-      ${env_extra_args}system-manager switch "$@" --sudo --flake "$HOME/.dotfiles/system-manager?submodules=1#$profile"
+      ${env_extra_args}system-manager switch "$@" --sudo --flake "path:$HOME/.dotfiles/system-manager#$profile"
     fi
   else
     if $verbose; then

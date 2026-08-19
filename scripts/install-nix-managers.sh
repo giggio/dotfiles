@@ -69,7 +69,12 @@ download_nixpkgs_cache_index() {
 hm_switch() {
   local verbose_flag=
   if $VERBOSE; then verbose_flag="--verbose"; fi
-  "$SCRIPTSDIR"/home-manager/bin/hm switch --show-trace $verbose_flag "$@"
+  "$SCRIPTSDIR"/../home-manager/bin/hm switch --show-trace $verbose_flag "$@"
+}
+sm_switch() {
+  local verbose_flag=
+  if $VERBOSE; then verbose_flag="--verbose"; fi
+  "$SCRIPTSDIR"/../system-manager/bin/sm switch $verbose_flag "$@"
 }
 setup_nix_channels() {
   writeBlue "Setting up Nix channels."
@@ -103,13 +108,18 @@ setup_nix_channels() {
 install_system_manager() {
   if ! hash system-manager 2> /dev/null; then
     writeBlue "Install Nix system-manager."
+    # the settings seeded by install-root-pkgs.sh go away with this file, but the running daemon
+    # still has them loaded, which is what serves this first switch, so do not restart it before it
     sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.backup
-    "$SCRIPTSDIR"/../system-manager/bin/sm switch --first-run
+    sm_switch --first-run
+    # system-manager owns /etc/nix/nix.conf from now on, the daemon has to be restarted to read it
+    if hash systemctl 2> /dev/null && systemctl is-active --quiet nix-daemon; then
+      sudo systemctl restart nix-daemon
+    fi
   elif $UPDATE; then
     writeBlue "Update Nix system-manager."
     rm -f "$SCRIPTSDIR"/../system-manager/flake.lock
-    hm_switch --refresh
-    download_nixpkgs_cache_index
+    sm_switch
   else
     writeBlue "Not installing Nix system-manager, it is already installed."
   fi

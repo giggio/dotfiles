@@ -14,7 +14,6 @@
     in
     {
       nixpkgs.hostPlatform = "x86_64-linux";
-      overlays = [ ./pkgs/sm-pkgs.nix ];
 
       users = {
         users.${username} = {

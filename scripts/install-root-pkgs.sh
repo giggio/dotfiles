@@ -229,6 +229,38 @@ elif $VERBOSE; then
   writeBlue "Not installing Nix, it is already installed."
 fi
 
+# private nix settings
+# Seeded into /etc/nix/nix.conf here, before home-manager and system-manager ever run, so the first
+# installation on a machine already uses them. system-manager takes over this file on its first
+# switch, and generates it with the very same settings, see system-manager/secret-modules.
+NIX_SECRET_CONF="$SCRIPTSDIR/../system-manager/secret-modules/secret-modules.conf"
+NIX_SECRET_BEGIN='# begin dotfiles secret settings'
+NIX_SECRET_END='# end dotfiles secret settings'
+if ! [ -f "$NIX_SECRET_CONF" ]; then
+  if $VERBOSE; then
+    writeBlue "Not applying the private Nix settings, they are not available on this machine."
+  fi
+elif [ -f /etc/nix/nix.conf ] && grep -qxF "$NIX_SECRET_BEGIN" /etc/nix/nix.conf && ! $UPDATE; then
+  if $VERBOSE; then
+    writeBlue "Not applying the private Nix settings, they are already applied."
+  fi
+else
+  writeBlue "Apply the private Nix settings."
+  mkdir -p /etc/nix
+  if [ -f /etc/nix/nix.conf ]; then
+    sed -i "/^$NIX_SECRET_BEGIN\$/,/^$NIX_SECRET_END\$/d" /etc/nix/nix.conf
+  fi
+  {
+    echo "$NIX_SECRET_BEGIN"
+    cat "$NIX_SECRET_CONF"
+    echo "$NIX_SECRET_END"
+  } >> /etc/nix/nix.conf
+  # the daemon only reads its configuration when it starts
+  if hash systemctl 2> /dev/null && systemctl is-active --quiet nix-daemon; then
+    systemctl restart nix-daemon
+  fi
+fi
+
 # upgrade
 if $UPDATE; then
   writeBlue "Upgrade with APT."

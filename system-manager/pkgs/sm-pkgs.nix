@@ -8,7 +8,7 @@ with pkgs;
     name = "sm";
     runtimeInputs = [
       gnugrep
-      inputs.system-manager.packages.${system}.default # system-manager binary
+      inputs.system-manager.packages.${stdenv.hostPlatform.system}.default # system-manager binary
     ];
     text = builtins.readFile ../bin/sm;
   };

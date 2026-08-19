@@ -32,7 +32,8 @@
             ./system.nix
           ]
           ++ secretModules;
-          extraSpecialArgs = {
+          overlays = [ (import ./pkgs/sm-pkgs.nix inputs) ];
+          specialArgs = {
             inherit inputs;
             inherit system;
             pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
